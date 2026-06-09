@@ -1,38 +1,42 @@
-const bar = { fontFamily: "var(--font-barlow), Arial Narrow, sans-serif" };
-
 interface MacroBarProps {
   label: string;
   atual: number;
   meta: number;
-  cor: string;
+  cor: "protein" | "carbs" | "fat";
   unidade?: string;
 }
 
 const colorMap: Record<string, string> = {
-  "bg-blue-400":   "#1E90FF",
-  "bg-yellow-400": "var(--yellow)",
-  "bg-orange-400": "#FF6A00",
+  protein: "var(--blue)",
+  carbs: "var(--green)",
+  fat: "var(--accent)",
 };
 
 export default function MacroBar({ label, atual, meta, cor, unidade = "g" }: MacroBarProps) {
-  const pct = Math.min((atual / meta) * 100, 100);
+  const pct = meta > 0 ? Math.min((atual / meta) * 100, 100) : 0;
   const over = atual > meta;
-  const fill = over ? "var(--red)" : (colorMap[cor] ?? "var(--yellow)");
+  const fill = over ? "var(--red)" : (colorMap[cor] ?? "var(--accent)");
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem" }}>
-        <span style={{ ...bar, fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.2em",
-          color: "var(--grey)", textTransform: "uppercase" as const }}>
-          {label}
-        </span>
-        <span style={{ ...bar, fontSize: "0.6rem", fontWeight: 700,
-          color: over ? "var(--red)" : "var(--grey)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+        <span className="stat-label">{label}</span>
+        <span
+          style={{
+            fontSize: "11px",
+            fontWeight: 500,
+            color: over ? "var(--red)" : "var(--text2)",
+            fontFamily: "var(--font-inter), sans-serif",
+          }}
+        >
           {atual}{unidade} / {meta}{unidade}
         </span>
       </div>
-      <div style={{ height: "5px", background: "var(--border)" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: fill, transition: "width 0.3s" }} />
+      <div className="progress-track">
+        <div
+          className="progress-fill"
+          style={{ width: `${pct}%`, background: fill }}
+        />
       </div>
     </div>
   );

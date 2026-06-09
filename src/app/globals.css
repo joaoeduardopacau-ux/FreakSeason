@@ -1,117 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #080808;
-  --card: #111111;
-  --card2: #1A1A1A;
-  --yellow: #F5C800;
-  --yellow-bright: #FFD700;
-  --red: #CC1111;
-  --red-dark: #8B0000;
-  --white: #FFFFFF;
-  --grey: #999999;
-  --grey-dark: #444444;
-  --border: #2A2A2A;
-  --input: #0D0D0D;
+  --bg: #0C0C0E;
+  --s1: #141417;
+  --s2: #1B1B1F;
+  --s3: #222226;
+  --accent: #E8531A;
+  --accent-dim: rgba(232,83,26,0.12);
+  --accent-glow: rgba(232,83,26,0.3);
+  --text: #EDEDF0;
+  --text2: #80808A;
+  --text3: #404048;
+  --border: #232328;
+  --green: #22C55E;
+  --green-dim: rgba(34,197,94,0.12);
+  --blue: #60A5FA;
+  --blue-dim: rgba(96,165,250,0.12);
+  --red: #EF4444;
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-card: var(--card);
-  --color-yellow: var(--yellow);
-  --color-red-flex: var(--red);
-  --color-border-dark: var(--border);
-  --font-bebas: var(--font-bebas);
-  --font-barlow: var(--font-barlow);
-  --font-gothic: var(--font-gothic);
+  --color-s1: var(--s1);
+  --color-s2: var(--s2);
+  --color-s3: var(--s3);
+  --color-accent: var(--accent);
+  --color-text: var(--text);
+  --color-text2: var(--text2);
+  --color-text3: var(--text3);
+  --color-border: var(--border);
+  --color-green: var(--green);
+  --color-blue: var(--blue);
+  --color-red: var(--red);
+  --font-inter: var(--font-inter);
 }
 
 body {
   background: var(--bg);
-  color: var(--white);
+  color: var(--text);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * { box-sizing: border-box; }
 
-/* ── FLEX MAGAZINE UTILITIES ── */
+/* ── UTILITY CLASSES ── */
 
-/* Yellow highlight bar (like FLEX masthead) */
-.flex-masthead {
-  background: var(--yellow);
-  color: #000000;
-  font-family: var(--font-bebas), Impact, Arial Narrow, sans-serif;
-  letter-spacing: 0.05em;
-}
-
-/* Red callout box */
-.callout-red {
-  background: var(--red);
-  color: #ffffff;
-  font-family: var(--font-barlow), Arial Narrow, sans-serif;
-  font-weight: 900;
+.stat-label {
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
+  color: var(--text2);
+  font-weight: 500;
+  font-family: var(--font-inter), sans-serif;
 }
 
-/* Yellow callout box */
-.callout-yellow {
-  background: var(--yellow);
-  color: #000000;
-  font-family: var(--font-barlow), Arial Narrow, sans-serif;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.stat-value {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  font-family: var(--font-inter), sans-serif;
 }
 
-/* Magazine section divider */
-.mag-divider {
-  display: flex;
+.badge {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-barlow), Arial Narrow, sans-serif;
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.25em;
-  color: var(--yellow);
-  text-transform: uppercase;
-}
-.mag-divider::before,
-.mag-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  background: var(--s2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-family: var(--font-inter), sans-serif;
 }
 
-/* Dark card with left yellow accent */
-.mag-card {
-  background: var(--card);
+.card {
+  background: var(--s1);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--yellow);
+  border-radius: 12px;
+  padding: 16px;
 }
 
-/* Vintage input */
-.vintage-input {
-  background: var(--input);
-  border: 1px solid var(--border);
-  color: var(--white);
-  padding: 0.55rem 0.75rem;
-  width: 100%;
-  font-size: 0.9rem;
-  font-family: var(--font-barlow), Arial Narrow, sans-serif;
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  transition: border-color 0.15s;
+  font-family: var(--font-inter), sans-serif;
+  cursor: pointer;
+  transition: opacity 0.15s;
 }
-.vintage-input:focus {
-  outline: none;
-  border-color: var(--yellow);
-}
-.vintage-input::placeholder { color: var(--grey-dark); }
-select.vintage-input option { background: var(--input); }
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:active { opacity: 0.8; }
 
-/* Scrollbar */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: var(--font-inter), sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: var(--accent-dim); }
+
+.progress-track {
+  background: var(--s3);
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* ── FORM INPUT ── */
+.field-input {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 400;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.field-input:focus {
+  border-color: var(--accent);
+}
+.field-input::placeholder {
+  color: var(--text3);
+}
+select.field-input option {
+  background: var(--s2);
+  color: var(--text);
+}
+
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }

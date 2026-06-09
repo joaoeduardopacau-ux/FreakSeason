@@ -1,45 +1,28 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Barlow_Condensed, UnifrakturMaguntia } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/contexts/AppContext";
 import BottomNav from "@/components/BottomNav";
 
-const bebas = Bebas_Neue({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-bebas",
-  display: "swap",
-});
-
-const barlow = Barlow_Condensed({
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
-  variable: "--font-barlow",
-  display: "swap",
-});
-
-const gothic = UnifrakturMaguntia({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-gothic",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-inter",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "FreakSeason",
-  description: "Organize seus treinos, dieta e calorias",
+  description: "Treino · Dieta · Evolução",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${bebas.variable} ${barlow.variable} ${gothic.variable}`}
-        style={{ fontFamily: "var(--font-barlow), Arial Narrow, Arial, sans-serif" }}
-      >
+      <body className={inter.variable}>
         <AppProvider>
           <div className="max-w-md mx-auto min-h-screen flex flex-col">
-            <main className="flex-1 pb-20">{children}</main>
+            <main className="flex-1 pb-[60px]">{children}</main>
             <BottomNav />
           </div>
         </AppProvider>

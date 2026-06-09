@@ -1,14 +1,17 @@
 <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="120" rx="16" fill="#080808"/>
-  <!-- Yellow top stripe -->
-  <rect x="0" y="0" width="120" height="14" rx="0" fill="#F5C800"/>
-  <text x="60" y="11" font-family="Impact, Arial Black, sans-serif" font-size="8"
-    fill="#000" text-anchor="middle" letter-spacing="1">FREAKSEASON</text>
-  <!-- FS big letters -->
-  <text x="60" y="80" font-family="Impact, Arial Black, sans-serif" font-size="58"
-    fill="#F5C800" text-anchor="middle" letter-spacing="-3">FS</text>
-  <!-- Bottom red stripe -->
-  <rect x="0" y="106" width="120" height="14" rx="0" fill="#CC1111"/>
-  <text x="60" y="117" font-family="Arial Narrow, Arial, sans-serif" font-size="7"
-    fill="#fff" text-anchor="middle" letter-spacing="2" font-weight="700">VENICE BEACH</text>
+  <!-- Rounded square background -->
+  <rect width="120" height="120" rx="24" fill="#E8531A"/>
+
+  <!-- White FS letters -->
+  <text x="60" y="78" font-family="Arial Black, Arial, sans-serif"
+    font-size="52" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="-3">FS</text>
+
+  <!-- Subtle glow overlay -->
+  <rect width="120" height="120" rx="24" fill="url(#g)" opacity="0.15"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
 </svg>

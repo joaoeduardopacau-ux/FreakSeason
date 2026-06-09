@@ -4,33 +4,39 @@ import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { calcularMetasCalorias } from "@/lib/calculations";
 import type { Refeicao, RefeicaoItem } from "@/types";
-import Card from "@/components/Card";
 import MacroBar from "@/components/MacroBar";
 
 const hoje = new Date().toISOString().split("T")[0];
-const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
 
 const refeicaoOpcoes = [
-  { value: "cafe_manha", label: "CAFÉ DA MANHÃ", short: "CAFÉ" },
-  { value: "lanche_manha", label: "LANCHE MANHÃ", short: "LANCHE M." },
-  { value: "almoco", label: "ALMOÇO", short: "ALMOÇO" },
-  { value: "lanche_tarde", label: "LANCHE TARDE", short: "LANCHE T." },
-  { value: "jantar", label: "JANTAR", short: "JANTAR" },
-  { value: "ceia", label: "CEIA", short: "CEIA" },
+  { value: "cafe_manha",    label: "Café da manhã",   short: "Café" },
+  { value: "lanche_manha",  label: "Lanche da manhã", short: "Lanche M." },
+  { value: "almoco",        label: "Almoço",          short: "Almoço" },
+  { value: "lanche_tarde",  label: "Lanche da tarde", short: "Lanche T." },
+  { value: "jantar",        label: "Jantar",          short: "Jantar" },
+  { value: "ceia",          label: "Ceia",            short: "Ceia" },
 ] as const;
 
 type RefeicaoTipo = typeof refeicaoOpcoes[number]["value"];
 
-const labelStyle = {
-  ...vh,
-  fontSize: "0.65rem",
-  letterSpacing: "0.18em",
-  color: "var(--muted)",
-  textTransform: "uppercase" as const,
-  display: "block",
-  marginBottom: "0.375rem",
-  fontWeight: 600,
-};
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label
+      style={{
+        display: "block",
+        fontSize: "10px",
+        fontWeight: 500,
+        letterSpacing: "0.08em",
+        color: "var(--text2)",
+        textTransform: "uppercase" as const,
+        marginBottom: "6px",
+        fontFamily: "var(--font-inter), sans-serif",
+      }}
+    >
+      {children}
+    </label>
+  );
+}
 
 export default function DietaPage() {
   const { data, adicionarRefeicao, removerRefeicao, adicionarAlimento } = useApp();
@@ -125,83 +131,115 @@ export default function DietaPage() {
   );
 
   return (
-    <div className="px-4 py-4 space-y-4">
-
+    <div style={{ background: "var(--bg)", padding: "0 16px 16px" }}>
       {/* Header */}
-      <div className="text-center py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div style={{ color: "var(--muted)", fontSize: "0.6rem", ...vh, letterSpacing: "0.2em" }}>
-          ◆ NUTRITION PROTOCOL ◆
-        </div>
-        <h1 style={{ ...vh, fontSize: "2rem", fontWeight: 700, color: "var(--gold-light)", letterSpacing: "0.2em", lineHeight: 1.1, marginTop: "0.25rem" }}>
-          DIETA
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "20px 0 16px",
+        }}
+      >
+        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text)" }}>
+          Dieta
         </h1>
-      </div>
-
-      {/* Action row */}
-      <div className="flex items-center justify-between">
-        <div className="divider-gold" style={{ flex: 1 }}>
-          <span>★ HOJE ★</span>
-        </div>
         <button
           onClick={() => setModal(true)}
-          className="ml-3 px-4 py-2 font-bold text-xs"
           style={{
-            background: "var(--gold)",
-            color: "#0A0600",
-            ...vh,
-            letterSpacing: "0.15em",
-            flexShrink: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            padding: "8px 14px",
+            background: "var(--accent)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "var(--font-inter), sans-serif",
           }}
         >
-          + REFEIÇÃO
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Refeição
         </button>
       </div>
 
       {/* Daily summary */}
-      <Card title="RESUMO DO DIA" accent>
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <span
-              style={{ color: "var(--gold-light)", ...vh, fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}
-            >
-              {Math.round(totaisHoje.calorias)}
-            </span>
-            <span style={{ color: "var(--muted)", ...vh, fontSize: "0.9rem", marginLeft: "0.5rem" }}>
-              / {metas?.calorias ?? "—"} KCAL
-            </span>
+      <div
+        style={{
+          background: "var(--s1)",
+          border: "1px solid var(--border)",
+          borderRadius: "12px",
+          padding: "16px",
+          marginBottom: "12px",
+        }}
+      >
+        <div className="stat-label" style={{ marginBottom: "10px" }}>Resumo do dia</div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", marginBottom: "16px" }}>
+          <span
+            style={{
+              fontSize: "48px",
+              fontWeight: 700,
+              color: "var(--accent)",
+              lineHeight: 1,
+            }}
+          >
+            {Math.round(totaisHoje.calorias)}
+          </span>
+          <div style={{ paddingBottom: "6px" }}>
+            <div style={{ fontSize: "12px", color: "var(--text2)" }}>
+              / {metas?.calorias ?? "—"} kcal
+            </div>
           </div>
         </div>
         {metas ? (
-          <div className="space-y-2.5">
-            <MacroBar label="PROTEÍNAS" atual={Math.round(totaisHoje.proteinas)} meta={metas.proteinas} cor="bg-blue-400" />
-            <MacroBar label="CARBOIDRATOS" atual={Math.round(totaisHoje.carboidratos)} meta={metas.carboidratos} cor="bg-yellow-400" />
-            <MacroBar label="GORDURAS" atual={Math.round(totaisHoje.gorduras)} meta={metas.gorduras} cor="bg-orange-400" />
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <MacroBar label="Proteína" atual={Math.round(totaisHoje.proteinas)} meta={metas.proteinas} cor="protein" />
+            <MacroBar label="Carboidrato" atual={Math.round(totaisHoje.carboidratos)} meta={metas.carboidratos} cor="carbs" />
+            <MacroBar label="Gordura" atual={Math.round(totaisHoje.gorduras)} meta={metas.gorduras} cor="fat" />
           </div>
         ) : (
-          <p style={{ color: "var(--muted)", ...vh, fontSize: "0.7rem", letterSpacing: "0.12em" }}>
-            CONFIGURE SEU PERFIL PARA VER AS METAS
+          <p style={{ fontSize: "12px", color: "var(--text2)" }}>
+            Configure seu perfil para ver as metas
           </p>
         )}
-      </Card>
+      </div>
 
       {/* Meals */}
       {refeicoesHoje.length === 0 ? (
         <div
-          className="text-center py-10"
-          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+          style={{
+            background: "var(--s1)",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            padding: "40px 24px",
+            textAlign: "center",
+          }}
         >
-          <p style={{ color: "var(--muted)", ...vh, fontSize: "0.85rem", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>
-            NENHUMA REFEIÇÃO REGISTRADA HOJE
+          <p style={{ fontSize: "14px", color: "var(--text2)", marginBottom: "12px" }}>
+            Nenhuma refeição registrada hoje
           </p>
           <button
             onClick={() => setModal(true)}
-            style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+            style={{
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "var(--accent)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "var(--font-inter), sans-serif",
+            }}
           >
-            + ADICIONAR PRIMEIRA REFEIÇÃO
+            + Adicionar primeira refeição
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {refeicaoOpcoes.map(({ value, label }) => {
             const ref = refeicoesHoje.find((r) => r.tipo === value);
             if (!ref) return null;
@@ -210,49 +248,84 @@ export default function DietaPage() {
               <div
                 key={ref.id}
                 style={{
-                  background: "var(--card)",
+                  background: "var(--s1)",
                   border: "1px solid var(--border)",
-                  borderLeft: "3px solid var(--gold)",
+                  borderRadius: "12px",
+                  overflow: "hidden",
                 }}
               >
-                <div className="p-3">
-                  <div className="flex items-start justify-between mb-2">
+                <div style={{ padding: "12px 14px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      marginBottom: "8px",
+                    }}
+                  >
                     <div>
-                      <p style={{ color: "var(--gold)", ...vh, fontSize: "0.7rem", letterSpacing: "0.18em", fontWeight: 700 }}>
-                        {label}
-                      </p>
-                      <p style={{ color: "var(--cream)", ...vh, fontSize: "1rem", fontWeight: 700 }}>
-                        {Math.round(totalRef)} <span style={{ fontSize: "0.7rem", color: "var(--muted)" }}>KCAL</span>
+                      <p className="stat-label" style={{ marginBottom: "4px" }}>{label}</p>
+                      <p style={{ fontSize: "20px", fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
+                        {Math.round(totalRef)}
+                        <span style={{ fontSize: "12px", color: "var(--text2)", marginLeft: "4px", fontWeight: 400 }}>kcal</span>
                       </p>
                     </div>
                     <button
                       onClick={() => removerRefeicao(ref.id)}
-                      style={{ color: "var(--muted)", padding: "4px" }}
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "6px",
+                        background: "var(--s2)",
+                        border: "1px solid var(--border)",
+                        color: "var(--text2)",
+                        cursor: "pointer",
+                      }}
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                       </svg>
                     </button>
                   </div>
-                  <div className="space-y-0.5">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     {ref.itens.map((item, idx) => (
-                      <div key={idx} className="flex justify-between">
-                        <span style={{ color: "var(--muted)", fontSize: "0.7rem" }}>
-                          {item.nomeAlimento} ({item.quantidade}g)
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: "12px", color: "var(--text2)" }}>
+                          {item.nomeAlimento}
+                          <span style={{ color: "var(--text3)", marginLeft: "4px" }}>
+                            {item.quantidade}g
+                          </span>
                         </span>
-                        <span style={{ color: "var(--cream)", fontSize: "0.7rem" }}>
+                        <span style={{ fontSize: "12px", color: "var(--text)", fontWeight: 500 }}>
                           {Math.round(item.caloriasTotais)} kcal
                         </span>
                       </div>
                     ))}
                   </div>
                   <div
-                    className="flex gap-3 mt-2 pt-2"
-                    style={{ borderTop: "1px solid var(--border)", ...vh, fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--muted)" }}
+                    style={{
+                      display: "flex",
+                      gap: "12px",
+                      marginTop: "8px",
+                      paddingTop: "8px",
+                      borderTop: "1px solid var(--border)",
+                      fontSize: "11px",
+                      color: "var(--text2)",
+                    }}
                   >
-                    <span>P: {Math.round(ref.itens.reduce((a, i) => a + i.proteinasTotais, 0))}g</span>
-                    <span>C: {Math.round(ref.itens.reduce((a, i) => a + i.carboidratosTotais, 0))}g</span>
-                    <span>G: {Math.round(ref.itens.reduce((a, i) => a + i.gordurasTotais, 0))}g</span>
+                    <span style={{ color: "var(--blue)" }}>P: {Math.round(ref.itens.reduce((a, i) => a + i.proteinasTotais, 0))}g</span>
+                    <span style={{ color: "var(--green)" }}>C: {Math.round(ref.itens.reduce((a, i) => a + i.carboidratosTotais, 0))}g</span>
+                    <span style={{ color: "var(--accent)" }}>G: {Math.round(ref.itens.reduce((a, i) => a + i.gordurasTotais, 0))}g</span>
                   </div>
                 </div>
               </div>
@@ -264,41 +337,74 @@ export default function DietaPage() {
       {/* Add meal modal */}
       {modal && (
         <div
-          className="fixed inset-0 z-50 flex items-end"
-          style={{ background: "rgba(0,0,0,0.85)" }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            display: "flex",
+            alignItems: "flex-end",
+            background: "rgba(0,0,0,0.8)",
+          }}
         >
           <div
-            className="w-full max-w-md mx-auto max-h-[92vh] overflow-y-auto"
             style={{
-              background: "var(--card)",
-              borderTop: "2px solid var(--gold)",
-              borderLeft: "1px solid var(--border)",
-              borderRight: "1px solid var(--border)",
+              width: "100%",
+              maxWidth: "448px",
+              margin: "0 auto",
+              maxHeight: "92vh",
+              overflowY: "auto",
+              background: "var(--s1)",
+              borderTop: "1px solid var(--border)",
+              borderRadius: "20px 20px 0 0",
             }}
           >
             {/* Modal header */}
             <div
-              className="p-4 sticky top-0"
-              style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}
+              style={{
+                padding: "16px 16px 12px",
+                position: "sticky",
+                top: 0,
+                background: "var(--s1)",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <div className="flex items-center justify-between">
-                <h2 style={{ color: "var(--gold-light)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.2em" }}>
-                  ADICIONAR REFEIÇÃO
-                </h2>
-                <button
-                  onClick={() => { setModal(false); setItens([]); setBusca(""); }}
-                  style={{ color: "var(--muted)", ...vh, fontSize: "1rem" }}
-                >
-                  ✕
-                </button>
-              </div>
+              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>
+                Adicionar refeição
+              </h2>
+              <button
+                onClick={() => { setModal(false); setItens([]); setBusca(""); }}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "999px",
+                  background: "var(--s2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text2)",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
+              >
+                ✕
+              </button>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
               {/* Meal type selector */}
               <div>
-                <label style={labelStyle}>Tipo de Refeição</label>
-                <div className="grid grid-cols-3 gap-2">
+                <FieldLabel>Tipo de refeição</FieldLabel>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "6px",
+                    flexWrap: "wrap",
+                  }}
+                >
                   {refeicaoOpcoes.map((o) => {
                     const selected = tipoRefeicao === o.value;
                     return (
@@ -306,15 +412,17 @@ export default function DietaPage() {
                         key={o.value}
                         type="button"
                         onClick={() => setTipoRefeicao(o.value)}
-                        className="py-2 px-1 text-center transition-opacity"
                         style={{
-                          background: selected ? "var(--gold)" : "var(--input)",
-                          border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
-                          color: selected ? "#0A0600" : "var(--muted)",
-                          ...vh,
-                          fontSize: "0.55rem",
-                          letterSpacing: "0.1em",
-                          fontWeight: 700,
+                          padding: "6px 12px",
+                          background: selected ? "var(--accent-dim)" : "var(--s2)",
+                          border: `1px solid ${selected ? "var(--accent)" : "var(--border)"}`,
+                          borderRadius: "999px",
+                          color: selected ? "var(--accent)" : "var(--text2)",
+                          fontSize: "12px",
+                          fontWeight: selected ? 600 : 400,
+                          cursor: "pointer",
+                          fontFamily: "var(--font-inter), sans-serif",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         {o.short}
@@ -326,51 +434,62 @@ export default function DietaPage() {
 
               {/* Search */}
               <div>
-                <div className="flex gap-2 mb-2">
+                <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
                   <input
                     type="text"
                     value={busca}
                     onChange={(e) => setBusca(e.target.value)}
-                    className="vintage-input flex-1"
+                    className="field-input"
                     placeholder="Buscar alimento..."
                     style={{ flex: 1 }}
                   />
                   <button
                     type="button"
                     onClick={() => setModalAlimento(true)}
-                    className="px-3 py-2 font-bold text-xs"
                     style={{
-                      background: "var(--card-2)",
+                      padding: "10px 12px",
+                      background: "var(--s2)",
                       border: "1px solid var(--border)",
-                      color: "var(--gold)",
-                      ...vh,
-                      letterSpacing: "0.12em",
+                      borderRadius: "8px",
+                      color: "var(--text2)",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontFamily: "var(--font-inter), sans-serif",
                       flexShrink: 0,
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    + NOVO
+                    + Novo
                   </button>
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Quantidade (g/ml)</label>
+                  <FieldLabel>Quantidade (g/ml)</FieldLabel>
                   <input
                     type="number"
                     min={1}
                     value={qtdSelecionada}
                     onChange={(e) => setQtdSelecionada(parseInt(e.target.value))}
-                    className="vintage-input"
+                    className="field-input"
                   />
                 </div>
 
                 {busca && (
                   <div
-                    className="mt-2 overflow-hidden max-h-44 overflow-y-auto"
-                    style={{ border: "1px solid var(--border)", background: "var(--input)" }}
+                    style={{
+                      marginTop: "8px",
+                      maxHeight: "180px",
+                      overflowY: "auto",
+                      background: "var(--s2)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                    }}
                   >
                     {alimentosFiltrados.length === 0 ? (
-                      <p style={{ color: "var(--muted)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em", padding: "0.75rem", textAlign: "center" }}>
-                        NENHUM RESULTADO
+                      <p style={{ fontSize: "13px", color: "var(--text2)", padding: "12px", textAlign: "center" }}>
+                        Nenhum resultado
                       </p>
                     ) : (
                       alimentosFiltrados.map((a) => {
@@ -380,16 +499,26 @@ export default function DietaPage() {
                             key={a.id}
                             type="button"
                             onClick={() => handleAdicionarItem(a.id)}
-                            className="w-full flex justify-between items-center px-3 py-2.5 text-left"
-                            style={{ borderBottom: "1px solid var(--border)" }}
+                            style={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              padding: "10px 14px",
+                              borderBottom: "1px solid var(--border)",
+                              background: "transparent",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              fontFamily: "var(--font-inter), sans-serif",
+                            }}
                           >
                             <div>
-                              <p style={{ color: "var(--cream)", ...vh, fontSize: "0.8rem" }}>{a.nome}</p>
-                              <p style={{ color: "var(--muted)", fontSize: "0.65rem" }}>
+                              <p style={{ fontSize: "13px", color: "var(--text)", fontWeight: 500 }}>{a.nome}</p>
+                              <p style={{ fontSize: "11px", color: "var(--text2)" }}>
                                 {Math.round(a.calorias * fator)} kcal · {qtdSelecionada}{a.unidade}
                               </p>
                             </div>
-                            <span style={{ color: "var(--gold)", fontSize: "1.2rem" }}>+</span>
+                            <span style={{ color: "var(--accent)", fontSize: "18px", fontWeight: 300 }}>+</span>
                           </button>
                         );
                       })
@@ -401,26 +530,50 @@ export default function DietaPage() {
               {/* Items added */}
               {itens.length > 0 && (
                 <div>
-                  <div className="divider-gold mb-2">
-                    <span>ITENS ({Math.round(totaisItens.calorias)} KCAL)</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    <span className="stat-label">Itens adicionados</span>
+                    <span style={{ fontSize: "12px", color: "var(--accent)", fontWeight: 600 }}>
+                      {Math.round(totaisItens.calorias)} kcal
+                    </span>
                   </div>
-                  <div className="space-y-1">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     {itens.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex justify-between items-center px-3 py-2"
-                        style={{ background: "var(--card-2)", border: "1px solid var(--border)" }}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "10px 12px",
+                          background: "var(--s2)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
                       >
                         <div>
-                          <p style={{ color: "var(--cream)", ...vh, fontSize: "0.8rem" }}>{item.nomeAlimento}</p>
-                          <p style={{ color: "var(--muted)", fontSize: "0.65rem" }}>
+                          <p style={{ fontSize: "13px", color: "var(--text)", fontWeight: 500 }}>{item.nomeAlimento}</p>
+                          <p style={{ fontSize: "11px", color: "var(--text2)" }}>
                             {item.quantidade}g · {Math.round(item.caloriasTotais)} kcal
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoverItem(idx)}
-                          style={{ color: "var(--muted)", marginLeft: "0.5rem" }}
+                          style={{
+                            color: "var(--text2)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            marginLeft: "8px",
+                          }}
                         >
                           ✕
                         </button>
@@ -433,16 +586,21 @@ export default function DietaPage() {
               <button
                 onClick={handleSalvarRefeicao}
                 disabled={itens.length === 0}
-                className="w-full py-3 font-bold text-sm"
                 style={{
-                  background: itens.length === 0 ? "var(--border)" : "var(--gold)",
-                  color: itens.length === 0 ? "var(--muted)" : "#0A0600",
-                  ...vh,
-                  letterSpacing: "0.2em",
+                  width: "100%",
+                  padding: "14px",
+                  background: itens.length === 0 ? "var(--s3)" : "var(--accent)",
+                  color: itens.length === 0 ? "var(--text3)" : "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "15px",
+                  fontWeight: 600,
                   cursor: itens.length === 0 ? "not-allowed" : "pointer",
+                  fontFamily: "var(--font-inter), sans-serif",
+                  transition: "background 0.15s",
                 }}
               >
-                ★ SALVAR REFEIÇÃO ★
+                Salvar refeição
               </button>
             </div>
           </div>
@@ -452,38 +610,70 @@ export default function DietaPage() {
       {/* Add food modal */}
       {modalAlimento && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.9)" }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 60,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            background: "rgba(0,0,0,0.85)",
+          }}
         >
           <div
-            className="w-full max-w-sm p-5"
             style={{
-              background: "var(--card)",
+              width: "100%",
+              maxWidth: "380px",
+              background: "var(--s1)",
               border: "1px solid var(--border)",
-              borderTop: "2px solid var(--gold)",
+              borderRadius: "16px",
+              padding: "20px",
             }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 style={{ color: "var(--gold-light)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.18em" }}>
-                NOVO ALIMENTO
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>
+                Novo alimento
               </h3>
               <button
                 onClick={() => setModalAlimento(false)}
-                style={{ color: "var(--muted)", ...vh }}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "999px",
+                  background: "var(--s2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text2)",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
               >
                 ✕
               </button>
             </div>
-            <form onSubmit={handleSalvarAlimento} className="space-y-3">
+            <form
+              onSubmit={handleSalvarAlimento}
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
               <input
                 required
                 type="text"
                 value={novoAlimento.nome}
                 onChange={(e) => setNovoAlimento({ ...novoAlimento, nome: e.target.value })}
-                className="vintage-input"
+                className="field-input"
                 placeholder="Nome do alimento"
               />
-              <div className="grid grid-cols-2 gap-2">
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                 {(["calorias", "proteinas", "carboidratos", "gorduras"] as const).map((field) => {
                   const fieldLabels = {
                     calorias: "Calorias (kcal)",
@@ -493,41 +683,35 @@ export default function DietaPage() {
                   };
                   return (
                     <div key={field}>
-                      <label style={labelStyle}>{fieldLabels[field]}</label>
+                      <FieldLabel>{fieldLabels[field]}</FieldLabel>
                       <input
                         type="number"
                         min={0}
                         step={0.1}
                         value={novoAlimento[field]}
                         onChange={(e) => setNovoAlimento({ ...novoAlimento, [field]: parseFloat(e.target.value) })}
-                        className="vintage-input"
+                        className="field-input"
                       />
                     </div>
                   );
                 })}
               </div>
               <div>
-                <label style={labelStyle}>Porção (g)</label>
+                <FieldLabel>Porção (g)</FieldLabel>
                 <input
                   type="number"
                   min={1}
                   value={novoAlimento.porcao}
                   onChange={(e) => setNovoAlimento({ ...novoAlimento, porcao: parseInt(e.target.value) })}
-                  className="vintage-input"
+                  className="field-input"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-2.5 font-bold text-sm"
-                style={{
-                  background: "var(--gold)",
-                  color: "#0A0600",
-                  ...vh,
-                  letterSpacing: "0.2em",
-                  fontSize: "0.8rem",
-                }}
+                className="btn-primary"
+                style={{ width: "100%", padding: "12px", fontSize: "14px", marginTop: "4px" }}
               >
-                + ADICIONAR ALIMENTO
+                Adicionar alimento
               </button>
             </form>
           </div>

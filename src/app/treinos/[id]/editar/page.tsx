@@ -4,20 +4,25 @@ import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import type { Exercise, Workout } from "@/types";
-import Card from "@/components/Card";
 
-const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
-
-const labelStyle = {
-  ...vh,
-  fontSize: "0.65rem",
-  letterSpacing: "0.18em",
-  color: "var(--muted)",
-  textTransform: "uppercase" as const,
-  display: "block",
-  marginBottom: "0.375rem",
-  fontWeight: 600,
-};
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label
+      style={{
+        display: "block",
+        fontSize: "10px",
+        fontWeight: 500,
+        letterSpacing: "0.08em",
+        color: "var(--text2)",
+        textTransform: "uppercase" as const,
+        marginBottom: "6px",
+        fontFamily: "var(--font-inter), sans-serif",
+      }}
+    >
+      {children}
+    </label>
+  );
+}
 
 function novoExercicio(): Exercise {
   return {
@@ -54,10 +59,8 @@ export default function EditarTreinoPage({ params }: { params: Promise<{ id: str
 
   if (!treinoOriginal) {
     return (
-      <div className="px-4 py-8 text-center">
-        <p style={{ color: "var(--muted)", ...vh, fontSize: "0.85rem", letterSpacing: "0.15em" }}>
-          TREINO NÃO ENCONTRADO
-        </p>
+      <div style={{ padding: "32px 16px", textAlign: "center" }}>
+        <p style={{ fontSize: "14px", color: "var(--text2)" }}>Treino não encontrado</p>
       </div>
     );
   }
@@ -91,160 +94,226 @@ export default function EditarTreinoPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="px-4 py-4 space-y-4">
-
+    <div style={{ background: "var(--bg)", padding: "0 16px 32px" }}>
       {/* Header */}
-      <div className="flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "0.75rem" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          padding: "20px 0 16px",
+          borderBottom: "1px solid var(--border)",
+          marginBottom: "20px",
+        }}
+      >
         <button
           onClick={() => router.back()}
-          style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+          style={{
+            color: "var(--text2)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            fontSize: "13px",
+            padding: 0,
+            fontFamily: "var(--font-inter), sans-serif",
+          }}
         >
-          ← VOLTAR
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Voltar
         </button>
-        <span style={{ color: "var(--border)" }}>|</span>
-        <h1 style={{ ...vh, fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-light)", letterSpacing: "0.15em" }}>
-          EDITAR TREINO
+        <h1 style={{ fontSize: "17px", fontWeight: 700, color: "var(--text)" }}>
+          Editar treino
         </h1>
       </div>
 
-      <form onSubmit={handleSalvar} className="space-y-4">
-        <Card title="DADOS DO TREINO" accent>
-          <div className="space-y-3">
+      <form onSubmit={handleSalvar} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {/* Workout data */}
+        <div
+          style={{
+            background: "var(--s1)",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            padding: "16px",
+          }}
+        >
+          <div className="stat-label" style={{ marginBottom: "12px" }}>Dados do treino</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div>
-              <label style={labelStyle}>Nome *</label>
+              <FieldLabel>Nome *</FieldLabel>
               <input
                 type="text"
                 required
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="vintage-input"
+                className="field-input"
               />
             </div>
             <div>
-              <label style={labelStyle}>Descrição</label>
+              <FieldLabel>Descrição</FieldLabel>
               <input
                 type="text"
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
-                className="vintage-input"
+                className="field-input"
+                placeholder="Opcional"
               />
             </div>
           </div>
-        </Card>
-
-        <div className="flex items-center justify-between">
-          <div className="divider-gold" style={{ flex: 1 }}>
-            <span>★ EXERCÍCIOS ★</span>
-          </div>
-          <button
-            type="button"
-            onClick={handleAddExercicio}
-            className="ml-3 px-3 py-1.5 font-bold text-xs"
-            style={{
-              color: "var(--gold)",
-              border: "1px solid var(--gold)",
-              background: "transparent",
-              ...vh,
-              letterSpacing: "0.15em",
-              flexShrink: 0,
-            }}
-          >
-            + ADICIONAR
-          </button>
         </div>
 
-        {exercicios.map((ex, idx) => (
-          <div
-            key={ex.id}
-            style={{
-              background: "var(--card)",
-              border: "1px solid var(--border)",
-              borderLeft: "3px solid var(--gold)",
-              padding: "1rem",
-            }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span style={{ color: "var(--gold)", ...vh, fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.15em" }}>
-                EXERCÍCIO {String(idx + 1).padStart(2, "0")}
-              </span>
-              {exercicios.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveExercicio(ex.id)}
-                  style={{ color: "var(--red)", ...vh, fontSize: "0.65rem", letterSpacing: "0.12em" }}
-                >
-                  ✕ REMOVER
-                </button>
-              )}
-            </div>
-            <div className="space-y-3">
-              <input
-                type="text"
-                value={ex.nome}
-                onChange={(e) => handleExercicioChange(ex.id, "nome", e.target.value)}
-                className="vintage-input"
-                placeholder="Nome do exercício"
-              />
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label style={labelStyle}>Séries</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={ex.series}
-                    onChange={(e) => handleExercicioChange(ex.id, "series", parseInt(e.target.value))}
-                    className="vintage-input"
-                  />
+        {/* Exercises */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {exercicios.map((ex, idx) => (
+            <div
+              key={ex.id}
+              style={{
+                background: "var(--s1)",
+                border: "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "16px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "12px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "8px",
+                      background: "var(--accent-dim)",
+                      border: "1px solid var(--accent)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "var(--accent)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {String(idx + 1).padStart(2, "0")}
+                  </div>
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                    Exercício {idx + 1}
+                  </span>
                 </div>
-                <div>
-                  <label style={labelStyle}>Reps</label>
-                  <input
-                    type="text"
-                    value={ex.repeticoes}
-                    onChange={(e) => handleExercicioChange(ex.id, "repeticoes", e.target.value)}
-                    className="vintage-input"
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Descanso</label>
-                  <input
-                    type="text"
-                    value={ex.descanso}
-                    onChange={(e) => handleExercicioChange(ex.id, "descanso", e.target.value)}
-                    className="vintage-input"
-                  />
-                </div>
+                {exercicios.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveExercicio(ex.id)}
+                    style={{
+                      fontSize: "12px",
+                      color: "var(--red)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontFamily: "var(--font-inter), sans-serif",
+                    }}
+                  >
+                    Remover
+                  </button>
+                )}
               </div>
-              <input
-                type="text"
-                value={ex.carga}
-                onChange={(e) => handleExercicioChange(ex.id, "carga", e.target.value)}
-                className="vintage-input"
-                placeholder="Carga"
-              />
-              <input
-                type="text"
-                value={ex.observacoes}
-                onChange={(e) => handleExercicioChange(ex.id, "observacoes", e.target.value)}
-                className="vintage-input"
-                placeholder="Observações"
-              />
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <input
+                  type="text"
+                  value={ex.nome}
+                  onChange={(e) => handleExercicioChange(ex.id, "nome", e.target.value)}
+                  className="field-input"
+                  placeholder="Nome do exercício"
+                />
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                  <div>
+                    <FieldLabel>Séries</FieldLabel>
+                    <input
+                      type="number"
+                      min={1}
+                      value={ex.series}
+                      onChange={(e) => handleExercicioChange(ex.id, "series", parseInt(e.target.value))}
+                      className="field-input"
+                      style={{ textAlign: "center" }}
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel>Reps</FieldLabel>
+                    <input
+                      type="text"
+                      value={ex.repeticoes}
+                      onChange={(e) => handleExercicioChange(ex.id, "repeticoes", e.target.value)}
+                      className="field-input"
+                      style={{ textAlign: "center" }}
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel>Descanso</FieldLabel>
+                    <input
+                      type="text"
+                      value={ex.descanso}
+                      onChange={(e) => handleExercicioChange(ex.id, "descanso", e.target.value)}
+                      className="field-input"
+                      style={{ textAlign: "center" }}
+                    />
+                  </div>
+                </div>
+
+                <input
+                  type="text"
+                  value={ex.carga}
+                  onChange={(e) => handleExercicioChange(ex.id, "carga", e.target.value)}
+                  className="field-input"
+                  placeholder="Carga"
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAddExercicio}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "transparent",
+            border: "1px dashed var(--border)",
+            borderRadius: "12px",
+            color: "var(--text2)",
+            fontSize: "13px",
+            fontWeight: 500,
+            cursor: "pointer",
+            fontFamily: "var(--font-inter), sans-serif",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Adicionar exercício
+        </button>
 
         <button
           type="submit"
-          className="w-full py-3 font-bold text-sm"
-          style={{
-            background: "var(--gold)",
-            color: "#0A0600",
-            ...vh,
-            letterSpacing: "0.2em",
-            fontSize: "0.9rem",
-          }}
+          className="btn-primary"
+          style={{ width: "100%", padding: "14px", fontSize: "15px" }}
         >
-          ★ SALVAR ALTERAÇÕES ★
+          Salvar alterações
         </button>
       </form>
     </div>

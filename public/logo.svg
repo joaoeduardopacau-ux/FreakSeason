@@ -1,30 +1,18 @@
-<svg width="440" height="130" viewBox="0 0 440 130" xmlns="http://www.w3.org/2000/svg">
-  <!-- Black background -->
-  <rect width="440" height="130" fill="#080808"/>
+<svg width="500" height="140" viewBox="0 0 500 140" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon mark: 44px circle accent color -->
+  <circle cx="32" cy="70" r="22" fill="#E8531A"/>
+  <!-- Lightning bolt inside circle -->
+  <path d="M35 52 L26 70 L32 70 L29 88 L38 70 L32 70 Z" fill="#ffffff" stroke="none"/>
 
-  <!-- Red top ticker -->
-  <rect x="0" y="0" width="440" height="18" fill="#CC1111"/>
-  <text x="8" y="13" font-family="Arial Narrow, Arial, sans-serif" font-weight="900"
-    font-size="8.5" fill="#ffffff" letter-spacing="2.5">▶ THE IRON BIBLE FOR CHAMPIONS</text>
-  <text x="390" y="13" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
-    font-size="8" fill="rgba(255,255,255,0.6)" letter-spacing="1">VOL.I</text>
+  <!-- Wordmark: Freak -->
+  <text x="66" y="62" font-family="Arial Black, Arial, sans-serif"
+    font-size="38" font-weight="800" fill="#EDEDF0" letter-spacing="-0.5">Freak</text>
 
-  <!-- JOE WEIDER'S -->
-  <text x="8" y="34" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
-    font-size="9" fill="#999999" letter-spacing="3">JOE WEIDER'S</text>
+  <!-- Wordmark: Season (lighter weight) -->
+  <text x="190" y="62" font-family="Arial, sans-serif"
+    font-size="38" font-weight="300" fill="#80808A" letter-spacing="-0.5">Season</text>
 
-  <!-- FREAK in yellow — big Impact style -->
-  <text x="6" y="92" font-family="Impact, Arial Black, Arial Narrow, sans-serif"
-    font-size="72" fill="#F5C800" letter-spacing="-1">FREAK</text>
-
-  <!-- SEASON in white -->
-  <text x="218" y="92" font-family="Impact, Arial Black, Arial Narrow, sans-serif"
-    font-size="72" fill="#FFFFFF" letter-spacing="-1">SEASON</text>
-
-  <!-- Bottom yellow bar -->
-  <rect x="0" y="100" width="440" height="3" fill="#F5C800"/>
-
-  <!-- Tagline -->
-  <text x="8" y="118" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
-    font-size="8.5" fill="#666666" letter-spacing="3">EST. VENICE BEACH · MCMLXXVII · TREINO · DIETA · EVOLUÇÃO</text>
+  <!-- Tagline below -->
+  <text x="66" y="82" font-family="Arial, sans-serif"
+    font-size="9" font-weight="400" fill="#404048" letter-spacing="4.8">TREINO · DIETA · EVOLUÇÃO</text>
 </svg>

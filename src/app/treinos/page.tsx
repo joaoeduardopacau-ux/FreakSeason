@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import Card from "@/components/Card";
 
 const hoje = new Date().toISOString().split("T")[0];
-const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
 
 export default function TreinosPage() {
   const { data, removerTreino } = useApp();
@@ -16,144 +14,188 @@ export default function TreinosPage() {
   }
 
   return (
-    <div className="px-4 py-4 space-y-4">
-
+    <div style={{ background: "var(--bg)", padding: "0 16px 16px" }}>
       {/* Header */}
-      <div className="text-center py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div style={{ color: "var(--muted)", fontSize: "0.6rem", ...vh, letterSpacing: "0.2em" }}>
-          ◆ MUSCLE & FITNESS · VENICE BEACH ◆
-        </div>
-        <h1 style={{ ...vh, fontSize: "2rem", fontWeight: 700, color: "var(--gold-light)", letterSpacing: "0.2em", lineHeight: 1.1, marginTop: "0.25rem" }}>
-          TREINOS
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "20px 0 16px",
+        }}
+      >
+        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text)" }}>
+          Treinos
         </h1>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="divider-gold" style={{ flex: 1 }}>
-          <span>★ PROGRAMAS ★</span>
-        </div>
         <Link
           href="/treinos/novo"
-          className="ml-3 px-4 py-2 font-bold text-xs"
           style={{
-            background: "var(--gold)",
-            color: "#0A0600",
-            ...vh,
-            letterSpacing: "0.15em",
-            flexShrink: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            padding: "8px 14px",
+            background: "var(--accent)",
+            color: "#fff",
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 600,
+            textDecoration: "none",
           }}
         >
-          + NOVO
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Novo
         </Link>
       </div>
 
       {treinos.length === 0 ? (
-        <Card>
-          <div className="text-center py-10">
-            <div
-              style={{
-                fontSize: "2.5rem",
-                color: "var(--gold)",
-                marginBottom: "1rem",
-              }}
-            >
-              ◆
-            </div>
-            <p
-              style={{ color: "var(--muted)", ...vh, fontSize: "0.85rem", letterSpacing: "0.15em", marginBottom: "1rem" }}
-            >
-              NENHUM TREINO CRIADO
-            </p>
-            <Link
-              href="/treinos/novo"
-              className="inline-block px-6 py-2.5 font-bold text-sm"
-              style={{
-                background: "var(--gold)",
-                color: "#0A0600",
-                ...vh,
-                letterSpacing: "0.15em",
-              }}
-            >
-              CRIAR MEU PRIMEIRO TREINO
-            </Link>
+        <div
+          style={{
+            background: "var(--s1)",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            padding: "48px 24px",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "12px",
+              background: "var(--s2)",
+              border: "1px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 16px",
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3" />
+              <line x1="6" y1="12" x2="18" y2="12" />
+            </svg>
           </div>
-        </Card>
+          <p style={{ fontSize: "15px", fontWeight: 600, color: "var(--text)", marginBottom: "6px" }}>
+            Nenhum treino criado
+          </p>
+          <p style={{ fontSize: "13px", color: "var(--text2)", marginBottom: "20px" }}>
+            Crie seu primeiro programa de treino
+          </p>
+          <Link
+            href="/treinos/novo"
+            style={{
+              display: "inline-block",
+              padding: "10px 24px",
+              background: "var(--accent)",
+              color: "#fff",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            Criar primeiro treino
+          </Link>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {treinos.map((treino, idx) => {
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {treinos.map((treino) => {
             const logs = treinosLog.filter((l) => l.workoutId === treino.id);
             const treinadoHoje = logs.some((l) => l.data.startsWith(hoje));
+
             return (
               <div
                 key={treino.id}
                 style={{
-                  background: "var(--card)",
+                  background: "var(--s1)",
                   border: "1px solid var(--border)",
-                  borderLeft: "3px solid var(--gold)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                  borderRadius: "12px",
+                  overflow: "hidden",
                 }}
               >
-                <div className="p-4 flex items-start justify-between">
-                  <Link href={`/treinos/${treino.id}`} className="flex-1">
-                    <div className="flex items-start gap-3">
-                      <span
-                        style={{ color: "var(--gold)", ...vh, fontSize: "1.4rem", fontWeight: 700, lineHeight: 1, minWidth: "2rem" }}
-                      >
-                        {String(idx + 1).padStart(2, "0")}
-                      </span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "14px 16px",
+                    gap: "12px",
+                  }}
+                >
+                  <Link
+                    href={`/treinos/${treino.id}`}
+                    style={{ flex: 1, textDecoration: "none" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
                       <div>
-                        {treinadoHoje && (
-                          <span
-                            className="inline-block px-2 py-0.5 mb-1"
-                            style={{
-                              background: "var(--gold)",
-                              color: "#0A0600",
-                              ...vh,
-                              fontSize: "0.55rem",
-                              letterSpacing: "0.15em",
-                              fontWeight: 700,
-                            }}
-                          >
-                            ★ CONCLUÍDO HOJE
-                          </span>
-                        )}
-                        <h3
-                          style={{ color: "var(--cream)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.08em", lineHeight: 1.2 }}
-                        >
-                          {treino.nome.toUpperCase()}
-                        </h3>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                          <h3 style={{ fontSize: "15px", fontWeight: 600, color: "var(--text)" }}>
+                            {treino.nome}
+                          </h3>
+                          {treinadoHoje && (
+                            <span
+                              style={{
+                                fontSize: "10px",
+                                fontWeight: 600,
+                                color: "var(--green)",
+                                background: "var(--green-dim)",
+                                border: "1px solid var(--green)",
+                                borderRadius: "999px",
+                                padding: "1px 7px",
+                              }}
+                            >
+                              Feito hoje
+                            </span>
+                          )}
+                        </div>
                         {treino.descricao && (
-                          <p style={{ color: "var(--muted)", fontSize: "0.7rem", marginTop: "2px" }}>
+                          <p style={{ fontSize: "12px", color: "var(--text2)", marginBottom: "8px" }}>
                             {treino.descricao}
                           </p>
                         )}
-                        <div
-                          className="flex gap-3 mt-2"
-                          style={{ color: "var(--muted)", ...vh, fontSize: "0.6rem", letterSpacing: "0.12em" }}
-                        >
-                          <span>{treino.exercicios.length} EXERCÍCIOS</span>
-                          <span>·</span>
-                          <span>{logs.length}× REALIZADO</span>
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                          <span className="badge">{treino.exercicios.length} exercícios</span>
+                          <span className="badge">{logs.length}× realizado</span>
                         </div>
                       </div>
                     </div>
                   </Link>
-                  <div className="flex gap-2 ml-2 shrink-0">
+                  <div style={{ display: "flex", gap: "4px", flexShrink: 0 }}>
                     <Link
                       href={`/treinos/${treino.id}/editar`}
-                      className="p-1.5"
-                      style={{ color: "var(--muted)" }}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "8px",
+                        background: "var(--s2)",
+                        border: "1px solid var(--border)",
+                        color: "var(--text2)",
+                      }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                       </svg>
                     </Link>
                     <button
                       onClick={() => handleRemover(treino.id)}
-                      className="p-1.5"
-                      style={{ color: "var(--muted)" }}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "8px",
+                        background: "var(--s2)",
+                        border: "1px solid var(--border)",
+                        color: "var(--text2)",
+                        cursor: "pointer",
+                      }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                       </svg>
                     </button>
