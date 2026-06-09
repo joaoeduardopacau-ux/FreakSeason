@@ -207,84 +207,28 @@ export default function PerfilPage() {
         </div>
       </div>
 
-      {/* ── COVER IMAGE AREA ── */}
-      <div style={{ position: "relative", background: "#050505",
-        display: "flex", justifyContent: "center", padding: "0.5rem 0 0" }}>
-
-        {/* Left callouts */}
-        <div style={{ position: "absolute", left: "0.5rem", top: "0.75rem",
-          display: "flex", flexDirection: "column", gap: "0.4rem", maxWidth: "38%" }}>
-          <div style={{ background: "var(--red)", padding: "0.3rem 0.4rem" }}>
-            <div style={{ ...bb, fontSize: "0.65rem", color: "#fff", lineHeight: 1, letterSpacing: "0.05em" }}>
-              O SEGREDO DO
-            </div>
-            <div style={{ ...bb, fontSize: "1.4rem", color: "#fff", lineHeight: 0.9 }}>
-              CORPO<br/>PERFEITO
-            </div>
+      {/* ── CALLOUT ROW (substituiu a área de foto) ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0", borderBottom: "2px solid var(--border)" }}>
+        <div style={{ background: "var(--red)", padding: "0.6rem 0.75rem", borderRight: "1px solid #000" }}>
+          <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 900, color: "rgba(255,255,255,0.6)", letterSpacing: "0.2em" }}>
+            IMC
           </div>
-          <div style={{ background: "var(--yellow)", padding: "0.3rem 0.4rem" }}>
-            <div style={{ ...bb, fontSize: "0.7rem", color: "#000", letterSpacing: "0.05em" }}>
-              IMC:
-            </div>
-            <div style={{ ...bb, fontSize: "1.6rem", color: "#000", lineHeight: 0.9 }}>
-              {imc?.imc}
-            </div>
-            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "#000", letterSpacing: "0.08em" }}>
-              {imc?.classificacao.toUpperCase()}
-            </div>
+          <div style={{ ...bb, fontSize: "2.4rem", color: "#fff", lineHeight: 0.9 }}>
+            {imc?.imc}
+          </div>
+          <div style={{ ...bar, fontSize: "0.55rem", fontWeight: 800, color: "rgba(255,255,255,0.8)", letterSpacing: "0.08em" }}>
+            {imc?.classificacao.toUpperCase()}
           </div>
         </div>
-
-        {/* Athlete silhouette */}
-        <svg width="155" height="200" viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="sg" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#E0E0E0"/>
-              <stop offset="100%" stopColor="#666"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="80" cy="18" rx="14" ry="16" fill="url(#sg)"/>
-          <rect x="73" y="32" width="14" height="10" fill="url(#sg)"/>
-          <ellipse cx="42" cy="52" rx="22" ry="13" fill="url(#sg)"/>
-          <ellipse cx="118" cy="52" rx="22" ry="13" fill="url(#sg)"/>
-          <path d="M52,44 Q80,38 108,44 L112,80 Q80,88 48,80 Z" fill="url(#sg)"/>
-          <path d="M56,80 Q80,85 104,80 L100,130 Q80,136 60,130 Z" fill="url(#sg)" opacity="0.9"/>
-          <ellipse cx="30" cy="72" rx="13" ry="23" fill="url(#sg)"/>
-          <ellipse cx="130" cy="72" rx="13" ry="23" fill="url(#sg)"/>
-          <path d="M22,92 Q18,118 20,138 L38,138 Q36,118 40,92 Z" fill="url(#sg)" opacity="0.75"/>
-          <path d="M122,92 Q118,118 120,138 L138,138 Q142,118 140,92 Z" fill="url(#sg)" opacity="0.75"/>
-          <path d="M60,130 Q55,158 53,200 L73,200 Q75,162 80,145 Q85,162 87,200 L107,200 Q105,158 100,130 Z"
-            fill="url(#sg)" opacity="0.8"/>
-          <line x1="80" y1="46" x2="80" y2="80" stroke="#000" strokeWidth="2" opacity="0.4"/>
-          <line x1="63" y1="95" x2="76" y2="95" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-          <line x1="84" y1="95" x2="97" y2="95" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-          <line x1="63" y1="108" x2="76" y2="108" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-          <line x1="84" y1="108" x2="97" y2="108" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-          <line x1="63" y1="121" x2="76" y2="121" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-          <line x1="84" y1="121" x2="97" y2="121" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
-        </svg>
-
-        {/* Right callouts */}
-        <div style={{ position: "absolute", right: "0.5rem", top: "0.75rem",
-          display: "flex", flexDirection: "column", gap: "0.4rem", maxWidth: "38%", alignItems: "flex-end" }}>
-          <div style={{ background: "#111", border: "1px solid var(--border)",
-            padding: "0.3rem 0.4rem", textAlign: "right" }}>
-            <div style={{ ...bb, fontSize: "0.65rem", color: "var(--grey)", letterSpacing: "0.05em" }}>
-              PROGRAMA
-            </div>
-            <div style={{ ...bb, fontSize: "1.1rem", color: "var(--yellow)", lineHeight: 0.95,
-              textTransform: "uppercase" }}>
-              CORPO<br/>IDEAL
-            </div>
-            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "var(--grey)",
-              letterSpacing: "0.08em" }}>P.01</div>
+        <div style={{ background: "var(--yellow)", padding: "0.6rem 0.75rem" }}>
+          <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 900, color: "rgba(0,0,0,0.5)", letterSpacing: "0.2em" }}>
+            FASE ATUAL
           </div>
-          <div style={{ background: obj.color, padding: "0.3rem 0.4rem", textAlign: "right" }}>
-            <div style={{ ...bb, fontSize: "0.6rem", color: "#fff" }}>FASE ATUAL</div>
-            <div style={{ ...bb, fontSize: "1.5rem", color: "#fff", lineHeight: 0.9 }}>{obj.label}</div>
-            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "rgba(255,255,255,0.7)" }}>
-              {obj.sub.toUpperCase()}
-            </div>
+          <div style={{ ...bb, fontSize: "2.4rem", color: "#000", lineHeight: 0.9 }}>
+            {obj.label}
+          </div>
+          <div style={{ ...bar, fontSize: "0.55rem", fontWeight: 800, color: "rgba(0,0,0,0.6)", letterSpacing: "0.08em" }}>
+            {obj.sub.toUpperCase()}
           </div>
         </div>
       </div>
