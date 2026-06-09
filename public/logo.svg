@@ -1,63 +1,30 @@
-<svg width="420" height="130" viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#F0B830"/>
-      <stop offset="50%" stop-color="#C8860A"/>
-      <stop offset="100%" stop-color="#7A5004"/>
-    </linearGradient>
-    <linearGradient id="creamFade" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#E8D49A"/>
-      <stop offset="100%" stop-color="#B8A060"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
+<svg width="440" height="130" viewBox="0 0 440 130" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black background -->
+  <rect width="440" height="130" fill="#080808"/>
 
-  <!-- Badge shield -->
-  <path d="M60,8 L100,8 L110,20 L110,80 L60,108 L10,80 L10,20 Z"
-    fill="#060400" stroke="url(#goldGrad)" stroke-width="2"/>
-  <path d="M60,15 L95,15 L104,25 L104,77 L60,102 L16,77 L16,25 Z"
-    fill="none" stroke="#3A2800" stroke-width="1"/>
+  <!-- Red top ticker -->
+  <rect x="0" y="0" width="440" height="18" fill="#CC1111"/>
+  <text x="8" y="13" font-family="Arial Narrow, Arial, sans-serif" font-weight="900"
+    font-size="8.5" fill="#ffffff" letter-spacing="2.5">▶ THE IRON BIBLE FOR CHAMPIONS</text>
+  <text x="390" y="13" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
+    font-size="8" fill="rgba(255,255,255,0.6)" letter-spacing="1">VOL.I</text>
 
-  <!-- Stars -->
-  <text x="60" y="32" font-family="Arial" font-size="9" fill="#C8860A"
-    text-anchor="middle" letter-spacing="8">★ ★ ★</text>
+  <!-- JOE WEIDER'S -->
+  <text x="8" y="34" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
+    font-size="9" fill="#999999" letter-spacing="3">JOE WEIDER'S</text>
 
-  <!-- FS in gothic style -->
-  <text x="60" y="77" font-family="Georgia, 'Times New Roman', serif"
-    font-weight="900" font-size="40" fill="url(#goldGrad)"
-    text-anchor="middle" letter-spacing="-2" filter="url(#glow)">FS</text>
+  <!-- FREAK in yellow — big Impact style -->
+  <text x="6" y="92" font-family="Impact, Arial Black, Arial Narrow, sans-serif"
+    font-size="72" fill="#F5C800" letter-spacing="-1">FREAK</text>
 
-  <!-- Bottom badge text -->
-  <text x="60" y="98" font-family="Georgia, serif" font-size="6"
-    fill="#6A4E18" text-anchor="middle" letter-spacing="3">MDCCCCLXXVII</text>
+  <!-- SEASON in white -->
+  <text x="218" y="92" font-family="Impact, Arial Black, Arial Narrow, sans-serif"
+    font-size="72" fill="#FFFFFF" letter-spacing="-1">SEASON</text>
 
-  <!-- Vertical divider -->
-  <line x1="120" y1="10" x2="120" y2="120" stroke="#3A2800" stroke-width="1"/>
+  <!-- Bottom yellow bar -->
+  <rect x="0" y="100" width="440" height="3" fill="#F5C800"/>
 
-  <!-- FREAK — gothic style using serif heavy -->
-  <text x="136" y="62"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-weight="900" font-size="52" fill="url(#creamFade)"
-    letter-spacing="2">FREAK</text>
-
-  <!-- SEASON — gold -->
-  <text x="138" y="108"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-weight="900" font-size="46" fill="url(#goldGrad)"
-    letter-spacing="3">SEASON</text>
-
-  <!-- Top ornamental line -->
-  <line x1="136" y1="12" x2="410" y2="12" stroke="#3A2800" stroke-width="0.8"/>
-  <line x1="136" y1="15" x2="410" y2="15" stroke="#C8860A" stroke-width="0.4"/>
-
-  <!-- Bottom tagline -->
-  <text x="138" y="124"
-    font-family="Georgia, serif" font-size="7.5"
-    fill="#6A4E18" letter-spacing="3.5">EST. VENICE BEACH · MCMLXXVII</text>
-
-  <!-- Bottom ornamental line -->
-  <line x1="136" y1="128" x2="410" y2="128" stroke="#3A2800" stroke-width="0.8"/>
+  <!-- Tagline -->
+  <text x="8" y="118" font-family="Arial Narrow, Arial, sans-serif" font-weight="700"
+    font-size="8.5" fill="#666666" letter-spacing="3">EST. VENICE BEACH · MCMLXXVII · TREINO · DIETA · EVOLUÇÃO</text>
 </svg>

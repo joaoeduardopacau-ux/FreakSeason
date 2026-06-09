@@ -3,19 +3,18 @@
 import { useState, useEffect } from "react";
 import { useApp } from "@/contexts/AppContext";
 import {
-  calcularTMB, calcularTDEE, calcularMetasCalorias,
-  calcularIMC, activityLabels,
+  calcularTMB, calcularTDEE, calcularMetasCalorias, calcularIMC, activityLabels,
 } from "@/lib/calculations";
 import type { UserProfile, ActivityLevel } from "@/types";
 
-const gothic = { fontFamily: "var(--font-gothic), Georgia, serif" };
-const cinzel = { fontFamily: "var(--font-cinzel), Georgia, serif" };
-const oswald = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
+const bb  = { fontFamily: "var(--font-bebas), Impact, Arial Narrow, sans-serif" };
+const bar = { fontFamily: "var(--font-barlow), Arial Narrow, sans-serif" };
+const goth = { fontFamily: "var(--font-gothic), Georgia, serif" };
 
 const objetivos = [
-  { value: "emagrecer",    label: "CUT",          sub: "Definição" },
-  { value: "manter",       label: "MAINTAIN",     sub: "Manutenção" },
-  { value: "ganhar_massa", label: "BULK",          sub: "Massa" },
+  { value: "emagrecer",    label: "CUT",   sub: "Definição",  color: "#1E6FCC" },
+  { value: "manter",       label: "MAINT", sub: "Manutenção", color: "#444" },
+  { value: "ganhar_massa", label: "BULK",  sub: "Massa",      color: "var(--red)" },
 ] as const;
 
 const atividadeOpcoes: { value: ActivityLevel; label: string }[] = [
@@ -26,11 +25,10 @@ const atividadeOpcoes: { value: ActivityLevel; label: string }[] = [
   { value: "muito_ativo", label: activityLabels.muito_ativo },
 ];
 
-const labelSt = {
-  ...{ fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" },
-  fontSize: "0.6rem", letterSpacing: "0.2em",
-  color: "var(--muted)", textTransform: "uppercase" as const,
-  display: "block", marginBottom: "0.35rem", fontWeight: 600,
+const lbl = {
+  ...bar, fontSize: "0.55rem", fontWeight: 800, letterSpacing: "0.2em",
+  color: "var(--grey)", textTransform: "uppercase" as const,
+  display: "block", marginBottom: "0.3rem",
 };
 
 export default function PerfilPage() {
@@ -56,322 +54,361 @@ export default function PerfilPage() {
   }
 
   const fp = form as UserProfile;
-  const tmb   = perfil ? Math.round(calcularTMB(fp))   : null;
-  const tdee  = perfil ? Math.round(calcularTDEE(fp))  : null;
-  const metas = perfil ? calcularMetasCalorias(fp)     : null;
+  const tmb   = perfil ? Math.round(calcularTMB(fp))  : null;
+  const tdee  = perfil ? Math.round(calcularTDEE(fp)) : null;
+  const metas = perfil ? calcularMetasCalorias(fp)    : null;
   const imc   = perfil ? calcularIMC(perfil.peso, perfil.altura) : null;
 
-  /* ── EDIT FORM ── */
+  /* ──────────────── EDIT FORM ──────────────── */
   if (editando) return (
-    <div className="px-4 py-4 space-y-4" style={{ background: "var(--bg)" }}>
+    <div style={{ background: "var(--bg)" }}>
       {/* Header */}
-      <div className="text-center pt-2 pb-3" style={{ borderBottom: "2px solid var(--gold)" }}>
-        <p style={{ ...oswald, fontSize: "0.6rem", letterSpacing: "0.3em", color: "var(--muted)" }}>
-          ATHLETE REGISTRATION
-        </p>
-        <h1 style={{ ...gothic, fontSize: "2.4rem", color: "var(--gold-light)", lineHeight: 1 }}>
-          Flex Season
-        </h1>
-        <p style={{ ...cinzel, fontSize: "0.65rem", letterSpacing: "0.25em", color: "var(--muted)" }}>
-          ◆ FICHA DO ATLETA ◆
-        </p>
+      <div style={{ background: "#000", borderBottom: "3px solid var(--yellow)", padding: "0" }}>
+        <div style={{ background: "var(--red)", padding: "0.2rem 0.75rem" }}>
+          <span style={{ ...bar, fontSize: "0.55rem", fontWeight: 900, color: "#fff", letterSpacing: "0.25em" }}>
+            ATHLETE REGISTRATION FORM
+          </span>
+        </div>
+        <div style={{ padding: "0.3rem 0.75rem 0.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div style={{ ...bb, fontSize: "2.8rem", color: "var(--yellow)", lineHeight: 0.85 }}>
+            FREAK<span style={{ color: "#fff" }}>SEASON</span>
+          </div>
+          <div style={{ ...bar, fontSize: "0.6rem", fontWeight: 700, color: "var(--grey)", letterSpacing: "0.15em" }}>
+            PERFIL DO ATLETA
+          </div>
+        </div>
       </div>
 
       {salvo && (
-        <div style={{ background: "#0A1A00", border: "1px solid var(--gold)", padding: "0.75rem",
-          textAlign: "center", ...oswald, fontSize: "0.8rem", letterSpacing: "0.15em", color: "var(--gold)" }}>
-          ★ PERFIL ATUALIZADO COM SUCESSO ★
+        <div style={{ background: "var(--yellow)", padding: "0.6rem 0.75rem",
+          ...bar, fontSize: "0.75rem", fontWeight: 900, color: "#000", letterSpacing: "0.15em", textAlign: "center" }}>
+          ★ FICHA SALVA COM SUCESSO! ★
         </div>
       )}
 
-      <form onSubmit={handleSalvar} className="space-y-4">
-        {/* Nome */}
-        <div>
-          <label style={labelSt}>Nome do atleta *</label>
-          <input type="text" required value={form.nome ?? ""}
-            onChange={(e) => setForm({ ...form, nome: e.target.value })}
-            className="vintage-input" style={{ ...cinzel, fontSize: "1rem", letterSpacing: "0.08em" }}
-            placeholder="Seu nome completo" />
-        </div>
+      <form onSubmit={handleSalvar} style={{ padding: "0.75rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
 
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { field: "peso", label: "Peso (kg)", min: 30, max: 300, step: 0.1, type: "number" },
-            { field: "altura", label: "Altura (cm)", min: 100, max: 250, step: 1, type: "number" },
-            { field: "idade", label: "Idade", min: 10, max: 100, step: 1, type: "number" },
-          ].map(({ field, label, min, max, step }) => (
-            <div key={field}>
-              <label style={labelSt}>{label}</label>
-              <input type="number" required min={min} max={max} step={step}
-                value={(form as Record<string, unknown>)[field] as number ?? ""}
-                onChange={(e) => setForm({ ...form, [field]: parseFloat(e.target.value) })}
-                className="vintage-input" style={{ ...oswald, fontSize: "1.1rem", textAlign: "center" }} />
+          <div>
+            <label style={lbl}>Nome do atleta *</label>
+            <input type="text" required value={form.nome ?? ""}
+              onChange={(e) => setForm({ ...form, nome: e.target.value })}
+              className="vintage-input" placeholder="Seu nome completo" />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+            {[
+              { f: "peso",   label: "Peso (kg)",  min: 30,  max: 300, step: 0.1 },
+              { f: "altura", label: "Altura (cm)", min: 100, max: 250, step: 1 },
+              { f: "idade",  label: "Idade",       min: 10,  max: 100, step: 1 },
+            ].map(({ f, label, min, max, step }) => (
+              <div key={f}>
+                <label style={lbl}>{label}</label>
+                <input type="number" required min={min} max={max} step={step}
+                  value={(form as Record<string,unknown>)[f] as number ?? ""}
+                  onChange={(e) => setForm({ ...form, [f]: parseFloat(e.target.value) })}
+                  className="vintage-input"
+                  style={{ textAlign: "center", ...bb, fontSize: "1.2rem" }} />
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+            <div>
+              <label style={lbl}>Sexo</label>
+              <select value={form.sexo ?? "masculino"}
+                onChange={(e) => setForm({ ...form, sexo: e.target.value as "masculino" | "feminino" })}
+                className="vintage-input">
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+              </select>
             </div>
-          ))}
-        </div>
+            <div>
+              <label style={lbl}>Atividade</label>
+              <select value={form.nivelAtividade ?? "moderado"}
+                onChange={(e) => setForm({ ...form, nivelAtividade: e.target.value as ActivityLevel })}
+                className="vintage-input">
+                {atividadeOpcoes.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label style={labelSt}>Sexo</label>
-            <select value={form.sexo ?? "masculino"}
-              onChange={(e) => setForm({ ...form, sexo: e.target.value as "masculino" | "feminino" })}
-              className="vintage-input vintage-select" style={oswald}>
-              <option value="masculino">Masculino</option>
-              <option value="feminino">Feminino</option>
-            </select>
+            <label style={lbl}>Objetivo</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+              {objetivos.map((o) => {
+                const on = form.objetivo === o.value;
+                return (
+                  <button key={o.value} type="button"
+                    onClick={() => setForm({ ...form, objetivo: o.value })}
+                    style={{ padding: "0.6rem 0.3rem", border: on ? `2px solid ${o.color}` : "1px solid var(--border)",
+                      background: on ? `${o.color}22` : "var(--card)", cursor: "pointer",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1rem" }}>
+                    <span style={{ ...bb, fontSize: "1.1rem", color: on ? o.color : "#fff", letterSpacing: "0.05em" }}>
+                      {o.label}
+                    </span>
+                    <span style={{ ...bar, fontSize: "0.55rem", color: on ? o.color : "var(--grey)", letterSpacing: "0.08em" }}>
+                      {o.sub}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div>
-            <label style={labelSt}>Nível de atividade</label>
-            <select value={form.nivelAtividade ?? "moderado"}
-              onChange={(e) => setForm({ ...form, nivelAtividade: e.target.value as ActivityLevel })}
-              className="vintage-input vintage-select" style={oswald}>
-              {atividadeOpcoes.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Objetivo */}
-        <div>
-          <label style={labelSt}>Objetivo</label>
-          <div className="grid grid-cols-3 gap-2">
-            {objetivos.map((o) => {
-              const active = form.objetivo === o.value;
-              return (
-                <button key={o.value} type="button"
-                  onClick={() => setForm({ ...form, objetivo: o.value })}
-                  style={{
-                    padding: "0.6rem 0.25rem",
-                    border: active ? "2px solid var(--gold)" : "1px solid var(--border)",
-                    background: active ? "rgba(200,134,10,0.12)" : "var(--card)",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem",
-                  }}>
-                  <span style={{ ...oswald, fontSize: "0.95rem", fontWeight: 700,
-                    color: active ? "var(--gold-light)" : "var(--cream)", letterSpacing: "0.1em" }}>
-                    {o.label}
-                  </span>
-                  <span style={{ ...oswald, fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-                    {o.sub}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <button type="submit" style={{ width: "100%", padding: "0.85rem",
+            background: "var(--yellow)", color: "#000", border: "none", cursor: "pointer",
+            ...bb, fontSize: "1.2rem", letterSpacing: "0.15em" }}>
+            SALVAR FICHA DO ATLETA
+          </button>
         </div>
-
-        <button type="submit" style={{
-          width: "100%", padding: "0.9rem",
-          background: "linear-gradient(180deg, var(--gold-light), var(--gold))",
-          color: "#060400", ...oswald, fontSize: "0.9rem", fontWeight: 700,
-          letterSpacing: "0.25em", textTransform: "uppercase" as const,
-          border: "none", cursor: "pointer",
-        }}>
-          ★ SALVAR FICHA ★
-        </button>
       </form>
     </div>
   );
 
-  /* ── MAGAZINE POSTER VIEW ── */
+  /* ──────────────── MAGAZINE COVER ──────────────── */
+  const obj = objetivos.find((o) => o.value === perfil!.objetivo)!;
+
   return (
-    <div style={{ background: "var(--bg)", minHeight: "100%" }}>
+    <div style={{ background: "#000", minHeight: "100%" }}>
 
-      {/* ── MASTHEAD ── */}
-      <div style={{ background: "#0A0700", borderBottom: "3px solid var(--gold)", padding: "0.6rem 1rem 0.5rem" }}>
-        <div className="flex items-center justify-between">
-          <div>
-            <p style={{ ...oswald, fontSize: "0.5rem", letterSpacing: "0.35em", color: "var(--muted)" }}>
-              THE IRON BIBLE · VOL. I
-            </p>
-            <h1 style={{ ...gothic, fontSize: "2rem", color: "var(--gold-light)", lineHeight: 0.9 }}>
-              Flex Season
-            </h1>
+      {/* ── TOP BANNER "417 TIPS" style ── */}
+      <div style={{ background: "var(--yellow)", padding: "0.25rem 0.75rem",
+        display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ ...bar, fontSize: "0.65rem", fontWeight: 900, color: "#000", letterSpacing: "0.1em" }}>
+          ▶ {metas?.calorias ?? "—"}KCAL META DIÁRIA
+        </span>
+        <button onClick={() => setEditando(true)}
+          style={{ ...bar, fontSize: "0.6rem", fontWeight: 900, color: "#000",
+            background: "transparent", border: "1px solid #000", padding: "0.1rem 0.4rem",
+            cursor: "pointer", letterSpacing: "0.1em" }}>
+          EDITAR
+        </button>
+      </div>
+
+      {/* ── FLEX MASTHEAD ── */}
+      <div style={{ padding: "0.4rem 0.75rem 0.3rem", borderBottom: "2px solid var(--border)" }}>
+        <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 700,
+          color: "var(--grey)", letterSpacing: "0.35em" }}>JOE WEIDER'S</div>
+        <div style={{ ...bb, fontSize: "4rem", color: "var(--yellow)",
+          lineHeight: 0.8, letterSpacing: "0.02em" }}>
+          FREAK<span style={{ color: "#fff" }}>SEASON</span>
+        </div>
+        <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.25rem" }}>
+          <span style={{ background: "var(--red)", color: "#fff", ...bar,
+            fontSize: "0.5rem", fontWeight: 900, padding: "0.1rem 0.4rem", letterSpacing: "0.15em" }}>
+            EDIÇÃO ESPECIAL
+          </span>
+          <span style={{ ...bar, fontSize: "0.5rem", color: "var(--grey)", letterSpacing: "0.2em" }}>
+            VOL.I · 2025
+          </span>
+        </div>
+      </div>
+
+      {/* ── COVER IMAGE AREA ── */}
+      <div style={{ position: "relative", background: "#050505",
+        display: "flex", justifyContent: "center", padding: "0.5rem 0 0" }}>
+
+        {/* Left callouts */}
+        <div style={{ position: "absolute", left: "0.5rem", top: "0.75rem",
+          display: "flex", flexDirection: "column", gap: "0.4rem", maxWidth: "38%" }}>
+          <div style={{ background: "var(--red)", padding: "0.3rem 0.4rem" }}>
+            <div style={{ ...bb, fontSize: "0.65rem", color: "#fff", lineHeight: 1, letterSpacing: "0.05em" }}>
+              O SEGREDO DO
+            </div>
+            <div style={{ ...bb, fontSize: "1.4rem", color: "#fff", lineHeight: 0.9 }}>
+              CORPO<br/>PERFEITO
+            </div>
           </div>
-          <button onClick={() => setEditando(true)} style={{
-            ...oswald, fontSize: "0.6rem", letterSpacing: "0.18em",
-            color: "var(--gold)", border: "1px solid var(--gold)",
-            padding: "0.3rem 0.6rem", background: "transparent",
-          }}>
-            EDITAR
-          </button>
+          <div style={{ background: "var(--yellow)", padding: "0.3rem 0.4rem" }}>
+            <div style={{ ...bb, fontSize: "0.7rem", color: "#000", letterSpacing: "0.05em" }}>
+              IMC:
+            </div>
+            <div style={{ ...bb, fontSize: "1.6rem", color: "#000", lineHeight: 0.9 }}>
+              {imc?.imc}
+            </div>
+            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "#000", letterSpacing: "0.08em" }}>
+              {imc?.classificacao.toUpperCase()}
+            </div>
+          </div>
+        </div>
+
+        {/* Athlete silhouette */}
+        <svg width="155" height="200" viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#E0E0E0"/>
+              <stop offset="100%" stopColor="#666"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="80" cy="18" rx="14" ry="16" fill="url(#sg)"/>
+          <rect x="73" y="32" width="14" height="10" fill="url(#sg)"/>
+          <ellipse cx="42" cy="52" rx="22" ry="13" fill="url(#sg)"/>
+          <ellipse cx="118" cy="52" rx="22" ry="13" fill="url(#sg)"/>
+          <path d="M52,44 Q80,38 108,44 L112,80 Q80,88 48,80 Z" fill="url(#sg)"/>
+          <path d="M56,80 Q80,85 104,80 L100,130 Q80,136 60,130 Z" fill="url(#sg)" opacity="0.9"/>
+          <ellipse cx="30" cy="72" rx="13" ry="23" fill="url(#sg)"/>
+          <ellipse cx="130" cy="72" rx="13" ry="23" fill="url(#sg)"/>
+          <path d="M22,92 Q18,118 20,138 L38,138 Q36,118 40,92 Z" fill="url(#sg)" opacity="0.75"/>
+          <path d="M122,92 Q118,118 120,138 L138,138 Q142,118 140,92 Z" fill="url(#sg)" opacity="0.75"/>
+          <path d="M60,130 Q55,158 53,200 L73,200 Q75,162 80,145 Q85,162 87,200 L107,200 Q105,158 100,130 Z"
+            fill="url(#sg)" opacity="0.8"/>
+          <line x1="80" y1="46" x2="80" y2="80" stroke="#000" strokeWidth="2" opacity="0.4"/>
+          <line x1="63" y1="95" x2="76" y2="95" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+          <line x1="84" y1="95" x2="97" y2="95" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+          <line x1="63" y1="108" x2="76" y2="108" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+          <line x1="84" y1="108" x2="97" y2="108" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+          <line x1="63" y1="121" x2="76" y2="121" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+          <line x1="84" y1="121" x2="97" y2="121" stroke="#000" strokeWidth="1.5" opacity="0.3"/>
+        </svg>
+
+        {/* Right callouts */}
+        <div style={{ position: "absolute", right: "0.5rem", top: "0.75rem",
+          display: "flex", flexDirection: "column", gap: "0.4rem", maxWidth: "38%", alignItems: "flex-end" }}>
+          <div style={{ background: "#111", border: "1px solid var(--border)",
+            padding: "0.3rem 0.4rem", textAlign: "right" }}>
+            <div style={{ ...bb, fontSize: "0.65rem", color: "var(--grey)", letterSpacing: "0.05em" }}>
+              PROGRAMA
+            </div>
+            <div style={{ ...bb, fontSize: "1.1rem", color: "var(--yellow)", lineHeight: 0.95,
+              textTransform: "uppercase" }}>
+              CORPO<br/>IDEAL
+            </div>
+            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "var(--grey)",
+              letterSpacing: "0.08em" }}>P.01</div>
+          </div>
+          <div style={{ background: obj.color, padding: "0.3rem 0.4rem", textAlign: "right" }}>
+            <div style={{ ...bb, fontSize: "0.6rem", color: "#fff" }}>FASE ATUAL</div>
+            <div style={{ ...bb, fontSize: "1.5rem", color: "#fff", lineHeight: 0.9 }}>{obj.label}</div>
+            <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 800, color: "rgba(255,255,255,0.7)" }}>
+              {obj.sub.toUpperCase()}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── COVER SECTION ── */}
-      <div style={{ position: "relative", background: "#08050000" }}>
-        {/* Muscle silhouette illustration */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "1.2rem 0 0.5rem",
-          borderBottom: "1px solid var(--border)" }}>
-          <svg width="160" height="180" viewBox="0 0 160 180" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#C8860A" stopOpacity="0.9"/>
-                <stop offset="100%" stopColor="#7A5004" stopOpacity="0.4"/>
-              </linearGradient>
-            </defs>
-            {/* Head */}
-            <ellipse cx="80" cy="18" rx="14" ry="16" fill="url(#bodyGrad)"/>
-            {/* Neck */}
-            <rect x="73" y="32" width="14" height="10" fill="url(#bodyGrad)"/>
-            {/* Shoulders */}
-            <ellipse cx="42" cy="52" rx="22" ry="14" fill="url(#bodyGrad)"/>
-            <ellipse cx="118" cy="52" rx="22" ry="14" fill="url(#bodyGrad)"/>
-            {/* Chest */}
-            <path d="M52,44 Q80,38 108,44 L112,80 Q80,88 48,80 Z" fill="url(#bodyGrad)"/>
-            {/* Abs */}
-            <path d="M56,80 Q80,85 104,80 L100,130 Q80,136 60,130 Z" fill="url(#bodyGrad)" opacity="0.85"/>
-            {/* Upper arms */}
-            <ellipse cx="30" cy="72" rx="12" ry="22" fill="url(#bodyGrad)"/>
-            <ellipse cx="130" cy="72" rx="12" ry="22" fill="url(#bodyGrad)"/>
-            {/* Forearms */}
-            <path d="M22,90 Q18,120 22,135 L38,135 Q34,120 38,90 Z" fill="url(#bodyGrad)" opacity="0.7"/>
-            <path d="M122,90 Q118,120 122,135 L138,135 Q142,120 138,90 Z" fill="url(#bodyGrad)" opacity="0.7"/>
-            {/* Legs */}
-            <path d="M60,130 Q54,155 52,178 L72,178 Q74,155 80,140 Q86,155 88,178 L108,178 Q106,155 100,130 Z"
-              fill="url(#bodyGrad)" opacity="0.75"/>
-            {/* Muscle definition lines */}
-            <line x1="80" y1="46" x2="80" y2="82" stroke="#060400" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="62" y1="90" x2="75" y2="90" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-            <line x1="85" y1="90" x2="98" y2="90" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-            <line x1="62" y1="103" x2="75" y2="103" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-            <line x1="85" y1="103" x2="98" y2="103" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-            <line x1="62" y1="116" x2="75" y2="116" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-            <line x1="85" y1="116" x2="98" y2="116" stroke="#060400" strokeWidth="1" opacity="0.4"/>
-          </svg>
-        </div>
-
-        {/* Athlete name banner */}
-        <div style={{ background: "linear-gradient(135deg, #0A0700, #1A1000)",
-          borderTop: "2px solid var(--gold)", borderBottom: "2px solid var(--gold)",
-          padding: "0.6rem 1rem", textAlign: "center" }}>
-          <p style={{ ...oswald, fontSize: "0.55rem", letterSpacing: "0.4em", color: "var(--muted)", marginBottom: "0.1rem" }}>
-            ATHLETE OF THE ISSUE
-          </p>
-          <h2 style={{ ...cinzel, fontSize: "1.8rem", fontWeight: 900, color: "var(--cream)",
-            letterSpacing: "0.12em", lineHeight: 1, textTransform: "uppercase" }}>
+      {/* ── ATHLETE NAME BANNER ── */}
+      <div style={{ background: "#fff", padding: "0.4rem 0.75rem",
+        display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <div style={{ ...bar, fontSize: "0.5rem", fontWeight: 700,
+            color: "#333", letterSpacing: "0.25em" }}>ATHLETE OF THE ISSUE</div>
+          <div style={{ ...bb, fontSize: "1.8rem", color: "#000", lineHeight: 0.9,
+            letterSpacing: "0.04em", textTransform: "uppercase" }}>
             {perfil!.nome}
-          </h2>
-          <p style={{ ...oswald, fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--gold)", marginTop: "0.2rem" }}>
-            {objetivos.find((o) => o.value === perfil!.objetivo)?.sub.toUpperCase()} PHASE
-          </p>
+          </div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ ...bar, fontSize: "0.55rem", fontWeight: 700, color: "#333", letterSpacing: "0.15em" }}>
+            {perfil!.idade} ANOS
+          </div>
+          <div style={{ ...bb, fontSize: "1.4rem", color: "#000" }}>
+            {perfil!.peso}KG
+          </div>
         </div>
       </div>
 
-      {/* ── VITAL STATS BAR ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr",
-        borderBottom: "1px solid var(--border)", background: "#0A0700" }}>
+      {/* ── VITAL STATS ROW ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)",
+        borderBottom: "1px solid var(--border)" }}>
         {[
-          { label: "PESO",    value: `${perfil!.peso}`, unit: "KG" },
-          { label: "ALTURA",  value: `${perfil!.altura}`, unit: "CM" },
-          { label: "IDADE",   value: `${perfil!.idade}`, unit: "ANOS" },
-          { label: "IMC",     value: `${imc?.imc}`, unit: imc?.classificacao.split(" ").slice(-1)[0] ?? "" },
-        ].map((s) => (
-          <div key={s.label} style={{ padding: "0.6rem 0.3rem", textAlign: "center",
+          { l: "PESO",   v: `${perfil!.peso}`,   u: "KG" },
+          { l: "ALTURA", v: `${perfil!.altura}`,  u: "CM" },
+          { l: "IDADE",  v: `${perfil!.idade}`,   u: "ANOS" },
+          { l: "IMC",    v: `${imc?.imc}`,         u: imc?.imc && imc.imc < 25 ? "NORMAL" : "ATT." },
+        ].map((s, i) => (
+          <div key={s.l} style={{ padding: "0.5rem 0.3rem", textAlign: "center",
+            background: i === 0 ? "var(--red)" : "var(--card)",
             borderRight: "1px solid var(--border)" }}>
-            <p style={{ ...oswald, fontSize: "0.5rem", letterSpacing: "0.2em", color: "var(--muted)" }}>{s.label}</p>
-            <p style={{ ...oswald, fontSize: "1.3rem", fontWeight: 700, color: "var(--gold-light)", lineHeight: 1 }}>
-              {s.value}
-            </p>
-            <p style={{ ...oswald, fontSize: "0.45rem", color: "var(--muted)", letterSpacing: "0.1em" }}>{s.unit}</p>
+            <div style={{ ...bar, fontSize: "0.45rem", fontWeight: 800, letterSpacing: "0.15em",
+              color: i === 0 ? "rgba(255,255,255,0.6)" : "var(--grey)" }}>{s.l}</div>
+            <div style={{ ...bb, fontSize: "1.3rem", lineHeight: 1,
+              color: i === 0 ? "#fff" : "var(--yellow)" }}>{s.v}</div>
+            <div style={{ ...bar, fontSize: "0.4rem", letterSpacing: "0.1em",
+              color: i === 0 ? "rgba(255,255,255,0.5)" : "var(--grey-dark)" }}>{s.u}</div>
           </div>
         ))}
       </div>
 
       {/* ── METABOLISM SPREAD ── */}
-      <div style={{ padding: "0.9rem 1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, var(--gold))" }}/>
-          <span style={{ ...cinzel, fontSize: "0.6rem", letterSpacing: "0.25em", color: "var(--gold)" }}>
-            ◆ METABOLISMO ◆
-          </span>
-          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, var(--gold))" }}/>
-        </div>
+      <div style={{ padding: "0.75rem" }}>
+        <div className="mag-divider" style={{ marginBottom: "0.6rem" }}>METABOLISMO</div>
 
-        <div className="space-y-2">
-          {[
-            { label: "TMB — Taxa Metabólica Basal", sub: "Calorias em repouso", value: tmb, unit: "kcal" },
-            { label: "TDEE — Gasto Total Diário",   sub: "Com fator de atividade", value: tdee, unit: "kcal" },
-            { label: "META DIÁRIA",                 sub: objetivos.find(o=>o.value===perfil!.objetivo)?.sub,
-              value: metas?.calorias, unit: "kcal", highlight: true },
-          ].map((row) => (
-            <div key={row.label} style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "0.55rem 0.75rem",
-              background: row.highlight ? "rgba(200,134,10,0.08)" : "var(--card)",
-              border: row.highlight ? "1px solid var(--gold)" : "1px solid var(--border)",
-              borderLeft: `3px solid ${row.highlight ? "var(--gold-light)" : "var(--gold)"}`,
-            }}>
-              <div>
-                <p style={{ ...oswald, fontSize: "0.7rem", fontWeight: 700,
-                  color: row.highlight ? "var(--gold-light)" : "var(--cream)", letterSpacing: "0.1em" }}>
-                  {row.label}
-                </p>
-                <p style={{ ...oswald, fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-                  {row.sub}
-                </p>
+        {[
+          { l: "TMB — TAXA METABÓLICA BASAL", sub: "Calorias em repouso total", v: tmb,  hl: false },
+          { l: "TDEE — GASTO TOTAL DIÁRIO",   sub: "Com fator de atividade",    v: tdee, hl: false },
+          { l: "META DIÁRIA — " + obj.label,  sub: obj.sub,                     v: metas?.calorias, hl: true },
+        ].map((row) => (
+          <div key={row.l} style={{ display: "flex", justifyContent: "space-between",
+            alignItems: "center", padding: "0.5rem 0.6rem",
+            marginBottom: "0.4rem",
+            background: row.hl ? "var(--yellow)" : "var(--card)",
+            border: row.hl ? "none" : "1px solid var(--border)",
+            borderLeft: row.hl ? "none" : "3px solid var(--grey-dark)" }}>
+            <div>
+              <div style={{ ...bar, fontSize: "0.65rem", fontWeight: 800,
+                color: row.hl ? "#000" : "#fff", letterSpacing: "0.06em" }}>
+                {row.l}
               </div>
-              <span style={{ ...oswald, fontSize: row.highlight ? "1.4rem" : "1.2rem", fontWeight: 700,
-                color: row.highlight ? "var(--gold-light)" : "var(--cream)" }}>
-                {row.value} <span style={{ fontSize: "0.6rem", color: "var(--muted)" }}>{row.unit}</span>
+              <div style={{ ...bar, fontSize: "0.5rem", color: row.hl ? "#333" : "var(--grey)",
+                letterSpacing: "0.08em" }}>{row.sub}</div>
+            </div>
+            <div>
+              <span style={{ ...bb, fontSize: row.hl ? "1.8rem" : "1.4rem",
+                color: row.hl ? "#000" : "var(--yellow)", lineHeight: 1 }}>
+                {row.v}
+              </span>
+              <span style={{ ...bar, fontSize: "0.55rem", fontWeight: 700,
+                color: row.hl ? "#333" : "var(--grey)", marginLeft: "0.2rem" }}>
+                KCAL
               </span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
 
-        {/* Macros */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem",
-          margin: "0.9rem 0 0.65rem" }}>
-          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, var(--border))" }}/>
-          <span style={{ ...cinzel, fontSize: "0.55rem", letterSpacing: "0.2em", color: "var(--muted)" }}>
-            ◆ MACROS / DIA ◆
-          </span>
-          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, var(--border))" }}/>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+        {/* MACROS */}
+        <div className="mag-divider" style={{ margin: "0.75rem 0 0.5rem" }}>MACROS / DIA</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
           {[
-            { label: "PROTEÍNA", value: metas?.proteinas, color: "#1A3A6A" },
-            { label: "CARBOIDR.", value: metas?.carboidratos, color: "#4A3A00" },
-            { label: "GORDURA",  value: metas?.gorduras, color: "#3A1A00" },
+            { l: "PROTEÍNA",  v: metas?.proteinas,    bg: "#0A1A3A" },
+            { l: "CARBOIDR.", v: metas?.carboidratos,  bg: "#1A1A00" },
+            { l: "GORDURA",   v: metas?.gorduras,      bg: "#1A0A00" },
           ].map((m) => (
-            <div key={m.label} style={{
-              background: m.color, border: "1px solid var(--border)",
-              borderTop: "2px solid var(--gold)", padding: "0.6rem 0.4rem", textAlign: "center",
-            }}>
-              <p style={{ ...oswald, fontSize: "0.5rem", letterSpacing: "0.15em", color: "var(--muted)" }}>
-                {m.label}
-              </p>
-              <p style={{ ...oswald, fontSize: "1.5rem", fontWeight: 700, color: "var(--gold-light)", lineHeight: 1.1 }}>
-                {m.value}<span style={{ fontSize: "0.65rem", color: "var(--muted)" }}>g</span>
-              </p>
+            <div key={m.l} style={{ background: m.bg, border: "1px solid var(--border)",
+              borderTop: "2px solid var(--yellow)", padding: "0.5rem 0.3rem", textAlign: "center" }}>
+              <div style={{ ...bar, fontSize: "0.45rem", fontWeight: 800, letterSpacing: "0.15em",
+                color: "var(--grey)" }}>{m.l}</div>
+              <div style={{ ...bb, fontSize: "1.6rem", color: "var(--yellow)", lineHeight: 1 }}>
+                {m.v}<span style={{ ...bar, fontSize: "0.6rem", color: "var(--grey)" }}>g</span>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Activity level tag */}
-        <div style={{ marginTop: "0.9rem", padding: "0.5rem 0.75rem",
-          background: "var(--card)", border: "1px solid var(--border)",
+        {/* ACTIVITY */}
+        <div style={{ marginTop: "0.6rem", background: "var(--card)",
+          border: "1px solid var(--border)", padding: "0.45rem 0.75rem",
           display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ ...oswald, fontSize: "0.55rem", letterSpacing: "0.15em", color: "var(--muted)" }}>
-            NÍVEL DE ATIVIDADE
-          </span>
-          <span style={{ ...oswald, fontSize: "0.75rem", fontWeight: 700,
-            color: "var(--cream)", letterSpacing: "0.08em" }}>
+          <span style={{ ...bar, fontSize: "0.5rem", fontWeight: 800,
+            color: "var(--grey)", letterSpacing: "0.2em" }}>NÍVEL DE ATIVIDADE</span>
+          <span style={{ ...bar, fontSize: "0.7rem", fontWeight: 900, color: "#fff",
+            letterSpacing: "0.06em" }}>
             {activityLabels[perfil!.nivelAtividade].toUpperCase()}
           </span>
         </div>
 
-        {/* Bottom ornament */}
-        <div style={{ textAlign: "center", marginTop: "1rem", paddingTop: "0.75rem",
-          borderTop: "1px solid var(--border)" }}>
-          <p style={{ ...gothic, fontSize: "0.9rem", color: "var(--muted)", letterSpacing: "0.05em" }}>
+        {/* Bottom gothic signature */}
+        <div style={{ textAlign: "center", paddingTop: "1rem",
+          borderTop: "1px solid var(--border)", marginTop: "0.75rem" }}>
+          <div style={{ ...goth, fontSize: "1.1rem", color: "var(--grey-dark)" }}>
             No Pain · No Gain
-          </p>
-          <p style={{ ...oswald, fontSize: "0.5rem", letterSpacing: "0.3em",
-            color: "var(--border)", marginTop: "0.2rem" }}>
-            EST. VENICE BEACH · MCMLXXVII
-          </p>
+          </div>
+          <div style={{ ...bar, fontSize: "0.45rem", fontWeight: 700,
+            color: "var(--border)", letterSpacing: "0.3em", marginTop: "0.2rem" }}>
+            FREAKSEASON · EST. VENICE BEACH · MCMLXXVII
+          </div>
         </div>
       </div>
     </div>

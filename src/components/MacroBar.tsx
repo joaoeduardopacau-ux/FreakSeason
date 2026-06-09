@@ -1,3 +1,5 @@
+const bar = { fontFamily: "var(--font-barlow), Arial Narrow, sans-serif" };
+
 interface MacroBarProps {
   label: string;
   atual: number;
@@ -6,53 +8,31 @@ interface MacroBarProps {
   unidade?: string;
 }
 
+const colorMap: Record<string, string> = {
+  "bg-blue-400":   "#1E90FF",
+  "bg-yellow-400": "var(--yellow)",
+  "bg-orange-400": "#FF6A00",
+};
+
 export default function MacroBar({ label, atual, meta, cor, unidade = "g" }: MacroBarProps) {
   const pct = Math.min((atual / meta) * 100, 100);
-  const excedeu = atual > meta;
-
-  // Map old Tailwind color classes to CSS color values for vintage theme
-  const colorMap: Record<string, string> = {
-    "bg-blue-400": "var(--gold-light)",
-    "bg-yellow-400": "var(--gold)",
-    "bg-orange-400": "#C87020",
-    "bg-green-400": "var(--gold-light)",
-  };
-  const fillColor = excedeu ? "var(--red)" : (colorMap[cor] ?? "var(--gold)");
+  const over = atual > meta;
+  const fill = over ? "var(--red)" : (colorMap[cor] ?? "var(--yellow)");
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between mb-1">
-        <span
-          className="font-oswald uppercase tracking-widest text-muted"
-          style={{ fontSize: "0.65rem", letterSpacing: "0.15em" }}
-        >
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem" }}>
+        <span style={{ ...bar, fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.2em",
+          color: "var(--grey)", textTransform: "uppercase" as const }}>
           {label}
         </span>
-        <span
-          className="font-oswald"
-          style={{
-            fontSize: "0.65rem",
-            color: excedeu ? "var(--red)" : "var(--muted)",
-            fontWeight: excedeu ? "700" : "400",
-          }}
-        >
+        <span style={{ ...bar, fontSize: "0.6rem", fontWeight: 700,
+          color: over ? "var(--red)" : "var(--grey)" }}>
           {atual}{unidade} / {meta}{unidade}
         </span>
       </div>
-      <div
-        className="h-2 rounded-sm overflow-hidden"
-        style={{ background: "#1E1400" }}
-      >
-        <div
-          className="h-full rounded-sm transition-all"
-          style={{
-            width: `${pct}%`,
-            background: excedeu
-              ? `linear-gradient(90deg, var(--red), #B02020)`
-              : `linear-gradient(90deg, ${fillColor}, ${fillColor}cc)`,
-            boxShadow: excedeu ? "0 0 6px rgba(139,26,26,0.6)" : `0 0 6px rgba(212,144,10,0.4)`,
-          }}
-        />
+      <div style={{ height: "5px", background: "var(--border)" }}>
+        <div style={{ height: "100%", width: `${pct}%`, background: fill, transition: "width 0.3s" }} />
       </div>
     </div>
   );

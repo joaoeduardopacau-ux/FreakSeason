@@ -1,37 +1,14 @@
 <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#F0B830"/>
-      <stop offset="60%" stop-color="#C8860A"/>
-      <stop offset="100%" stop-color="#7A5004"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-
-  <!-- Background -->
-  <rect width="120" height="120" rx="18" fill="#060400"/>
-
-  <!-- Shield shape -->
-  <path d="M60,8 L105,8 L115,22 L115,72 L60,112 L5,72 L5,22 Z"
-    fill="#0A0700" stroke="url(#g)" stroke-width="2"/>
-  <path d="M60,14 L100,14 L109,26 L109,70 L60,105 L11,70 L11,26 Z"
-    fill="none" stroke="#3A2800" stroke-width="0.8"/>
-
-  <!-- FS -->
-  <text x="60" y="78"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-weight="900" font-size="50"
-    fill="url(#g)" text-anchor="middle"
-    letter-spacing="-3" filter="url(#glow)">FS</text>
-
-  <!-- Stars top -->
-  <text x="60" y="28" font-family="Arial" font-size="8" fill="#C8860A"
-    text-anchor="middle" letter-spacing="6">★ ★ ★</text>
-
-  <!-- Year bottom -->
-  <text x="60" y="100" font-family="Georgia, serif" font-size="6.5"
-    fill="#6A4E18" text-anchor="middle" letter-spacing="2">MCMLXXVII</text>
+  <rect width="120" height="120" rx="16" fill="#080808"/>
+  <!-- Yellow top stripe -->
+  <rect x="0" y="0" width="120" height="14" rx="0" fill="#F5C800"/>
+  <text x="60" y="11" font-family="Impact, Arial Black, sans-serif" font-size="8"
+    fill="#000" text-anchor="middle" letter-spacing="1">FREAKSEASON</text>
+  <!-- FS big letters -->
+  <text x="60" y="80" font-family="Impact, Arial Black, sans-serif" font-size="58"
+    fill="#F5C800" text-anchor="middle" letter-spacing="-3">FS</text>
+  <!-- Bottom red stripe -->
+  <rect x="0" y="106" width="120" height="14" rx="0" fill="#CC1111"/>
+  <text x="60" y="117" font-family="Arial Narrow, Arial, sans-serif" font-size="7"
+    fill="#fff" text-anchor="middle" letter-spacing="2" font-weight="700">VENICE BEACH</text>
 </svg>
