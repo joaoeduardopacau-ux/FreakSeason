@@ -6,6 +6,19 @@ import { useApp } from "@/contexts/AppContext";
 import type { Exercise, Workout } from "@/types";
 import Card from "@/components/Card";
 
+const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
+
+const labelStyle = {
+  ...vh,
+  fontSize: "0.65rem",
+  letterSpacing: "0.18em",
+  color: "var(--muted)",
+  textTransform: "uppercase" as const,
+  display: "block",
+  marginBottom: "0.375rem",
+  fontWeight: 600,
+};
+
 function novoExercicio(): Exercise {
   return {
     id: crypto.randomUUID(),
@@ -55,38 +68,42 @@ export default function NovoTreinoPage() {
 
   return (
     <div className="px-4 py-4 space-y-4">
-      <div className="flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-700">
-          ← Voltar
+
+      {/* Header */}
+      <div className="flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "0.75rem" }}>
+        <button
+          onClick={() => router.back()}
+          style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+        >
+          ← VOLTAR
         </button>
-        <h1 className="text-xl font-bold text-gray-900">Novo Treino</h1>
+        <span style={{ color: "var(--border)" }}>|</span>
+        <h1 style={{ ...vh, fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-light)", letterSpacing: "0.15em" }}>
+          NOVO TREINO
+        </h1>
       </div>
 
       <form onSubmit={handleSalvar} className="space-y-4">
-        <Card>
+        <Card title="DADOS DO TREINO" accent>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nome do treino *
-              </label>
+              <label style={labelStyle}>Nome do Treino *</label>
               <input
                 type="text"
                 required
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-                placeholder="ex: Treino A - Peito e Tríceps"
+                className="vintage-input"
+                placeholder="ex: TREINO A — PEITO E TRÍCEPS"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Descrição (opcional)
-              </label>
+              <label style={labelStyle}>Descrição (opcional)</label>
               <input
                 type="text"
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="vintage-input"
                 placeholder="ex: Foco em hipertrofia"
               />
             </div>
@@ -94,29 +111,47 @@ export default function NovoTreinoPage() {
         </Card>
 
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Exercícios</h2>
+          <div className="divider-gold" style={{ flex: 1 }}>
+            <span>★ EXERCÍCIOS ★</span>
+          </div>
           <button
             type="button"
             onClick={handleAddExercicio}
-            className="text-green-600 text-sm font-medium"
+            className="ml-3 px-3 py-1.5 font-bold text-xs"
+            style={{
+              color: "var(--gold)",
+              border: "1px solid var(--gold)",
+              background: "transparent",
+              ...vh,
+              letterSpacing: "0.15em",
+              flexShrink: 0,
+            }}
           >
-            + Adicionar
+            + ADICIONAR
           </button>
         </div>
 
         {exercicios.map((ex, idx) => (
-          <Card key={ex.id}>
+          <div
+            key={ex.id}
+            style={{
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderLeft: "3px solid var(--gold)",
+              padding: "1rem",
+            }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-gray-700">
-                Exercício {idx + 1}
+              <span style={{ color: "var(--gold)", ...vh, fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.15em" }}>
+                EXERCÍCIO {String(idx + 1).padStart(2, "0")}
               </span>
               {exercicios.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveExercicio(ex.id)}
-                  className="text-red-400 text-sm hover:text-red-600"
+                  style={{ color: "var(--red)", ...vh, fontSize: "0.65rem", letterSpacing: "0.12em" }}
                 >
-                  Remover
+                  ✕ REMOVER
                 </button>
               )}
             </div>
@@ -126,39 +161,39 @@ export default function NovoTreinoPage() {
                 type="text"
                 value={ex.nome}
                 onChange={(e) => handleExercicioChange(ex.id, "nome", e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="vintage-input"
                 placeholder="Nome do exercício"
               />
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Séries</label>
+                  <label style={labelStyle}>Séries</label>
                   <input
                     type="number"
                     min={1}
                     max={20}
                     value={ex.series}
                     onChange={(e) => handleExercicioChange(ex.id, "series", parseInt(e.target.value))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="vintage-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Repetições</label>
+                  <label style={labelStyle}>Repetições</label>
                   <input
                     type="text"
                     value={ex.repeticoes}
                     onChange={(e) => handleExercicioChange(ex.id, "repeticoes", e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="vintage-input"
                     placeholder="10"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Descanso</label>
+                  <label style={labelStyle}>Descanso</label>
                   <input
                     type="text"
                     value={ex.descanso}
                     onChange={(e) => handleExercicioChange(ex.id, "descanso", e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="vintage-input"
                     placeholder="60s"
                   />
                 </div>
@@ -168,7 +203,7 @@ export default function NovoTreinoPage() {
                 type="text"
                 value={ex.carga}
                 onChange={(e) => handleExercicioChange(ex.id, "carga", e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="vintage-input"
                 placeholder="Carga (ex: 20kg, peso corporal)"
               />
 
@@ -176,26 +211,40 @@ export default function NovoTreinoPage() {
                 type="text"
                 value={ex.observacoes}
                 onChange={(e) => handleExercicioChange(ex.id, "observacoes", e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="vintage-input"
                 placeholder="Observações (opcional)"
               />
             </div>
-          </Card>
+          </div>
         ))}
 
         <button
           type="button"
           onClick={handleAddExercicio}
-          className="w-full border-2 border-dashed border-gray-200 rounded-xl py-3 text-gray-400 text-sm hover:border-green-300 hover:text-green-500 transition-colors"
+          className="w-full py-3 font-bold text-sm"
+          style={{
+            background: "transparent",
+            border: "1px dashed var(--border)",
+            color: "var(--muted)",
+            ...vh,
+            letterSpacing: "0.15em",
+          }}
         >
-          + Adicionar exercício
+          + ADICIONAR EXERCÍCIO
         </button>
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white rounded-xl py-3 font-semibold text-sm hover:bg-green-700 transition-colors"
+          className="w-full py-3 font-bold text-sm"
+          style={{
+            background: "var(--gold)",
+            color: "#0A0600",
+            ...vh,
+            letterSpacing: "0.2em",
+            fontSize: "0.9rem",
+          }}
         >
-          Salvar Treino
+          ★ SALVAR TREINO ★
         </button>
       </form>
     </div>

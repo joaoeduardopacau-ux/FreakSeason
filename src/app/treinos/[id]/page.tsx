@@ -7,6 +7,8 @@ import { useApp } from "@/contexts/AppContext";
 import type { WorkoutLog } from "@/types";
 import Card from "@/components/Card";
 
+const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
+
 export default function TreinoDetalhe({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -16,9 +18,14 @@ export default function TreinoDetalhe({ params }: { params: Promise<{ id: string
   if (!treino) {
     return (
       <div className="px-4 py-8 text-center">
-        <p className="text-gray-500">Treino não encontrado</p>
-        <Link href="/treinos" className="text-green-600 text-sm mt-2 block">
-          ← Voltar para treinos
+        <p style={{ color: "var(--muted)", ...vh, fontSize: "0.85rem", letterSpacing: "0.15em" }}>
+          TREINO NÃO ENCONTRADO
+        </p>
+        <Link
+          href="/treinos"
+          style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em", display: "block", marginTop: "0.75rem" }}
+        >
+          ← VOLTAR PARA TREINOS
         </Link>
       </div>
     );
@@ -43,76 +50,168 @@ export default function TreinoDetalhe({ params }: { params: Promise<{ id: string
 
   return (
     <div className="px-4 py-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-700">
-          ← Voltar
+
+      {/* Nav row */}
+      <div className="flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "0.75rem" }}>
+        <button
+          onClick={() => router.back()}
+          style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+        >
+          ← VOLTAR
         </button>
         <Link
           href={`/treinos/${id}/editar`}
-          className="text-green-600 text-sm font-medium"
+          style={{ color: "var(--muted)", ...vh, fontSize: "0.7rem", letterSpacing: "0.12em" }}
         >
-          Editar
+          ✏ EDITAR
         </Link>
       </div>
 
-      <Card>
-        <h1 className="text-xl font-bold text-gray-900">{treino.nome}</h1>
-        {treino.descricao && (
-          <p className="text-sm text-gray-500 mt-1">{treino.descricao}</p>
-        )}
-        <div className="flex gap-4 mt-3 text-sm text-gray-400">
-          <span>{treino.exercicios.length} exercícios</span>
-          <span>{totalVezes}x realizado</span>
+      {/* Workout header card — poster style */}
+      <div
+        className="p-4"
+        style={{
+          background: "var(--card)",
+          border: "1px solid var(--border)",
+          borderTop: "3px solid var(--gold)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
+        }}
+      >
+        <div className="text-center mb-3">
+          <div style={{ color: "var(--muted)", fontSize: "0.55rem", ...vh, letterSpacing: "0.2em" }}>
+            ◆ PROGRAMA DE TREINAMENTO ◆
+          </div>
+          <h1
+            style={{
+              ...vh,
+              fontSize: "1.6rem",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              lineHeight: 1.1,
+              marginTop: "0.25rem",
+              background: "linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            {treino.nome.toUpperCase()}
+          </h1>
+          {treino.descricao && (
+            <p style={{ color: "var(--muted)", fontSize: "0.75rem", marginTop: "0.25rem" }}>
+              {treino.descricao}
+            </p>
+          )}
         </div>
-      </Card>
+        <div className="divider-gold" style={{ margin: "0.5rem 0" }}></div>
+        <div className="flex justify-center gap-6">
+          <div className="text-center">
+            <p style={{ color: "var(--gold)", ...vh, fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 }}>
+              {treino.exercicios.length}
+            </p>
+            <p style={{ color: "var(--muted)", ...vh, fontSize: "0.55rem", letterSpacing: "0.15em" }}>EXERCÍCIOS</p>
+          </div>
+          <div style={{ width: "1px", background: "var(--border)" }} />
+          <div className="text-center">
+            <p style={{ color: "var(--gold)", ...vh, fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 }}>
+              {totalVezes}
+            </p>
+            <p style={{ color: "var(--muted)", ...vh, fontSize: "0.55rem", letterSpacing: "0.15em" }}>REALIZAÇÕES</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Exercise list */}
+      <div className="divider-gold">◆ LISTA DE EXERCÍCIOS ◆</div>
 
       <div className="space-y-3">
         {treino.exercicios.map((ex, idx) => (
-          <Card key={ex.id}>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-sm flex-shrink-0">
-                {idx + 1}
+          <div
+            key={ex.id}
+            style={{
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderLeft: "3px solid var(--gold)",
+            }}
+          >
+            <div className="p-3 flex items-start gap-3">
+              <div
+                className="flex-shrink-0 w-9 h-9 flex items-center justify-center font-bold"
+                style={{
+                  background: "var(--card-2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--gold)",
+                  ...vh,
+                  fontSize: "0.85rem",
+                }}
+              >
+                {String(idx + 1).padStart(2, "0")}
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{ex.nome}</h3>
+                <h3 style={{ color: "var(--cream)", ...vh, fontSize: "0.95rem", fontWeight: 700, letterSpacing: "0.08em" }}>
+                  {ex.nome.toUpperCase()}
+                </h3>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-lg">
-                    {ex.series} séries
-                  </span>
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-lg">
-                    {ex.repeticoes} reps
-                  </span>
-                  {ex.carga && (
-                    <span className="bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-lg">
-                      {ex.carga}
+                  {[
+                    { label: `${ex.series} SÉR.`, color: "var(--card-2)" },
+                    { label: `${ex.repeticoes} REPS`, color: "var(--card-2)" },
+                    ...(ex.carga ? [{ label: ex.carga.toUpperCase(), color: "rgba(212,144,10,0.15)" }] : []),
+                    ...(ex.descanso ? [{ label: `⏱ ${ex.descanso}`, color: "rgba(139,26,26,0.2)" }] : []),
+                  ].map((badge) => (
+                    <span
+                      key={badge.label}
+                      className="px-2 py-0.5"
+                      style={{
+                        background: badge.color,
+                        border: "1px solid var(--border)",
+                        color: "var(--cream)",
+                        ...vh,
+                        fontSize: "0.6rem",
+                        letterSpacing: "0.12em",
+                      }}
+                    >
+                      {badge.label}
                     </span>
-                  )}
-                  {ex.descanso && (
-                    <span className="bg-orange-50 text-orange-600 text-xs px-2 py-1 rounded-lg">
-                      ⏱ {ex.descanso}
-                    </span>
-                  )}
+                  ))}
                 </div>
                 {ex.observacoes && (
-                  <p className="text-xs text-gray-400 mt-1">{ex.observacoes}</p>
+                  <p style={{ color: "var(--muted)", fontSize: "0.65rem", marginTop: "0.375rem", fontStyle: "italic" }}>
+                    {ex.observacoes}
+                  </p>
                 )}
               </div>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
+      {/* Complete button */}
       {treinadoHoje ? (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
-          <p className="text-2xl mb-1">✅</p>
-          <p className="text-green-700 font-semibold">Treino concluído hoje!</p>
+        <div
+          className="p-4 text-center"
+          style={{
+            background: "var(--card-2)",
+            border: "1px solid var(--gold)",
+          }}
+        >
+          <p style={{ color: "var(--gold)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.2em" }}>
+            ★ TREINO CONCLUÍDO HOJE ★
+          </p>
         </div>
       ) : (
         <button
           onClick={handleConcluir}
-          className="w-full bg-green-600 text-white rounded-2xl py-4 font-bold text-base hover:bg-green-700 transition-colors"
+          className="w-full py-4 font-bold text-base"
+          style={{
+            background: "var(--gold)",
+            color: "#0A0600",
+            ...vh,
+            letterSpacing: "0.2em",
+            fontSize: "0.95rem",
+            boxShadow: "0 2px 12px rgba(212,144,10,0.3)",
+          }}
         >
-          ✅ Marcar como concluído hoje
+          ★ MARCAR COMO CONCLUÍDO HOJE ★
         </button>
       )}
     </div>

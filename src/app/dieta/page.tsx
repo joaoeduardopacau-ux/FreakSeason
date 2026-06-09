@@ -8,17 +8,29 @@ import Card from "@/components/Card";
 import MacroBar from "@/components/MacroBar";
 
 const hoje = new Date().toISOString().split("T")[0];
+const vh = { fontFamily: "var(--font-oswald), Arial Narrow, sans-serif" };
 
 const refeicaoOpcoes = [
-  { value: "cafe_manha", label: "Café da manhã", emoji: "☕" },
-  { value: "lanche_manha", label: "Lanche da manhã", emoji: "🍎" },
-  { value: "almoco", label: "Almoço", emoji: "🍽️" },
-  { value: "lanche_tarde", label: "Lanche da tarde", emoji: "🥪" },
-  { value: "jantar", label: "Jantar", emoji: "🌙" },
-  { value: "ceia", label: "Ceia", emoji: "🥛" },
+  { value: "cafe_manha", label: "CAFÉ DA MANHÃ", short: "CAFÉ" },
+  { value: "lanche_manha", label: "LANCHE MANHÃ", short: "LANCHE M." },
+  { value: "almoco", label: "ALMOÇO", short: "ALMOÇO" },
+  { value: "lanche_tarde", label: "LANCHE TARDE", short: "LANCHE T." },
+  { value: "jantar", label: "JANTAR", short: "JANTAR" },
+  { value: "ceia", label: "CEIA", short: "CEIA" },
 ] as const;
 
 type RefeicaoTipo = typeof refeicaoOpcoes[number]["value"];
+
+const labelStyle = {
+  ...vh,
+  fontSize: "0.65rem",
+  letterSpacing: "0.18em",
+  color: "var(--muted)",
+  textTransform: "uppercase" as const,
+  display: "block",
+  marginBottom: "0.375rem",
+  fontWeight: 600,
+};
 
 export default function DietaPage() {
   const { data, adicionarRefeicao, removerRefeicao, adicionarAlimento } = useApp();
@@ -41,14 +53,12 @@ export default function DietaPage() {
 
   const metas = perfil ? calcularMetasCalorias(perfil) : null;
 
-  // Modal de adicionar refeição
   const [modal, setModal] = useState(false);
   const [tipoRefeicao, setTipoRefeicao] = useState<RefeicaoTipo>("almoco");
   const [busca, setBusca] = useState("");
   const [itens, setItens] = useState<RefeicaoItem[]>([]);
   const [qtdSelecionada, setQtdSelecionada] = useState(100);
 
-  // Adicionar alimento personalizado
   const [modalAlimento, setModalAlimento] = useState(false);
   const [novoAlimento, setNovoAlimento] = useState({
     nome: "", calorias: 0, proteinas: 0, carboidratos: 0, gorduras: 0, porcao: 100,
@@ -61,7 +71,6 @@ export default function DietaPage() {
   function handleAdicionarItem(alimentoId: string) {
     const alimento = alimentos.find((a) => a.id === alimentoId);
     if (!alimento) return;
-
     const fator = qtdSelecionada / alimento.porcao;
     const item: RefeicaoItem = {
       alimentoId,
@@ -117,151 +126,252 @@ export default function DietaPage() {
 
   return (
     <div className="px-4 py-4 space-y-4">
+
+      {/* Header */}
+      <div className="text-center py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div style={{ color: "var(--muted)", fontSize: "0.6rem", ...vh, letterSpacing: "0.2em" }}>
+          ◆ NUTRITION PROTOCOL ◆
+        </div>
+        <h1 style={{ ...vh, fontSize: "2rem", fontWeight: 700, color: "var(--gold-light)", letterSpacing: "0.2em", lineHeight: 1.1, marginTop: "0.25rem" }}>
+          DIETA
+        </h1>
+      </div>
+
+      {/* Action row */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dieta</h1>
+        <div className="divider-gold" style={{ flex: 1 }}>
+          <span>★ HOJE ★</span>
+        </div>
         <button
           onClick={() => setModal(true)}
-          className="bg-green-600 text-white text-sm px-4 py-2 rounded-xl font-medium hover:bg-green-700 transition-colors"
+          className="ml-3 px-4 py-2 font-bold text-xs"
+          style={{
+            background: "var(--gold)",
+            color: "#0A0600",
+            ...vh,
+            letterSpacing: "0.15em",
+            flexShrink: 0,
+          }}
         >
-          + Refeição
+          + REFEIÇÃO
         </button>
       </div>
 
-      {/* Resumo do dia */}
-      <Card>
-        <h2 className="font-semibold text-gray-900 mb-3">Resumo de hoje</h2>
-        <div className="flex items-end gap-2 mb-4">
-          <span className="text-4xl font-bold text-gray-900">
-            {Math.round(totaisHoje.calorias)}
-          </span>
-          <span className="text-gray-400 text-lg mb-1">/ {metas?.calorias ?? "—"} kcal</span>
+      {/* Daily summary */}
+      <Card title="RESUMO DO DIA" accent>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <span
+              style={{ color: "var(--gold-light)", ...vh, fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}
+            >
+              {Math.round(totaisHoje.calorias)}
+            </span>
+            <span style={{ color: "var(--muted)", ...vh, fontSize: "0.9rem", marginLeft: "0.5rem" }}>
+              / {metas?.calorias ?? "—"} KCAL
+            </span>
+          </div>
         </div>
         {metas ? (
-          <div className="space-y-2">
-            <MacroBar label="Proteínas" atual={Math.round(totaisHoje.proteinas)} meta={metas.proteinas} cor="bg-blue-400" />
-            <MacroBar label="Carboidratos" atual={Math.round(totaisHoje.carboidratos)} meta={metas.carboidratos} cor="bg-yellow-400" />
-            <MacroBar label="Gorduras" atual={Math.round(totaisHoje.gorduras)} meta={metas.gorduras} cor="bg-orange-400" />
+          <div className="space-y-2.5">
+            <MacroBar label="PROTEÍNAS" atual={Math.round(totaisHoje.proteinas)} meta={metas.proteinas} cor="bg-blue-400" />
+            <MacroBar label="CARBOIDRATOS" atual={Math.round(totaisHoje.carboidratos)} meta={metas.carboidratos} cor="bg-yellow-400" />
+            <MacroBar label="GORDURAS" atual={Math.round(totaisHoje.gorduras)} meta={metas.gorduras} cor="bg-orange-400" />
           </div>
         ) : (
-          <p className="text-sm text-gray-400">Configure seu perfil para ver as metas</p>
+          <p style={{ color: "var(--muted)", ...vh, fontSize: "0.7rem", letterSpacing: "0.12em" }}>
+            CONFIGURE SEU PERFIL PARA VER AS METAS
+          </p>
         )}
       </Card>
 
-      {/* Refeições do dia */}
+      {/* Meals */}
       {refeicoesHoje.length === 0 ? (
-        <Card>
-          <div className="text-center py-6">
-            <p className="text-3xl mb-2">🥗</p>
-            <p className="text-gray-400 text-sm">Nenhuma refeição registrada hoje</p>
-          </div>
-        </Card>
+        <div
+          className="text-center py-10"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <p style={{ color: "var(--muted)", ...vh, fontSize: "0.85rem", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>
+            NENHUMA REFEIÇÃO REGISTRADA HOJE
+          </p>
+          <button
+            onClick={() => setModal(true)}
+            style={{ color: "var(--gold)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+          >
+            + ADICIONAR PRIMEIRA REFEIÇÃO
+          </button>
+        </div>
       ) : (
         <div className="space-y-3">
-          {refeicaoOpcoes.map(({ value, label, emoji }) => {
+          {refeicaoOpcoes.map(({ value, label }) => {
             const ref = refeicoesHoje.find((r) => r.tipo === value);
             if (!ref) return null;
             const totalRef = ref.itens.reduce((a, i) => a + i.caloriasTotais, 0);
             return (
-              <Card key={ref.id}>
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{emoji}</span>
+              <div
+                key={ref.id}
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderLeft: "3px solid var(--gold)",
+                }}
+              >
+                <div className="p-3">
+                  <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">{label}</p>
-                      <p className="text-xs text-gray-400">{Math.round(totalRef)} kcal</p>
+                      <p style={{ color: "var(--gold)", ...vh, fontSize: "0.7rem", letterSpacing: "0.18em", fontWeight: 700 }}>
+                        {label}
+                      </p>
+                      <p style={{ color: "var(--cream)", ...vh, fontSize: "1rem", fontWeight: 700 }}>
+                        {Math.round(totalRef)} <span style={{ fontSize: "0.7rem", color: "var(--muted)" }}>KCAL</span>
+                      </p>
                     </div>
+                    <button
+                      onClick={() => removerRefeicao(ref.id)}
+                      style={{ color: "var(--muted)", padding: "4px" }}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removerRefeicao(ref.id)}
-                    className="text-gray-300 hover:text-red-400 text-sm p-1"
+                  <div className="space-y-0.5">
+                    {ref.itens.map((item, idx) => (
+                      <div key={idx} className="flex justify-between">
+                        <span style={{ color: "var(--muted)", fontSize: "0.7rem" }}>
+                          {item.nomeAlimento} ({item.quantidade}g)
+                        </span>
+                        <span style={{ color: "var(--cream)", fontSize: "0.7rem" }}>
+                          {Math.round(item.caloriasTotais)} kcal
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div
+                    className="flex gap-3 mt-2 pt-2"
+                    style={{ borderTop: "1px solid var(--border)", ...vh, fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--muted)" }}
                   >
-                    🗑️
-                  </button>
+                    <span>P: {Math.round(ref.itens.reduce((a, i) => a + i.proteinasTotais, 0))}g</span>
+                    <span>C: {Math.round(ref.itens.reduce((a, i) => a + i.carboidratosTotais, 0))}g</span>
+                    <span>G: {Math.round(ref.itens.reduce((a, i) => a + i.gordurasTotais, 0))}g</span>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  {ref.itens.map((item, idx) => (
-                    <div key={idx} className="flex justify-between text-xs text-gray-500">
-                      <span>{item.nomeAlimento} ({item.quantidade}g)</span>
-                      <span>{Math.round(item.caloriasTotais)} kcal</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-3 mt-2 pt-2 border-t border-gray-50 text-xs text-gray-400">
-                  <span>P: {Math.round(ref.itens.reduce((a, i) => a + i.proteinasTotais, 0))}g</span>
-                  <span>C: {Math.round(ref.itens.reduce((a, i) => a + i.carboidratosTotais, 0))}g</span>
-                  <span>G: {Math.round(ref.itens.reduce((a, i) => a + i.gordurasTotais, 0))}g</span>
-                </div>
-              </Card>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* Modal adicionar refeição */}
+      {/* Add meal modal */}
       {modal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-          <div className="bg-white w-full max-w-md mx-auto rounded-t-3xl max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-3xl">
+        <div
+          className="fixed inset-0 z-50 flex items-end"
+          style={{ background: "rgba(0,0,0,0.85)" }}
+        >
+          <div
+            className="w-full max-w-md mx-auto max-h-[92vh] overflow-y-auto"
+            style={{
+              background: "var(--card)",
+              borderTop: "2px solid var(--gold)",
+              borderLeft: "1px solid var(--border)",
+              borderRight: "1px solid var(--border)",
+            }}
+          >
+            {/* Modal header */}
+            <div
+              className="p-4 sticky top-0"
+              style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}
+            >
               <div className="flex items-center justify-between">
-                <h2 className="font-bold text-gray-900">Adicionar refeição</h2>
-                <button onClick={() => { setModal(false); setItens([]); setBusca(""); }} className="text-gray-400 text-xl">✕</button>
+                <h2 style={{ color: "var(--gold-light)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.2em" }}>
+                  ADICIONAR REFEIÇÃO
+                </h2>
+                <button
+                  onClick={() => { setModal(false); setItens([]); setBusca(""); }}
+                  style={{ color: "var(--muted)", ...vh, fontSize: "1rem" }}
+                >
+                  ✕
+                </button>
               </div>
             </div>
 
             <div className="p-4 space-y-4">
-              {/* Tipo de refeição */}
-              <div className="grid grid-cols-3 gap-2">
-                {refeicaoOpcoes.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    onClick={() => setTipoRefeicao(o.value)}
-                    className={`flex flex-col items-center py-2 rounded-xl border text-xs transition-colors ${
-                      tipoRefeicao === o.value
-                        ? "border-green-500 bg-green-50 text-green-700 font-semibold"
-                        : "border-gray-200 text-gray-500"
-                    }`}
-                  >
-                    <span className="text-lg mb-0.5">{o.emoji}</span>
-                    <span className="text-center leading-tight">{o.label}</span>
-                  </button>
-                ))}
+              {/* Meal type selector */}
+              <div>
+                <label style={labelStyle}>Tipo de Refeição</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {refeicaoOpcoes.map((o) => {
+                    const selected = tipoRefeicao === o.value;
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        onClick={() => setTipoRefeicao(o.value)}
+                        className="py-2 px-1 text-center transition-opacity"
+                        style={{
+                          background: selected ? "var(--gold)" : "var(--input)",
+                          border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
+                          color: selected ? "#0A0600" : "var(--muted)",
+                          ...vh,
+                          fontSize: "0.55rem",
+                          letterSpacing: "0.1em",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {o.short}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Buscar alimento */}
+              {/* Search */}
               <div>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
                     value={busca}
                     onChange={(e) => setBusca(e.target.value)}
-                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="vintage-input flex-1"
                     placeholder="Buscar alimento..."
+                    style={{ flex: 1 }}
                   />
                   <button
                     type="button"
                     onClick={() => setModalAlimento(true)}
-                    className="bg-gray-100 text-gray-600 text-xs px-3 rounded-xl hover:bg-gray-200"
+                    className="px-3 py-2 font-bold text-xs"
+                    style={{
+                      background: "var(--card-2)",
+                      border: "1px solid var(--border)",
+                      color: "var(--gold)",
+                      ...vh,
+                      letterSpacing: "0.12em",
+                      flexShrink: 0,
+                    }}
                   >
-                    + Novo
+                    + NOVO
                   </button>
                 </div>
 
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Quantidade (g/ml)</label>
+                  <label style={labelStyle}>Quantidade (g/ml)</label>
                   <input
                     type="number"
                     min={1}
                     value={qtdSelecionada}
                     onChange={(e) => setQtdSelecionada(parseInt(e.target.value))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="vintage-input"
                   />
                 </div>
 
                 {busca && (
-                  <div className="mt-2 border border-gray-100 rounded-xl overflow-hidden max-h-40 overflow-y-auto">
+                  <div
+                    className="mt-2 overflow-hidden max-h-44 overflow-y-auto"
+                    style={{ border: "1px solid var(--border)", background: "var(--input)" }}
+                  >
                     {alimentosFiltrados.length === 0 ? (
-                      <p className="text-sm text-gray-400 p-3 text-center">Nenhum resultado</p>
+                      <p style={{ color: "var(--muted)", ...vh, fontSize: "0.75rem", letterSpacing: "0.12em", padding: "0.75rem", textAlign: "center" }}>
+                        NENHUM RESULTADO
+                      </p>
                     ) : (
                       alimentosFiltrados.map((a) => {
                         const fator = qtdSelecionada / a.porcao;
@@ -270,15 +380,16 @@ export default function DietaPage() {
                             key={a.id}
                             type="button"
                             onClick={() => handleAdicionarItem(a.id)}
-                            className="w-full flex justify-between items-center px-3 py-2 hover:bg-green-50 border-b border-gray-50 last:border-b-0 text-left"
+                            className="w-full flex justify-between items-center px-3 py-2.5 text-left"
+                            style={{ borderBottom: "1px solid var(--border)" }}
                           >
                             <div>
-                              <p className="text-sm font-medium text-gray-800">{a.nome}</p>
-                              <p className="text-xs text-gray-400">
+                              <p style={{ color: "var(--cream)", ...vh, fontSize: "0.8rem" }}>{a.nome}</p>
+                              <p style={{ color: "var(--muted)", fontSize: "0.65rem" }}>
                                 {Math.round(a.calorias * fator)} kcal · {qtdSelecionada}{a.unidade}
                               </p>
                             </div>
-                            <span className="text-green-600 text-lg">+</span>
+                            <span style={{ color: "var(--gold)", fontSize: "1.2rem" }}>+</span>
                           </button>
                         );
                       })
@@ -287,25 +398,29 @@ export default function DietaPage() {
                 )}
               </div>
 
-              {/* Itens adicionados */}
+              {/* Items added */}
               {itens.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Itens ({Math.round(totaisItens.calorias)} kcal)
-                  </p>
+                  <div className="divider-gold mb-2">
+                    <span>ITENS ({Math.round(totaisItens.calorias)} KCAL)</span>
+                  </div>
                   <div className="space-y-1">
                     {itens.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center px-3 py-2"
+                        style={{ background: "var(--card-2)", border: "1px solid var(--border)" }}
+                      >
                         <div>
-                          <p className="text-sm text-gray-800">{item.nomeAlimento}</p>
-                          <p className="text-xs text-gray-400">
+                          <p style={{ color: "var(--cream)", ...vh, fontSize: "0.8rem" }}>{item.nomeAlimento}</p>
+                          <p style={{ color: "var(--muted)", fontSize: "0.65rem" }}>
                             {item.quantidade}g · {Math.round(item.caloriasTotais)} kcal
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoverItem(idx)}
-                          className="text-gray-300 hover:text-red-400 ml-2"
+                          style={{ color: "var(--muted)", marginLeft: "0.5rem" }}
                         >
                           ✕
                         </button>
@@ -318,22 +433,46 @@ export default function DietaPage() {
               <button
                 onClick={handleSalvarRefeicao}
                 disabled={itens.length === 0}
-                className="w-full bg-green-600 text-white rounded-xl py-3 font-semibold text-sm hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 font-bold text-sm"
+                style={{
+                  background: itens.length === 0 ? "var(--border)" : "var(--gold)",
+                  color: itens.length === 0 ? "var(--muted)" : "#0A0600",
+                  ...vh,
+                  letterSpacing: "0.2em",
+                  cursor: itens.length === 0 ? "not-allowed" : "pointer",
+                }}
               >
-                Salvar Refeição
+                ★ SALVAR REFEIÇÃO ★
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal adicionar alimento */}
+      {/* Add food modal */}
       {modalAlimento && (
-        <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-5">
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.9)" }}
+        >
+          <div
+            className="w-full max-w-sm p-5"
+            style={{
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderTop: "2px solid var(--gold)",
+            }}
+          >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-gray-900">Novo alimento</h3>
-              <button onClick={() => setModalAlimento(false)} className="text-gray-400">✕</button>
+              <h3 style={{ color: "var(--gold-light)", ...vh, fontSize: "1rem", fontWeight: 700, letterSpacing: "0.18em" }}>
+                NOVO ALIMENTO
+              </h3>
+              <button
+                onClick={() => setModalAlimento(false)}
+                style={{ color: "var(--muted)", ...vh }}
+              >
+                ✕
+              </button>
             </div>
             <form onSubmit={handleSalvarAlimento} className="space-y-3">
               <input
@@ -341,39 +480,54 @@ export default function DietaPage() {
                 type="text"
                 value={novoAlimento.nome}
                 onChange={(e) => setNovoAlimento({ ...novoAlimento, nome: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="vintage-input"
                 placeholder="Nome do alimento"
               />
               <div className="grid grid-cols-2 gap-2">
-                {(["calorias", "proteinas", "carboidratos", "gorduras"] as const).map((field) => (
-                  <div key={field}>
-                    <label className="text-xs text-gray-500 block mb-1 capitalize">{field} (por porção)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      step={0.1}
-                      value={novoAlimento[field]}
-                      onChange={(e) => setNovoAlimento({ ...novoAlimento, [field]: parseFloat(e.target.value) })}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-                    />
-                  </div>
-                ))}
+                {(["calorias", "proteinas", "carboidratos", "gorduras"] as const).map((field) => {
+                  const fieldLabels = {
+                    calorias: "Calorias (kcal)",
+                    proteinas: "Proteínas (g)",
+                    carboidratos: "Carboidratos (g)",
+                    gorduras: "Gorduras (g)",
+                  };
+                  return (
+                    <div key={field}>
+                      <label style={labelStyle}>{fieldLabels[field]}</label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.1}
+                        value={novoAlimento[field]}
+                        onChange={(e) => setNovoAlimento({ ...novoAlimento, [field]: parseFloat(e.target.value) })}
+                        className="vintage-input"
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Porção (g)</label>
+                <label style={labelStyle}>Porção (g)</label>
                 <input
                   type="number"
                   min={1}
                   value={novoAlimento.porcao}
                   onChange={(e) => setNovoAlimento({ ...novoAlimento, porcao: parseInt(e.target.value) })}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="vintage-input"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-green-600 text-white rounded-xl py-2.5 font-semibold text-sm"
+                className="w-full py-2.5 font-bold text-sm"
+                style={{
+                  background: "var(--gold)",
+                  color: "#0A0600",
+                  ...vh,
+                  letterSpacing: "0.2em",
+                  fontSize: "0.8rem",
+                }}
               >
-                Adicionar alimento
+                + ADICIONAR ALIMENTO
               </button>
             </form>
           </div>
