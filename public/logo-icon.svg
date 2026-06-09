@@ -1,41 +1,37 @@
 <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="goldGradIcon" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#F5C430;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#D4900A;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8A5C06;stop-opacity:1" />
+    <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F0B830"/>
+      <stop offset="60%" stop-color="#C8860A"/>
+      <stop offset="100%" stop-color="#7A5004"/>
     </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
 
-  <!-- Background rounded square -->
-  <rect width="120" height="120" rx="22" fill="#0A0600"/>
+  <!-- Background -->
+  <rect width="120" height="120" rx="18" fill="#060400"/>
 
-  <!-- Outer border -->
-  <rect x="4" y="4" width="112" height="112" rx="18" fill="none" stroke="#4A3505" stroke-width="1.5"/>
-  <rect x="8" y="8" width="104" height="104" rx="16" fill="none" stroke="#D4900A" stroke-width="1"/>
+  <!-- Shield shape -->
+  <path d="M60,8 L105,8 L115,22 L115,72 L60,112 L5,72 L5,22 Z"
+    fill="#0A0700" stroke="url(#g)" stroke-width="2"/>
+  <path d="M60,14 L100,14 L109,26 L109,70 L60,105 L11,70 L11,26 Z"
+    fill="none" stroke="#3A2800" stroke-width="0.8"/>
 
-  <!-- Corner ornaments -->
-  <text x="11" y="21" font-family="Arial" font-size="9" fill="#4A3505">&#x25C6;</text>
-  <text x="99" y="21" font-family="Arial" font-size="9" fill="#4A3505">&#x25C6;</text>
-  <text x="11" y="113" font-family="Arial" font-size="9" fill="#4A3505">&#x25C6;</text>
-  <text x="99" y="113" font-family="Arial" font-size="9" fill="#4A3505">&#x25C6;</text>
+  <!-- FS -->
+  <text x="60" y="78"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="900" font-size="50"
+    fill="url(#g)" text-anchor="middle"
+    letter-spacing="-3" filter="url(#glow)">FS</text>
 
-  <!-- Star above FS -->
-  <text x="60" y="37" font-family="Arial" font-size="14" fill="url(#goldGradIcon)" text-anchor="middle">&#x2605;</text>
+  <!-- Stars top -->
+  <text x="60" y="28" font-family="Arial" font-size="8" fill="#C8860A"
+    text-anchor="middle" letter-spacing="6">★ ★ ★</text>
 
-  <!-- FS monogram -->
-  <text
-    x="60"
-    y="85"
-    font-family="Arial Black, Impact, Arial, sans-serif"
-    font-weight="900"
-    font-size="52"
-    fill="url(#goldGradIcon)"
-    text-anchor="middle"
-    letter-spacing="-3"
-  >FS</text>
-
-  <!-- Bottom line -->
-  <line x1="20" y1="96" x2="100" y2="96" stroke="#4A3505" stroke-width="1"/>
-  <text x="60" y="108" font-family="Arial, sans-serif" font-size="7" fill="#7A5C1E" text-anchor="middle" letter-spacing="3">1977</text>
+  <!-- Year bottom -->
+  <text x="60" y="100" font-family="Georgia, serif" font-size="6.5"
+    fill="#6A4E18" text-anchor="middle" letter-spacing="2">MCMLXXVII</text>
 </svg>

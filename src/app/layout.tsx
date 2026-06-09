@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Oswald } from "next/font/google";
+import { Oswald, UnifrakturMaguntia, Cinzel } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/contexts/AppContext";
 import BottomNav from "@/components/BottomNav";
@@ -8,6 +8,20 @@ const oswald = Oswald({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-oswald",
+  display: "swap",
+});
+
+const gothic = UnifrakturMaguntia({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-gothic",
+  display: "swap",
+});
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  variable: "--font-cinzel",
   display: "swap",
 });
 
@@ -23,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${oswald.variable}`} style={{ fontFamily: "var(--font-oswald), Arial Narrow, Arial, sans-serif" }}>
+      <body className={`${oswald.variable} ${gothic.variable} ${cinzel.variable}`} style={{ fontFamily: "var(--font-oswald), Arial Narrow, Arial, sans-serif" }}>
         <AppProvider>
           <div className="max-w-md mx-auto min-h-screen flex flex-col">
             <main className="flex-1 pb-20 pt-2">{children}</main>

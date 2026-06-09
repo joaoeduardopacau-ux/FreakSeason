@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0A0600;
-  --card: #1A1200;
-  --card-2: #221900;
-  --gold: #D4900A;
-  --gold-light: #F5C430;
-  --red: #8B1A1A;
-  --cream: #F0E0B0;
-  --muted: #7A5C1E;
-  --border: #4A3505;
-  --input: #120D00;
+  --bg: #060400;
+  --card: #100C00;
+  --card-2: #181200;
+  --gold: #C8860A;
+  --gold-light: #F0B830;
+  --red: #7A1010;
+  --cream: #E8D49A;
+  --muted: #6A4E18;
+  --border: #3A2800;
+  --input: #0A0800;
 }
 
 @theme inline {
@@ -25,6 +25,8 @@
   --color-border-gold: var(--border);
   --color-input: var(--input);
   --font-oswald: var(--font-oswald);
+  --font-gothic: var(--font-gothic);
+  --font-cinzel: var(--font-cinzel);
 }
 
 body {
