@@ -1,0 +1,53 @@
+<svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4ade80;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon background circle -->
+  <circle cx="55" cy="60" r="48" fill="#111827"/>
+
+  <!-- Lightning bolt / spark icon -->
+  <polygon
+    points="64,16 38,62 56,62 46,104 72,58 54,58"
+    fill="url(#flameGrad)"
+  />
+
+  <!-- Brand name -->
+  <text
+    x="118"
+    y="52"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="38"
+    fill="#111827"
+    letter-spacing="-1"
+  >FREAK</text>
+
+  <text
+    x="118"
+    y="95"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="38"
+    fill="url(#flameGrad)"
+    letter-spacing="-1"
+  >SEASON</text>
+
+  <!-- Tagline -->
+  <text
+    x="120"
+    y="114"
+    font-family="Arial, sans-serif"
+    font-weight="400"
+    font-size="11"
+    fill="#9ca3af"
+    letter-spacing="3"
+  >TREINO · DIETA · EVOLUÇÃO</text>
+</svg>
