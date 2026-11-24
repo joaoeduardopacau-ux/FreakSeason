@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { contarSeries, useTreinos } from "@/lib/treinos/store";
+import { contarSeries, registrosOrdenados, useTreinos } from "@/lib/treinos/store";
 import { dataCurta, dataPorExtenso, diaDaSemana, nomeMes, paraData, rotuloRelativo } from "@/lib/treinos/datas";
 import type { TreinoDoDia } from "@/lib/treinos/types";
 import { tecnicaPorId } from "@/lib/treinos/tecnicas";
@@ -36,7 +36,8 @@ export default function HistoricoPage() {
   }
 
   const { treinos } = estado.dados;
-  const lista = Object.values(treinos).sort((a, b) => b.data.localeCompare(a.data));
+  const registros = registrosOrdenados(estado.dados);
+  const lista = registros.map(([, t]) => t);
 
   const mesDe = (data: string) => {
     const d = paraData(data);
@@ -57,7 +58,7 @@ export default function HistoricoPage() {
       {lista.length === 0 && (
         <div style={{ textAlign: "center", padding: "36px 0" }}>
           <Link href="/treinos" className="tr-btn tr-btn-primary tr-btn-lg" style={{ textDecoration: "none" }}>
-            Começar o treino de hoje
+            Ir para os treinos
           </Link>
         </div>
       )}
@@ -69,9 +70,9 @@ export default function HistoricoPage() {
         const c = contarSeries(t);
         const rel = rotuloRelativo(t.data);
         return (
-          <div key={t.data}>
+          <div key={registros[i][0]}>
             {cabecalho && <div className="tr-hist-month">{cabecalho}</div>}
-            <button className="tr-hist-item" onClick={() => setAberto(t.data)}>
+            <button className="tr-hist-item" onClick={() => setAberto(registros[i][0])}>
               <div
                 style={{
                   width: 52,
@@ -88,7 +89,8 @@ export default function HistoricoPage() {
                 </div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 16, fontWeight: 700 }}>
+                <div style={{ fontSize: 16, fontWeight: 700 }}>{t.titulo ?? "Treino avulso"}</div>
+                <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 2 }}>
                   {rel ? `${rel} · ` : ""}
                   {dataCurta(t.data)}
                 </div>
@@ -108,7 +110,6 @@ export default function HistoricoPage() {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {t.titulo ? `${t.titulo}: ` : ""}
                   {t.exercicios.map((e) => e.nome).join(" · ")}
                 </div>
               </div>
@@ -125,7 +126,7 @@ export default function HistoricoPage() {
         <span>Os treinos ficam salvos apenas neste aparelho e navegador. Limpar os dados do navegador apaga o histórico.</span>
       </p>
 
-      {aberto && treinos[aberto] && <Detalhe t={treinos[aberto]} onFechar={() => setAberto(null)} />}
+      {aberto && treinos[aberto] && <Detalhe chave={aberto} t={treinos[aberto]} onFechar={() => setAberto(null)} />}
     </div>
   );
 }
@@ -135,7 +136,7 @@ function numero(v: string) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
+function Detalhe({ chave, t, onFechar }: { chave: string; t: TreinoDoDia; onFechar: () => void }) {
   const c = contarSeries(t);
   const volume = t.exercicios
     .filter((e) => e.tipo !== "cardio")
@@ -143,20 +144,22 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
 
   return (
     <Sheet
-      titulo={`${diaDaSemana(t.data)}`}
+      titulo={t.titulo ?? diaDaSemana(t.data)}
       onFechar={onFechar}
       cheia
       rodape={
         <Link
-          href={`/treinos?data=${t.data}`}
+          href={`/treinos?sessao=${encodeURIComponent(chave)}`}
           className="tr-btn tr-btn-primary tr-btn-block tr-btn-lg"
           style={{ textDecoration: "none" }}
         >
-          Abrir em Treinos para editar ou copiar
+          Abrir para editar
         </Link>
       }
     >
-      <p style={{ fontSize: 15, color: "var(--text2)", marginTop: -4 }}>{dataPorExtenso(t.data)}</p>
+      <p style={{ fontSize: 15, color: "var(--text2)", marginTop: -4 }}>
+        {diaDaSemana(t.data)}, {dataPorExtenso(t.data)}
+      </p>
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0 6px" }}>
         <Status t={t} />
         <span className="tr-pill tr-pill-muted">
@@ -166,7 +169,6 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
           <span className="tr-pill tr-pill-muted">Volume {Math.round(volume).toLocaleString("pt-BR")} kg</span>
         )}
       </div>
-      {t.titulo && <p style={{ fontSize: 17, fontWeight: 800, marginTop: 4 }}>{t.titulo}</p>}
       {t.copiadoDe && <p className="tr-note">Copiado de {dataCurta(t.copiadoDe)}.</p>}
 
       {t.exercicios.map((e) => {

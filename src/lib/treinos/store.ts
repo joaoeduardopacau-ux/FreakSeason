@@ -130,7 +130,7 @@ function alterarTreino(data: string, fn: (t: TreinoDoDia) => TreinoDoDia | null)
   const novo = fn(atual);
   const treinos = { ...dados.treinos };
   if (!novo || novo.exercicios.length === 0) {
-    // Dia sem exercícios volta a ficar vazio (some do calendário e do histórico).
+    // Registro sem exercícios é apagado (some do histórico).
     delete treinos[data];
   } else {
     treinos[data] = { ...novo, atualizadoEm: agora() };
@@ -176,19 +176,28 @@ export function excluirExercicioPersonalizado(id: string) {
 
 // ───────── consultas ─────────
 
-/** Séries do registro mais recente desse exercício antes da data (para sugestão). */
+/** Ordem cronológica de um registro (data do treino + momento em que começou). */
+function ordemDe(t: TreinoDoDia) {
+  return `${t.data}|${t.criadoEm}`;
+}
+
+/** Registros do histórico, do mais recente para o mais antigo, com a chave de cada um. */
+export function registrosOrdenados(dados: DadosTreinos): [string, TreinoDoDia][] {
+  return Object.entries(dados.treinos).sort((a, b) => ordemDe(b[1]).localeCompare(ordemDe(a[1])));
+}
+
+/** Séries do registro mais recente desse exercício antes do registro atual (para sugestão). */
 export function ultimoRegistro(
   dados: DadosTreinos,
   exercicioId: string,
-  antesDe: string
+  chaveAtual: string
 ): { data: string; series: Serie[] } | null {
-  const datas = Object.keys(dados.treinos)
-    .filter((d) => d < antesDe)
-    .sort()
-    .reverse();
-  for (const d of datas) {
-    const ex = dados.treinos[d].exercicios.find((e) => e.exercicioId === exercicioId);
-    if (ex && ex.series.some((s) => s.carga || s.reps)) return { data: d, series: ex.series };
+  const atual = dados.treinos[chaveAtual];
+  const limite = atual ? ordemDe(atual) : "\uffff";
+  for (const [chave, t] of registrosOrdenados(dados)) {
+    if (chave === chaveAtual || ordemDe(t) >= limite) continue;
+    const ex = t.exercicios.find((e) => e.exercicioId === exercicioId);
+    if (ex && ex.series.some((s) => s.carga || s.reps)) return { data: t.data, series: ex.series };
   }
   return null;
 }
@@ -278,36 +287,6 @@ export function reabrirTreino(data: string) {
 
 export function excluirTreino(data: string) {
   alterarTreino(data, () => null);
-}
-
-/**
- * Copia exercícios, séries e cargas de uma data para outra.
- * Gera ids novos e desmarca todas as séries, então a cópia é independente.
- */
-export function copiarTreino(origem: string, destino: string) {
-  const { dados } = garantirEstado();
-  const fonte = dados.treinos[origem];
-  if (!fonte || origem === destino) return;
-  const ts = agora();
-  const copia: TreinoDoDia = {
-    data: destino,
-    status: "em_andamento",
-    criadoEm: ts,
-    atualizadoEm: ts,
-    copiadoDe: origem,
-    titulo: fonte.titulo,
-    exercicios: fonte.exercicios.map((e) => ({
-      id: novoId(),
-      exercicioId: e.exercicioId,
-      nome: e.nome,
-      grupo: e.grupo,
-      tipo: e.tipo,
-      tecnica: e.tecnica,
-      observacoes: "",
-      series: e.series.map((s) => serieVazia({ carga: s.carga, reps: s.reps })),
-    })),
-  };
-  gravar({ ...dados, treinos: { ...dados.treinos, [destino]: copia } });
 }
 
 export function definirTecnicaTreino(data: string, itemId: string, tecnica: TecnicaId) {
@@ -448,29 +427,48 @@ export function atualizarObservacoesFicha(fichaId: string, itemId: string, obser
 }
 
 /**
- * Sugere a ficha a fazer numa data: a seguinte (na ordem da lista) à última
- * ficha usada antes dessa data. Sem histórico, sugere a primeira.
+ * Sugere a próxima ficha: a seguinte (na ordem da lista) à última ficha feita.
+ * Sem histórico, sugere a primeira.
  */
-export function fichaSugerida(dados: DadosTreinos, data: string): string | null {
+export function fichaSugerida(dados: DadosTreinos): string | null {
   const usaveis = dados.fichas.filter((f) => f.itens.length > 0);
   if (usaveis.length === 0) return null;
-  const anterior = Object.keys(dados.treinos)
-    .filter((d) => d < data && dados.treinos[d].fichaId)
-    .sort()
-    .pop();
-  if (!anterior) return usaveis[0].id;
-  const i = usaveis.findIndex((f) => f.id === dados.treinos[anterior].fichaId);
+  const ultimo = registrosOrdenados(dados).find(([, t]) => t.fichaId && usaveis.some((f) => f.id === t.fichaId));
+  if (!ultimo) return usaveis[0].id;
+  const i = usaveis.findIndex((f) => f.id === ultimo[1].fichaId);
   return usaveis[(i + 1) % usaveis.length].id;
 }
 
-/** Monta o treino de uma data a partir de uma ficha. Séries vêm desmarcadas. */
-export function aplicarFichaNoDia(data: string, fichaId: string) {
+/** Treino desta ficha começado hoje e ainda não concluído (para continuar de onde parou). */
+export function sessaoEmAndamento(dados: DadosTreinos, fichaId: string, hoje: string): string | null {
+  const achado = registrosOrdenados(dados).find(
+    ([, t]) => t.fichaId === fichaId && t.data === hoje && t.status === "em_andamento"
+  );
+  return achado ? achado[0] : null;
+}
+
+/** Última vez que a ficha foi feita (data). */
+export function ultimaVezFicha(dados: DadosTreinos, fichaId: string): string | null {
+  const achado = registrosOrdenados(dados).find(([, t]) => t.fichaId === fichaId);
+  return achado ? achado[1].data : null;
+}
+
+/**
+ * Começa o treino de uma ficha hoje (ou continua o que está em andamento).
+ * Copia exercícios, técnicas e metas da ficha com as séries desmarcadas.
+ * Retorna a chave do registro.
+ */
+export function iniciarTreino(fichaId: string, hoje: string): string | null {
   const { dados } = garantirEstado();
   const ficha = dados.fichas.find((f) => f.id === fichaId);
-  if (!ficha || ficha.itens.length === 0) return;
+  if (!ficha || ficha.itens.length === 0) return null;
+  const existente = sessaoEmAndamento(dados, fichaId, hoje);
+  if (existente) return existente;
+  let chave = `${hoje}_${fichaId}`;
+  for (let n = 2; dados.treinos[chave]; n++) chave = `${hoje}_${fichaId}_${n}`;
   const ts = agora();
   const treino: TreinoDoDia = {
-    data,
+    data: hoje,
     status: "em_andamento",
     criadoEm: ts,
     atualizadoEm: ts,
@@ -487,5 +485,6 @@ export function aplicarFichaNoDia(data: string, fichaId: string) {
       series: i.series.map((x) => serieVazia({ carga: x.carga, reps: x.reps })),
     })),
   };
-  gravar({ ...dados, treinos: { ...dados.treinos, [data]: treino } });
+  gravar({ ...dados, treinos: { ...dados.treinos, [chave]: treino } });
+  return chave;
 }
