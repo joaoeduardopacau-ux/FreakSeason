@@ -4,12 +4,25 @@ export type GrupoMuscular =
   | "Ombros"
   | "Bíceps"
   | "Tríceps"
+  | "Antebraço"
   | "Pernas"
   | "Glúteos"
   | "Panturrilha"
   | "Abdômen"
   | "Cardio"
+  | "Alongamento"
   | "Outro";
+
+export type Equipamento =
+  | "Halteres"
+  | "Barra"
+  | "Cabo"
+  | "Máquina"
+  | "Smith"
+  | "Peso corporal"
+  | "Kettlebell"
+  | "Elástico"
+  | "Outros";
 
 /** Força: linhas de carga (kg) × repetições. Cardio: linhas de minutos × intensidade. */
 export type TipoExercicio = "forca" | "cardio";
@@ -32,6 +45,10 @@ export interface ExercicioCatalogo {
   nome: string;
   grupo: GrupoMuscular;
   personalizado?: boolean;
+  principal?: boolean; // exercícios mais comuns, aparecem primeiro na lista
+  equipamento?: Equipamento;
+  gif?: string; // id do GIF (arquivo public/gifs/<gif>.gif)
+  nomeEn?: string; // nome original em inglês, usado na busca
 }
 
 /**

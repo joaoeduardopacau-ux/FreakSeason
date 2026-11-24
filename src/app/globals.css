@@ -386,3 +386,10 @@ input, textarea { font-family: inherit; }
   display: block; width: 100%; max-width: 360px; height: auto; aspect-ratio: 1; margin: 0 auto;
   background: #fff; border-radius: 16px; object-fit: contain;
 }
+.tr-gif-caixa { display: block; flex-shrink: 0; }
+.tr-gif-mini.carregando { background: var(--s3); animation: tr-pulsa 1.2s ease-in-out infinite; }
+.tr-gif-espera { display: flex; align-items: center; justify-content: center; color: #555; font-size: 15px; }
+@keyframes tr-pulsa { 50% { opacity: 0.5; } }
+.tr-chips + .tr-chips { padding-top: 4px; }
+.tr-chip.equip { height: 34px; font-size: 13px; }
+.tr-lista-info { font-size: 13px; color: var(--text2); padding: 8px 2px 4px; }

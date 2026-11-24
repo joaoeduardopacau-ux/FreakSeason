@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { DadosTreinos, ExercicioCatalogo, GrupoMuscular } from "@/lib/treinos/types";
-import { GRUPOS, normalizar } from "@/lib/treinos/catalogo";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { DadosTreinos, Equipamento, ExercicioCatalogo, GrupoMuscular } from "@/lib/treinos/types";
+import { EQUIPAMENTOS, GRUPOS, normalizar } from "@/lib/treinos/catalogo";
 import { cadastrarExercicio, catalogoCompleto } from "@/lib/treinos/store";
 import { IconeBusca, IconeCheck, IconeMais } from "./Icones";
 import { Sheet } from "./Sheet";
@@ -21,6 +21,7 @@ export function SeletorExercicios({
 }) {
   const [busca, setBusca] = useState("");
   const [grupo, setGrupo] = useState<GrupoMuscular | "Todos">("Todos");
+  const [equip, setEquip] = useState<Equipamento | "Todos">("Todos");
   const [selecionados, setSelecionados] = useState<ExercicioCatalogo[]>([]);
   const [cadastrando, setCadastrando] = useState(false);
   const [novoNome, setNovoNome] = useState("");
@@ -28,11 +29,35 @@ export function SeletorExercicios({
 
   const catalogo = useMemo(() => catalogoCompleto(dados), [dados]);
   const filtrados = useMemo(() => {
-    const q = normalizar(busca);
-    return catalogo.filter(
-      (e) => (grupo === "Todos" || e.grupo === grupo) && (!q || normalizar(e.nome).includes(q))
+    const termos = normalizar(busca).split(/\s+/).filter(Boolean);
+    return catalogo.filter((e) => {
+      if (grupo !== "Todos" && e.grupo !== grupo) return false;
+      if (equip !== "Todos" && e.equipamento !== equip) return false;
+      if (termos.length === 0) return true;
+      const texto = normalizar(e.nome + " " + (e.nomeEn ?? ""));
+      return termos.every((t) => texto.includes(t));
+    });
+  }, [catalogo, busca, grupo, equip]);
+
+  // Renderiza aos poucos: a biblioteca tem mais de 1.300 exercícios.
+  const POR_VEZ = 80; // cobre todos os exercícios principais na primeira tela
+  const assinatura = `${busca}|${grupo}|${equip}`;
+  const [limite, setLimite] = useState({ chave: assinatura, n: POR_VEZ });
+  const visiveis = limite.chave === assinatura ? limite.n : POR_VEZ;
+  const mostrarMais = () => setLimite({ chave: assinatura, n: visiveis + POR_VEZ });
+  const sentinela = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinela.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (es) => {
+        if (es.some((x) => x.isIntersecting)) setLimite((l) => ({ chave: assinatura, n: (l.chave === assinatura ? l.n : POR_VEZ) + POR_VEZ }));
+      },
+      { rootMargin: "300px" }
     );
-  }, [catalogo, busca, grupo]);
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [assinatura, visiveis]);
 
   const idsSel = new Set(selecionados.map((s) => s.id));
 
@@ -136,9 +161,20 @@ export function SeletorExercicios({
             </button>
           ))}
         </div>
+        <div className="tr-chips" role="group" aria-label="Filtrar por equipamento">
+          {(["Todos", ...EQUIPAMENTOS] as const).map((q) => (
+            <button key={q} className="tr-chip equip" aria-pressed={equip === q} onClick={() => setEquip(q)}>
+              {q === "Todos" ? "Todo equipamento" : q}
+            </button>
+          ))}
+        </div>
+        <div className="tr-lista-info" role="status">
+          {filtrados.length === 1 ? "1 exercício" : `${filtrados.length.toLocaleString("pt-BR")} exercícios`}
+          {selecionados.length > 0 && ` · ${selecionados.length} selecionado${selecionados.length === 1 ? "" : "s"}`}
+        </div>
       </div>
 
-      {filtrados.map((e) => (
+      {filtrados.slice(0, visiveis).map((e) => (
         <button key={e.id} className="tr-ex-item" aria-pressed={idsSel.has(e.id)} onClick={() => alternar(e)}>
           <span className="tr-box">
             <IconeCheck size={18} />
@@ -148,12 +184,21 @@ export function SeletorExercicios({
             <span style={{ display: "block", fontSize: 16, fontWeight: 600 }}>{e.nome}</span>
             <span style={{ display: "block", fontSize: 13, color: "var(--text2)", marginTop: 2 }}>
               {e.grupo}
+              {e.equipamento ? ` · ${e.equipamento}` : ""}
               {e.personalizado ? " · cadastrado por você" : ""}
               {jaNoTreino.has(e.id) ? " · já está no treino" : ""}
             </span>
           </span>
         </button>
       ))}
+
+      {visiveis < filtrados.length && (
+        <div ref={sentinela}>
+          <button className="tr-btn tr-btn-block" style={{ marginTop: 12 }} onClick={mostrarMais}>
+            Mostrar mais ({(filtrados.length - visiveis).toLocaleString("pt-BR")} restantes)
+          </button>
+        </div>
+      )}
 
       {filtrados.length === 0 && (
         <p style={{ textAlign: "center", color: "var(--text2)", padding: "28px 0 8px", fontSize: 15 }}>

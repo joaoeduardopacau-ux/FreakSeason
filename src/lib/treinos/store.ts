@@ -152,7 +152,11 @@ function alterarExercicio(
 // ───────── catálogo ─────────
 
 export function catalogoCompleto(dados: DadosTreinos): ExercicioCatalogo[] {
-  return [...CATALOGO_PADRAO, ...dados.catalogo].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  // principais e os cadastrados por você primeiro; depois a biblioteca completa
+  const peso = (e: ExercicioCatalogo) => (e.principal || e.personalizado ? 0 : 1);
+  return [...CATALOGO_PADRAO, ...dados.catalogo].sort(
+    (a, b) => peso(a) - peso(b) || a.nome.localeCompare(b.nome, "pt-BR")
+  );
 }
 
 export function cadastrarExercicio(nome: string, grupo: GrupoMuscular): ExercicioCatalogo {
