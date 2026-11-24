@@ -20,3 +20,11 @@ export function rotulos(tipo: "forca" | "cardio" | undefined) {
     ? { linha: "Bloco", a: "Minutos", b: "Intensidade", phA: "min", phB: "ex.: 6 km/h", unidadeA: " min" }
     : { linha: "Série", a: "Carga (kg)", b: "Reps", phA: "kg", phB: "reps", unidadeA: " kg" };
 }
+
+/** "Treino A" → "A"; outros nomes → iniciais. */
+export function siglaFicha(nome: string) {
+  const m = nome.trim().match(/^treino\s+(\S{1,3})$/i);
+  if (m) return m[1].toUpperCase();
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  return (partes.length > 1 ? partes[0][0] + partes[1][0] : (partes[0] ?? "T").slice(0, 2)).toUpperCase();
+}

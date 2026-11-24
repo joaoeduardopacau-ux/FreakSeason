@@ -2,26 +2,26 @@
 
 import type { ItemPlano } from "@/lib/treinos/types";
 import {
-  adicionarSeriePlano,
-  atualizarObservacoesPlano,
-  atualizarSeriePlano,
-  moverItemPlano,
-  removerSeriePlano,
+  adicionarSerieFicha,
+  atualizarObservacoesFicha,
+  atualizarSerieFicha,
+  moverItemFicha,
+  removerSerieFicha,
 } from "@/lib/treinos/store";
 import { limparDecimal, limparInteiro, limparTexto, rotulos } from "@/lib/treinos/campos";
 import { ChipTecnica } from "./ChipTecnica";
 import { IconeBaixo, IconeCima, IconeLixo, IconeMais, IconeMenos } from "./Icones";
 
-/** Exercício dentro do plano semanal: técnica + metas por série (sem marcar como feita). */
+/** Exercício dentro de uma ficha: técnica + metas por série (sem marcar como feita). */
 export function CartaoItemPlano({
-  dia,
+  fichaId,
   item,
   indice,
   total,
   onRemover,
   onTecnica,
 }: {
-  dia: number;
+  fichaId: string;
   item: ItemPlano;
   indice: number;
   total: number;
@@ -43,7 +43,7 @@ export function CartaoItemPlano({
         <div style={{ display: "flex", gap: 6 }}>
           <button
             className="tr-icon-btn tr-icon-btn-sm"
-            onClick={() => moverItemPlano(dia, item.id, -1)}
+            onClick={() => moverItemFicha(fichaId, item.id, -1)}
             disabled={indice === 0}
             aria-label={`Mover ${item.nome} para cima`}
           >
@@ -51,7 +51,7 @@ export function CartaoItemPlano({
           </button>
           <button
             className="tr-icon-btn tr-icon-btn-sm"
-            onClick={() => moverItemPlano(dia, item.id, 1)}
+            onClick={() => moverItemFicha(fichaId, item.id, 1)}
             disabled={indice === total - 1}
             aria-label={`Mover ${item.nome} para baixo`}
           >
@@ -82,7 +82,7 @@ export function CartaoItemPlano({
             placeholder={r.phA}
             value={s.carga}
             aria-label={cardio ? `Minutos do bloco ${i + 1} de ${item.nome}` : `Carga meta da série ${i + 1} de ${item.nome}`}
-            onChange={(e) => atualizarSeriePlano(dia, item.id, s.id, { carga: limparDecimal(e.target.value) })}
+            onChange={(e) => atualizarSerieFicha(fichaId, item.id, s.id, { carga: limparDecimal(e.target.value) })}
           />
           {cardio ? (
             <input
@@ -92,7 +92,7 @@ export function CartaoItemPlano({
               placeholder={r.phB}
               value={s.reps}
               aria-label={`Intensidade do bloco ${i + 1} de ${item.nome}`}
-              onChange={(e) => atualizarSeriePlano(dia, item.id, s.id, { reps: limparTexto(e.target.value) })}
+              onChange={(e) => atualizarSerieFicha(fichaId, item.id, s.id, { reps: limparTexto(e.target.value) })}
             />
           ) : (
             <input
@@ -104,7 +104,7 @@ export function CartaoItemPlano({
               placeholder={r.phB}
               value={s.reps}
               aria-label={`Repetições meta da série ${i + 1} de ${item.nome}`}
-              onChange={(e) => atualizarSeriePlano(dia, item.id, s.id, { reps: limparInteiro(e.target.value) })}
+              onChange={(e) => atualizarSerieFicha(fichaId, item.id, s.id, { reps: limparInteiro(e.target.value) })}
             />
           )}
         </div>
@@ -113,13 +113,13 @@ export function CartaoItemPlano({
       <div className="tr-card-foot">
         <button
           className="tr-btn"
-          onClick={() => removerSeriePlano(dia, item.id)}
+          onClick={() => removerSerieFicha(fichaId, item.id)}
           disabled={item.series.length <= 1}
           aria-label={`Remover a última série de ${item.nome}`}
         >
           <IconeMenos size={20} /> {r.linha}
         </button>
-        <button className="tr-btn" onClick={() => adicionarSeriePlano(dia, item.id)} aria-label={`Adicionar série em ${item.nome}`}>
+        <button className="tr-btn" onClick={() => adicionarSerieFicha(fichaId, item.id)} aria-label={`Adicionar série em ${item.nome}`}>
           <IconeMais size={20} /> {r.linha}
         </button>
       </div>
@@ -130,7 +130,7 @@ export function CartaoItemPlano({
         placeholder="Observações (opcional)"
         value={item.observacoes}
         aria-label={`Observações de ${item.nome}`}
-        onChange={(e) => atualizarObservacoesPlano(dia, item.id, e.target.value)}
+        onChange={(e) => atualizarObservacoesFicha(fichaId, item.id, e.target.value)}
       />
     </section>
   );

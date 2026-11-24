@@ -69,11 +69,12 @@ export interface TreinoDoDia {
   atualizadoEm: string;
   concluidoEm?: string;
   copiadoDe?: string; // data de origem, quando foi copiado
-  planoDe?: number; // dia da semana (0 = domingo) do plano usado para montar o treino
-  titulo?: string; // título do plano usado, ex.: "Peito e tríceps"
+  planoDe?: number; // (antigo) dia da semana do plano usado
+  fichaId?: string; // ficha usada para montar o treino
+  titulo?: string; // nome da ficha usada, ex.: "Treino A · Peito e tríceps"
 }
 
-/** Meta de uma série no plano semanal. Em cardio: carga = minutos, reps = intensidade. */
+/** Meta de uma série na ficha. Em cardio: carga = minutos, reps = intensidade. */
 export interface SeriePlano {
   id: string;
   carga: string;
@@ -91,17 +92,18 @@ export interface ItemPlano {
   observacoes: string;
 }
 
-export interface DiaPlano {
-  titulo: string;
+/** Ficha de treino com nome livre (Treino A, B, C…), sem dia fixo da semana. */
+export interface Ficha {
+  id: string;
+  nome: string; // "Treino A"
+  descricao: string; // "Peito e tríceps"
   itens: ItemPlano[];
+  criadoEm: string;
 }
-
-/** Chave = dia da semana como em Date.getDay(): "0" domingo … "6" sábado. */
-export type PlanoSemanal = Record<string, DiaPlano>;
 
 export interface DadosTreinos {
   versao: 1;
   catalogo: ExercicioCatalogo[];
   treinos: Record<string, TreinoDoDia>;
-  plano: PlanoSemanal;
+  fichas: Ficha[];
 }

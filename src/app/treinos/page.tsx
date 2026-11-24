@@ -5,7 +5,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   adicionarExercicios,
-  aplicarPlanoNoDia,
+  aplicarFichaNoDia,
+  fichaSugerida,
   definirTecnicaTreino,
   concluirTreino,
   contarSeries,
@@ -22,7 +23,6 @@ import {
   dataPorExtenso,
   diaDaSemana,
   hojeChave,
-  paraData,
   rotuloRelativo,
   somarDias,
 } from "@/lib/treinos/datas";
@@ -32,6 +32,7 @@ import { SeletorExercicios } from "@/components/treinos/SeletorExercicios";
 import { CartaoExercicio } from "@/components/treinos/CartaoExercicio";
 import { Confirmacao } from "@/components/treinos/Sheet";
 import { SeletorTecnica } from "@/components/treinos/SeletorTecnica";
+import { siglaFicha } from "@/lib/treinos/campos";
 import {
   IconeCalendario,
   IconeCelular,
@@ -116,10 +117,8 @@ function TreinosDoDia() {
   }
 
   const relativo = rotuloRelativo(data);
-  const diaSemana = paraData(data).getDay();
-  const nomeDia = diaDaSemana(data).split("-")[0];
-  const planoDoDia = dados.plano[diaSemana];
-  const temPlano = !!planoDoDia && planoDoDia.itens.length > 0;
+  const fichas = dados.fichas.filter((f) => f.itens.length > 0);
+  const sugerida = treino ? null : fichaSugerida(dados, data);
   const contagem = treino ? contarSeries(treino) : { feitas: 0, total: 0 };
   const concluido = treino?.status === "concluido";
 
@@ -191,33 +190,47 @@ function TreinosDoDia() {
             <IconeHalter size={32} />
           </div>
           <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Nenhum treino neste dia</p>
-          <p style={{ fontSize: 15, color: "var(--text2)", marginBottom: 24 }}>
-            {temPlano ? `Use o plano de ${nomeDia.toLowerCase()} ou escolha os exercícios.` : "Escolha os exercícios que você vai fazer."}
+          <p style={{ fontSize: 15, color: "var(--text2)", marginBottom: 20 }}>
+            {fichas.length > 0 ? "Qual treino você vai fazer hoje?" : "Escolha os exercícios que você vai fazer."}
           </p>
-          {temPlano && (
-            <div className="tr-plano-banner" style={{ marginBottom: 12 }}>
-              <div className="stat-label" style={{ color: "var(--accent)" }}>Plano de {nomeDia.toLowerCase()}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, marginTop: 4 }}>{planoDoDia.titulo.trim() || nomeDia}</div>
-              <div style={{ fontSize: 14, color: "var(--text2)", margin: "4px 0 14px", lineHeight: 1.4 }}>
-                {planoDoDia.itens.map((i) => i.nome).join(" · ")}
-              </div>
-              <button className="tr-btn tr-btn-primary tr-btn-lg tr-btn-block" onClick={() => aplicarPlanoNoDia(data, diaSemana)}>
-                <IconeCheck /> Usar o plano de {nomeDia.toLowerCase()}
-              </button>
+          {fichas.length > 0 && (
+            <div role="group" aria-label="Qual treino hoje?" style={{ textAlign: "left", marginBottom: 12 }}>
+              {fichas.map((f) => (
+                <button
+                  key={f.id}
+                  className={"tr-semana-dia" + (f.id === sugerida ? " hoje" : "")}
+                  onClick={() => aplicarFichaNoDia(data, f.id)}
+                  aria-label={`Fazer ${f.nome}${f.descricao ? ", " + f.descricao : ""}`}
+                >
+                  <span className="tr-semana-sigla">{siglaFicha(f.nome)}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>
+                      {f.nome.trim() || "Treino"}
+                      {f.id === sugerida && <span style={{ color: "var(--accent)", fontSize: 13 }}> · sugerido</span>}
+                    </span>
+                    <span style={{ display: "block", fontSize: 13, color: "var(--text2)", marginTop: 2 }}>
+                      {f.descricao.trim() || f.itens.map((i) => i.nome).join(" · ")}
+                    </span>
+                  </span>
+                  <span style={{ color: f.id === sugerida ? "var(--accent)" : "var(--text3)" }}>
+                    <IconeDireita />
+                  </span>
+                </button>
+              ))}
             </div>
           )}
           <button
-            className={"tr-btn tr-btn-lg tr-btn-block" + (temPlano ? "" : " tr-btn-primary")}
+            className={"tr-btn tr-btn-lg tr-btn-block" + (fichas.length > 0 ? "" : " tr-btn-primary")}
             onClick={() => setDialogo({ tipo: "seletor" })}
           >
-            <IconeMais /> Adicionar exercícios
+            <IconeMais /> {fichas.length > 0 ? "Montar treino avulso" : "Adicionar exercícios"}
           </button>
-          {!temPlano && (
+          {fichas.length === 0 && (
             <p className="tr-note" style={{ justifyContent: "center", marginTop: 16 }}>
               <span>
-                Dica: monte seu treino de cada dia da semana na aba{" "}
-                <Link href="/semana" style={{ color: "var(--accent)", fontWeight: 700 }}>
-                  Semana
+                Dica: monte suas fichas (Treino A, B, C…) na aba{" "}
+                <Link href="/fichas" style={{ color: "var(--accent)", fontWeight: 700 }}>
+                  Fichas
                 </Link>
                 .
               </span>
@@ -248,8 +261,8 @@ function TreinosDoDia() {
           {treino.titulo && (
             <p style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>
               {treino.titulo}
-              {treino.planoDe !== undefined && (
-                <span style={{ fontSize: 13, color: "var(--text2)", fontWeight: 500 }}> · do plano semanal</span>
+              {treino.fichaId && (
+                <span style={{ fontSize: 13, color: "var(--text2)", fontWeight: 500 }}> · da sua ficha</span>
               )}
             </p>
           )}

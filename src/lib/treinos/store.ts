@@ -5,7 +5,7 @@ import { CATALOGO_PADRAO, normalizar, tipoDoGrupo } from "./catalogo";
 import { tecnicaPadrao, tecnicaPorId } from "./tecnicas";
 import type {
   DadosTreinos,
-  DiaPlano,
+  Ficha,
   ItemPlano,
   SeriePlano,
   TecnicaId,
@@ -34,7 +34,7 @@ function agora() {
 }
 
 function vazio(): DadosTreinos {
-  return { versao: 1, catalogo: [], treinos: {}, plano: {} };
+  return { versao: 1, catalogo: [], treinos: {}, fichas: [] };
 }
 
 function ler(): DadosTreinos {
@@ -42,15 +42,39 @@ function ler(): DadosTreinos {
     const raw = localStorage.getItem(CHAVE);
     if (!raw) return vazio();
     const p = JSON.parse(raw) as Partial<DadosTreinos>;
-    return {
+    const dados: DadosTreinos = {
       versao: 1,
       catalogo: Array.isArray(p.catalogo) ? p.catalogo : [],
       treinos: p.treinos && typeof p.treinos === "object" ? p.treinos : {},
-      plano: p.plano && typeof p.plano === "object" ? p.plano : {},
+      fichas: Array.isArray(p.fichas) ? p.fichas : migrarPlanoSemanal(p as Record<string, unknown>),
     };
+    if (!Array.isArray(p.fichas) && dados.fichas.length > 0) {
+      // grava já migrado para os ids das fichas ficarem estáveis
+      try {
+        localStorage.setItem(CHAVE, JSON.stringify(dados));
+      } catch {}
+    }
+    return dados;
   } catch {
     return vazio();
   }
+}
+
+const NOMES_DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+/** Versão anterior guardava um plano por dia da semana; cada dia preenchido vira uma ficha. */
+function migrarPlanoSemanal(p: Record<string, unknown>): Ficha[] {
+  const plano = p.plano as Record<string, { titulo?: string; itens?: ItemPlano[] }> | undefined;
+  if (!plano || typeof plano !== "object") return [];
+  return [1, 2, 3, 4, 5, 6, 0]
+    .filter((d) => plano[d]?.itens?.length)
+    .map((d) => ({
+      id: novoId(),
+      nome: `Treino de ${NOMES_DIAS[d].toLowerCase()}`,
+      descricao: plano[d].titulo ?? "",
+      itens: plano[d].itens ?? [],
+      criadoEm: agora(),
+    }));
 }
 
 function garantirEstado(): Estado {
@@ -286,16 +310,15 @@ export function definirTecnicaTreino(data: string, itemId: string, tecnica: Tecn
   alterarExercicio(data, itemId, (e) => ({ ...e, tecnica }));
 }
 
-// ───────── plano semanal ─────────
+// ───────── fichas (treinos com nome livre) ─────────
 
-function alterarDiaPlano(dia: number, fn: (d: DiaPlano) => DiaPlano) {
+function alterarFicha(fichaId: string, fn: (f: Ficha) => Ficha) {
   const { dados } = garantirEstado();
-  const atual = dados.plano[dia] ?? { titulo: "", itens: [] };
-  gravar({ ...dados, plano: { ...dados.plano, [dia]: fn(atual) } });
+  gravar({ ...dados, fichas: dados.fichas.map((f) => (f.id === fichaId ? fn(f) : f)) });
 }
 
-function alterarItemPlano(dia: number, itemId: string, fn: (i: ItemPlano) => ItemPlano) {
-  alterarDiaPlano(dia, (d) => ({ ...d, itens: d.itens.map((i) => (i.id === itemId ? fn(i) : i)) }));
+function alterarItemFicha(fichaId: string, itemId: string, fn: (i: ItemPlano) => ItemPlano) {
+  alterarFicha(fichaId, (f) => ({ ...f, itens: f.itens.map((i) => (i.id === itemId ? fn(i) : i)) }));
 }
 
 function seriesDoModelo(tecnica: TecnicaId, atuais: SeriePlano[] = []): SeriePlano[] {
@@ -309,16 +332,57 @@ function seriesDoModelo(tecnica: TecnicaId, atuais: SeriePlano[] = []): SeriePla
   }));
 }
 
-export function definirTituloPlano(dia: number, titulo: string) {
-  alterarDiaPlano(dia, (d) => ({ ...d, titulo }));
+/** "Treino A", "Treino B"… usando a primeira letra ainda livre. */
+function proximoNome(fichas: Ficha[]) {
+  const usados = new Set(fichas.map((f) => f.nome.trim().toLowerCase()));
+  for (const l of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+    if (!usados.has(`treino ${l}`.toLowerCase())) return `Treino ${l}`;
+  }
+  return `Treino ${fichas.length + 1}`;
 }
 
-export function adicionarItensPlano(dia: number, itens: ExercicioCatalogo[]) {
+export function nomeCompletoFicha(f: Pick<Ficha, "nome" | "descricao">) {
+  const nome = f.nome.trim() || "Treino";
+  return f.descricao.trim() ? `${nome} · ${f.descricao.trim()}` : nome;
+}
+
+export function criarFicha(): string {
+  const { dados } = garantirEstado();
+  const f: Ficha = { id: novoId(), nome: proximoNome(dados.fichas), descricao: "", itens: [], criadoEm: agora() };
+  gravar({ ...dados, fichas: [...dados.fichas, f] });
+  return f.id;
+}
+
+export function renomearFicha(fichaId: string, patch: Partial<Pick<Ficha, "nome" | "descricao">>) {
+  alterarFicha(fichaId, (f) => ({ ...f, ...patch }));
+}
+
+export function excluirFicha(fichaId: string) {
+  const { dados } = garantirEstado();
+  gravar({ ...dados, fichas: dados.fichas.filter((f) => f.id !== fichaId) });
+}
+
+export function duplicarFicha(fichaId: string): string | null {
+  const { dados } = garantirEstado();
+  const fonte = dados.fichas.find((f) => f.id === fichaId);
+  if (!fonte) return null;
+  const copia: Ficha = {
+    id: novoId(),
+    nome: proximoNome(dados.fichas),
+    descricao: fonte.descricao,
+    criadoEm: agora(),
+    itens: fonte.itens.map((i) => ({ ...i, id: novoId(), series: i.series.map((x) => ({ ...x, id: novoId() })) })),
+  };
+  gravar({ ...dados, fichas: [...dados.fichas, copia] });
+  return copia.id;
+}
+
+export function adicionarItensFicha(fichaId: string, itens: ExercicioCatalogo[]) {
   if (itens.length === 0) return;
-  alterarDiaPlano(dia, (d) => ({
-    ...d,
+  alterarFicha(fichaId, (f) => ({
+    ...f,
     itens: [
-      ...d.itens,
+      ...f.itens,
       ...itens.map((c) => {
         const tipo = tipoDoGrupo(c.grupo);
         const tecnica = tecnicaPadrao(tipo);
@@ -337,81 +401,78 @@ export function adicionarItensPlano(dia: number, itens: ExercicioCatalogo[]) {
   }));
 }
 
-export function removerItemPlano(dia: number, itemId: string) {
-  alterarDiaPlano(dia, (d) => ({ ...d, itens: d.itens.filter((i) => i.id !== itemId) }));
+export function removerItemFicha(fichaId: string, itemId: string) {
+  alterarFicha(fichaId, (f) => ({ ...f, itens: f.itens.filter((i) => i.id !== itemId) }));
 }
 
-export function moverItemPlano(dia: number, itemId: string, direcao: -1 | 1) {
-  alterarDiaPlano(dia, (d) => {
-    const lista = [...d.itens];
+export function moverItemFicha(fichaId: string, itemId: string, direcao: -1 | 1) {
+  alterarFicha(fichaId, (f) => {
+    const lista = [...f.itens];
     const i = lista.findIndex((e) => e.id === itemId);
     const j = i + direcao;
-    if (i < 0 || j < 0 || j >= lista.length) return d;
+    if (i < 0 || j < 0 || j >= lista.length) return f;
     [lista[i], lista[j]] = [lista[j], lista[i]];
-    return { ...d, itens: lista };
+    return { ...f, itens: lista };
   });
 }
 
 /** Troca a técnica e ajusta as séries para o modelo dela (mantendo as cargas). */
-export function definirTecnicaPlano(dia: number, itemId: string, tecnica: TecnicaId) {
-  alterarItemPlano(dia, itemId, (i) => ({ ...i, tecnica, series: seriesDoModelo(tecnica, i.series) }));
+export function definirTecnicaFicha(fichaId: string, itemId: string, tecnica: TecnicaId) {
+  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, tecnica, series: seriesDoModelo(tecnica, i.series) }));
 }
 
-export function atualizarSeriePlano(dia: number, itemId: string, serieId: string, patch: Partial<Omit<SeriePlano, "id">>) {
-  alterarItemPlano(dia, itemId, (i) => ({
+export function atualizarSerieFicha(fichaId: string, itemId: string, serieId: string, patch: Partial<Omit<SeriePlano, "id">>) {
+  alterarItemFicha(fichaId, itemId, (i) => ({
     ...i,
-    series: i.series.map((s) => (s.id === serieId ? { ...s, ...patch } : s)),
+    series: i.series.map((x) => (x.id === serieId ? { ...x, ...patch } : x)),
   }));
 }
 
-export function adicionarSeriePlano(dia: number, itemId: string) {
-  alterarItemPlano(dia, itemId, (i) => {
+export function adicionarSerieFicha(fichaId: string, itemId: string) {
+  alterarItemFicha(fichaId, itemId, (i) => {
     const u = i.series[i.series.length - 1];
     return { ...i, series: [...i.series, { id: novoId(), carga: u?.carga ?? "", reps: u?.reps ?? "" }] };
   });
 }
 
-export function removerSeriePlano(dia: number, itemId: string) {
-  alterarItemPlano(dia, itemId, (i) => (i.series.length <= 1 ? i : { ...i, series: i.series.slice(0, -1) }));
+export function removerSerieFicha(fichaId: string, itemId: string) {
+  alterarItemFicha(fichaId, itemId, (i) => (i.series.length <= 1 ? i : { ...i, series: i.series.slice(0, -1) }));
 }
 
-export function atualizarObservacoesPlano(dia: number, itemId: string, observacoes: string) {
-  alterarItemPlano(dia, itemId, (i) => ({ ...i, observacoes }));
+export function atualizarObservacoesFicha(fichaId: string, itemId: string, observacoes: string) {
+  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, observacoes }));
 }
 
-export function limparDiaPlano(dia: number) {
+/**
+ * Sugere a ficha a fazer numa data: a seguinte (na ordem da lista) à última
+ * ficha usada antes dessa data. Sem histórico, sugere a primeira.
+ */
+export function fichaSugerida(dados: DadosTreinos, data: string): string | null {
+  const usaveis = dados.fichas.filter((f) => f.itens.length > 0);
+  if (usaveis.length === 0) return null;
+  const anterior = Object.keys(dados.treinos)
+    .filter((d) => d < data && dados.treinos[d].fichaId)
+    .sort()
+    .pop();
+  if (!anterior) return usaveis[0].id;
+  const i = usaveis.findIndex((f) => f.id === dados.treinos[anterior].fichaId);
+  return usaveis[(i + 1) % usaveis.length].id;
+}
+
+/** Monta o treino de uma data a partir de uma ficha. Séries vêm desmarcadas. */
+export function aplicarFichaNoDia(data: string, fichaId: string) {
   const { dados } = garantirEstado();
-  const plano = { ...dados.plano };
-  delete plano[dia];
-  gravar({ ...dados, plano });
-}
-
-/** Copia o plano de um dia da semana para outro (substitui o destino). */
-export function copiarDiaPlano(origem: number, destino: number) {
-  const { dados } = garantirEstado();
-  const fonte = dados.plano[origem];
-  if (!fonte || origem === destino) return;
-  const copia: DiaPlano = {
-    titulo: fonte.titulo,
-    itens: fonte.itens.map((i) => ({ ...i, id: novoId(), series: i.series.map((s) => ({ ...s, id: novoId() })) })),
-  };
-  gravar({ ...dados, plano: { ...dados.plano, [destino]: copia } });
-}
-
-/** Monta o treino de uma data a partir do plano do dia da semana. Séries vêm desmarcadas. */
-export function aplicarPlanoNoDia(data: string, dia: number) {
-  const { dados } = garantirEstado();
-  const plano = dados.plano[dia];
-  if (!plano || plano.itens.length === 0) return;
+  const ficha = dados.fichas.find((f) => f.id === fichaId);
+  if (!ficha || ficha.itens.length === 0) return;
   const ts = agora();
   const treino: TreinoDoDia = {
     data,
     status: "em_andamento",
     criadoEm: ts,
     atualizadoEm: ts,
-    planoDe: dia,
-    titulo: plano.titulo.trim() || undefined,
-    exercicios: plano.itens.map((i) => ({
+    fichaId,
+    titulo: nomeCompletoFicha(ficha),
+    exercicios: ficha.itens.map((i) => ({
       id: novoId(),
       exercicioId: i.exercicioId,
       nome: i.nome,
@@ -419,7 +480,7 @@ export function aplicarPlanoNoDia(data: string, dia: number) {
       tipo: i.tipo,
       tecnica: i.tecnica,
       observacoes: i.observacoes,
-      series: i.series.map((s) => serieVazia({ carga: s.carga, reps: s.reps })),
+      series: i.series.map((x) => serieVazia({ carga: x.carga, reps: x.reps })),
     })),
   };
   gravar({ ...dados, treinos: { ...dados.treinos, [data]: treino } });

@@ -54,7 +54,7 @@ function WeekIcon({ active }: { active: boolean }) {
 
 const tabs = [
   { href: "/treinos",   label: "Treinos",   Icon: DumbbellIcon },
-  { href: "/semana",    label: "Semana",    Icon: WeekIcon },
+  { href: "/fichas",    label: "Fichas",    Icon: WeekIcon },
   { href: "/historico", label: "Histórico", Icon: HistoryIcon },
   { href: "/dieta",   label: "Dieta",   Icon: ForkIcon },
   { href: "/perfil",  label: "Perfil",  Icon: PersonIcon },
