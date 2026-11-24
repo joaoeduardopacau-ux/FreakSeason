@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-function HomeIcon({ active }: { active: boolean }) {
+function HistoryIcon({ active }: { active: boolean }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" fill={active ? "currentColor" : "none"} />
-      <polyline points="9 22 9 12 15 12 15 22" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.6" : "2"} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+      <polyline points="3 3 3 8 8 8" />
+      <polyline points="12 7 12 12 15 14" />
     </svg>
   );
 }
@@ -41,8 +42,8 @@ function PersonIcon({ active }: { active: boolean }) {
 }
 
 const tabs = [
-  { href: "/",        label: "Início",  Icon: HomeIcon },
-  { href: "/treinos", label: "Treinos", Icon: DumbbellIcon },
+  { href: "/treinos",   label: "Treinos",   Icon: DumbbellIcon },
+  { href: "/historico", label: "Histórico", Icon: HistoryIcon },
   { href: "/dieta",   label: "Dieta",   Icon: ForkIcon },
   { href: "/perfil",  label: "Perfil",  Icon: PersonIcon },
 ];
@@ -61,19 +62,22 @@ export default function BottomNav() {
         display: "flex",
         background: "#0C0C0E",
         borderTop: "1px solid var(--border)",
-        height: "60px",
+        height: "calc(64px + env(safe-area-inset-bottom))",
+        paddingBottom: "env(safe-area-inset-bottom)",
         maxWidth: "448px",
         margin: "0 auto",
       }}
     >
       {tabs.map((tab) => {
-        const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
+        const active = pathname.startsWith(tab.href);
         return (
           <Link
             key={tab.href}
             href={tab.href}
+            aria-current={active ? "page" : undefined}
             style={{
               flex: 1,
+              position: "relative",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -87,8 +91,8 @@ export default function BottomNav() {
             <tab.Icon active={active} />
             <span
               style={{
-                fontSize: "9px",
-                fontWeight: 500,
+                fontSize: "11px",
+                fontWeight: 600,
                 letterSpacing: "0.08em",
                 fontFamily: "var(--font-inter), sans-serif",
                 color: active ? "var(--accent)" : "var(--text3)",
