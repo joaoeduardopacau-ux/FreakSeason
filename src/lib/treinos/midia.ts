@@ -8,7 +8,7 @@ import { useEffect, useSyncExternalStore } from "react";
  * - "arquivos" (padrão, app Next e arquivo único do repositório): um arquivo por
  *   exercício em <base><id>.gif e <base>thumbs/<id>.jpg.
  * - "pacotes" (página publicada, que aceita poucos arquivos): os GIFs ficam
- *   agrupados em pacotes binários de ~1 MB e as miniaturas em arquivos JSON;
+ *   agrupados em pacotes de ~1 MB (arquivos .gif concatenados) e as miniaturas em arquivos JSON;
  *   um índice diz onde está cada um. Só o pacote necessário é baixado.
  */
 const MODO = process.env.NEXT_PUBLIC_GIF_MODE === "pacotes" ? "pacotes" : "arquivos";
@@ -59,7 +59,7 @@ async function carregarPacote(tipo: TipoMidia, id: string): Promise<string> {
   const pos = ind.gifs[id];
   if (!pos) throw new Error("sem gif");
   const [n, ini, tam] = pos;
-  if (!pacotesGif.has(n)) pacotesGif.set(n, fetch(`${BASE}pacote-${n}.bin`).then((r) => r.arrayBuffer()));
+  if (!pacotesGif.has(n)) pacotesGif.set(n, fetch(`${BASE}pacote-${n}.gif`).then((r) => r.arrayBuffer()));
   const buf = await pacotesGif.get(n)!;
   return paraDataUrl(new Blob([buf.slice(ini, ini + tam)], { type: "image/gif" }));
 }
