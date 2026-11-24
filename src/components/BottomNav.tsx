@@ -23,24 +23,6 @@ function DumbbellIcon({ active }: { active: boolean }) {
   );
 }
 
-function ForkIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2v8m0 0a4 4 0 0 0 4-4M12 10a4 4 0 0 1-4-4M12 10v12" strokeWidth={active ? "2.5" : "2"} />
-      <circle cx="12" cy="13" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function PersonIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="7" r="4" fill={active ? "currentColor" : "none"} />
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-  );
-}
-
 function WeekIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.6" : "2"} strokeLinecap="round" strokeLinejoin="round">
@@ -56,8 +38,6 @@ const tabs = [
   { href: "/treinos",   label: "Treinos",   Icon: DumbbellIcon },
   { href: "/fichas",    label: "Fichas",    Icon: WeekIcon },
   { href: "/historico", label: "Histórico", Icon: HistoryIcon },
-  { href: "/dieta",   label: "Dieta",   Icon: ForkIcon },
-  { href: "/perfil",  label: "Perfil",  Icon: PersonIcon },
 ];
 
 export default function BottomNav() {

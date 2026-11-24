@@ -1,8 +1,8 @@
 // Service worker do Freak: deixa o app abrir sem internet.
 // - Telas: rede primeiro, com cópia guardada para usar offline.
 // - Arquivos do build (/_next/static), ícones e GIFs: guardados na primeira vez que são usados.
-const VERSAO = "freak-v1";
-const TELAS = ["/treinos", "/fichas", "/historico", "/dieta", "/perfil"];
+const VERSAO = "freak-v2";
+const TELAS = ["/treinos", "/fichas", "/historico"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
