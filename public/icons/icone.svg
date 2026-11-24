@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="fundo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1B1F"/>
+      <stop offset="1" stop-color="#0C0C0E"/>
+    </linearGradient>
+    <linearGradient id="laranja" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF6A2B"/>
+      <stop offset="1" stop-color="#E8531A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#fundo)"/>
+  <!-- F inclinado (peça única, cantos arredondados pelo traço) -->
+  <g transform="translate(512 500) skewX(-10) translate(-512 -500)">
+    <path d="M338 252 H718 V350 H488 V470 H638 V564 H488 V762 H338 Z"
+      fill="url(#laranja)" stroke="url(#laranja)" stroke-width="40" stroke-linejoin="round"/>
+  </g>
+  <!-- barra com anilhas -->
+  <g fill="#EDEDF0">
+    <rect x="250" y="834" width="524" height="24" rx="12"/>
+    <rect x="206" y="790" width="30" height="112" rx="10"/>
+    <rect x="242" y="806" width="22" height="80" rx="8"/>
+    <rect x="788" y="790" width="30" height="112" rx="10"/>
+    <rect x="760" y="806" width="22" height="80" rx="8"/>
+  </g>
+</svg>
