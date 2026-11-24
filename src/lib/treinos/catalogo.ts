@@ -10,6 +10,7 @@ export const GRUPOS: GrupoMuscular[] = [
   "Glúteos",
   "Panturrilha",
   "Abdômen",
+  "Cardio",
   "Outro",
 ];
 
@@ -84,6 +85,19 @@ const base: [string, GrupoMuscular][] = [
   ["Abdominal infra", "Abdômen"],
   ["Prancha", "Abdômen"],
   ["Abdominal na polia", "Abdômen"],
+  // Cardio
+  ["Esteira (caminhada)", "Cardio"],
+  ["Esteira (corrida)", "Cardio"],
+  ["Caminhada inclinada na esteira", "Cardio"],
+  ["Bicicleta ergométrica", "Cardio"],
+  ["Bike spinning", "Cardio"],
+  ["Elíptico (transport)", "Cardio"],
+  ["Escada (simulador)", "Cardio"],
+  ["Remo ergômetro", "Cardio"],
+  ["Pular corda", "Cardio"],
+  ["Burpee", "Cardio"],
+  ["Polichinelo", "Cardio"],
+  ["Corrida ao ar livre", "Cardio"],
 ];
 
 function slug(s: string) {
@@ -100,6 +114,10 @@ export const CATALOGO_PADRAO: ExercicioCatalogo[] = base.map(([nome, grupo]) => 
   nome,
   grupo,
 }));
+
+export function tipoDoGrupo(grupo: GrupoMuscular) {
+  return grupo === "Cardio" ? ("cardio" as const) : ("forca" as const);
+}
 
 /** Normaliza para busca sem acentos e sem maiúsculas. */
 export function normalizar(s: string) {

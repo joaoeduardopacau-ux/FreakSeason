@@ -5,6 +5,8 @@ import Link from "next/link";
 import { contarSeries, useTreinos } from "@/lib/treinos/store";
 import { dataCurta, dataPorExtenso, diaDaSemana, nomeMes, paraData, rotuloRelativo } from "@/lib/treinos/datas";
 import type { TreinoDoDia } from "@/lib/treinos/types";
+import { tecnicaPorId } from "@/lib/treinos/tecnicas";
+import { rotulos } from "@/lib/treinos/campos";
 import { Sheet } from "@/components/treinos/Sheet";
 import { IconeCelular, IconeCheck, IconeDireita, IconeRelogio } from "@/components/treinos/Icones";
 
@@ -105,6 +107,7 @@ export default function HistoricoPage() {
                     textOverflow: "ellipsis",
                   }}
                 >
+                  {t.titulo ? `${t.titulo}: ` : ""}
                   {t.exercicios.map((e) => e.nome).join(" · ")}
                 </div>
               </div>
@@ -133,10 +136,9 @@ function numero(v: string) {
 
 function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
   const c = contarSeries(t);
-  const volume = t.exercicios.reduce(
-    (acc, e) => acc + e.series.filter((s) => s.feita).reduce((a, s) => a + numero(s.carga) * numero(s.reps), 0),
-    0
-  );
+  const volume = t.exercicios
+    .filter((e) => e.tipo !== "cardio")
+    .reduce((acc, e) => acc + e.series.filter((s) => s.feita).reduce((a, s) => a + numero(s.carga) * numero(s.reps), 0), 0);
 
   return (
     <Sheet
@@ -163,20 +165,25 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
           <span className="tr-pill tr-pill-muted">Volume {Math.round(volume).toLocaleString("pt-BR")} kg</span>
         )}
       </div>
+      {t.titulo && <p style={{ fontSize: 17, fontWeight: 800, marginTop: 4 }}>{t.titulo}</p>}
       {t.copiadoDe && <p className="tr-note">Copiado de {dataCurta(t.copiadoDe)}.</p>}
 
-      {t.exercicios.map((e) => (
+      {t.exercicios.map((e) => {
+        const r = rotulos(e.tipo);
+        const tec = tecnicaPorId(e.tecnica);
+        return (
         <div key={e.id} className="tr-card" style={{ padding: 14, marginTop: 12 }}>
           <div style={{ fontSize: 16, fontWeight: 700 }}>{e.nome}</div>
           <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 2, marginBottom: 8 }}>
-            {e.grupo} · {e.series.filter((s) => s.feita).length}/{e.series.length} séries feitas
+            {e.grupo} · {e.series.filter((s) => s.feita).length}/{e.series.length} {e.tipo === "cardio" ? "blocos feitos" : "séries feitas"}
+            {tec && tec.id !== "tradicional" && <> · <span style={{ color: "var(--accent)", fontWeight: 600 }}>{tec.nome}</span></>}
           </div>
           <table className="tr-table">
             <thead>
               <tr>
-                <th style={{ width: "18%" }}>Série</th>
-                <th>Carga</th>
-                <th>Reps</th>
+                <th style={{ width: "18%" }}>{r.linha}</th>
+                <th>{e.tipo === "cardio" ? "Tempo" : "Carga"}</th>
+                <th>{r.b}</th>
                 <th style={{ textAlign: "right" }}>Status</th>
               </tr>
             </thead>
@@ -184,7 +191,7 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
               {e.series.map((s, i) => (
                 <tr key={s.id} className={s.feita ? "" : "nao-feita"}>
                   <td>{i + 1}</td>
-                  <td style={{ fontWeight: 700 }}>{s.carga ? `${s.carga} kg` : "—"}</td>
+                  <td style={{ fontWeight: 700 }}>{s.carga ? `${s.carga}${r.unidadeA}` : "—"}</td>
                   <td style={{ fontWeight: 700 }}>{s.reps || "—"}</td>
                   <td style={{ textAlign: "right", fontSize: 13, color: s.feita ? "var(--green)" : "var(--text3)" }}>
                     {s.feita ? "Feita" : "Não feita"}
@@ -200,7 +207,8 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
             </p>
           )}
         </div>
-      ))}
+        );
+      })}
     </Sheet>
   );
 }

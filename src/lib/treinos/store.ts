@@ -1,9 +1,14 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { CATALOGO_PADRAO, normalizar } from "./catalogo";
+import { CATALOGO_PADRAO, normalizar, tipoDoGrupo } from "./catalogo";
+import { tecnicaPadrao, tecnicaPorId } from "./tecnicas";
 import type {
   DadosTreinos,
+  DiaPlano,
+  ItemPlano,
+  SeriePlano,
+  TecnicaId,
   ExercicioCatalogo,
   ExercicioDoTreino,
   GrupoMuscular,
@@ -29,7 +34,7 @@ function agora() {
 }
 
 function vazio(): DadosTreinos {
-  return { versao: 1, catalogo: [], treinos: {} };
+  return { versao: 1, catalogo: [], treinos: {}, plano: {} };
 }
 
 function ler(): DadosTreinos {
@@ -41,6 +46,7 @@ function ler(): DadosTreinos {
       versao: 1,
       catalogo: Array.isArray(p.catalogo) ? p.catalogo : [],
       treinos: p.treinos && typeof p.treinos === "object" ? p.treinos : {},
+      plano: p.plano && typeof p.plano === "object" ? p.plano : {},
     };
   } catch {
     return vazio();
@@ -177,14 +183,19 @@ export function adicionarExercicios(data: string, itens: ExercicioCatalogo[]) {
   if (itens.length === 0) return;
   const { dados } = garantirEstado();
   const existente = dados.treinos[data];
-  const novos: ExercicioDoTreino[] = itens.map((c) => ({
-    id: novoId(),
-    exercicioId: c.id,
-    nome: c.nome,
-    grupo: c.grupo,
-    observacoes: "",
-    series: Array.from({ length: SERIES_INICIAIS }, () => serieVazia()),
-  }));
+  const novos: ExercicioDoTreino[] = itens.map((c) => {
+    const tipo = tipoDoGrupo(c.grupo);
+    return {
+      id: novoId(),
+      exercicioId: c.id,
+      nome: c.nome,
+      grupo: c.grupo,
+      tipo,
+      tecnica: tecnicaPadrao(tipo),
+      observacoes: "",
+      series: Array.from({ length: tipo === "cardio" ? 1 : SERIES_INICIAIS }, () => serieVazia()),
+    };
+  });
   const ts = agora();
   const treino: TreinoDoDia = existente
     ? { ...existente, exercicios: [...existente.exercicios, ...novos], atualizadoEm: ts }
@@ -256,14 +267,160 @@ export function copiarTreino(origem: string, destino: string) {
     criadoEm: ts,
     atualizadoEm: ts,
     copiadoDe: origem,
+    titulo: fonte.titulo,
     exercicios: fonte.exercicios.map((e) => ({
       id: novoId(),
       exercicioId: e.exercicioId,
       nome: e.nome,
       grupo: e.grupo,
+      tipo: e.tipo,
+      tecnica: e.tecnica,
       observacoes: "",
       series: e.series.map((s) => serieVazia({ carga: s.carga, reps: s.reps })),
     })),
   };
   gravar({ ...dados, treinos: { ...dados.treinos, [destino]: copia } });
+}
+
+export function definirTecnicaTreino(data: string, itemId: string, tecnica: TecnicaId) {
+  alterarExercicio(data, itemId, (e) => ({ ...e, tecnica }));
+}
+
+// ───────── plano semanal ─────────
+
+function alterarDiaPlano(dia: number, fn: (d: DiaPlano) => DiaPlano) {
+  const { dados } = garantirEstado();
+  const atual = dados.plano[dia] ?? { titulo: "", itens: [] };
+  gravar({ ...dados, plano: { ...dados.plano, [dia]: fn(atual) } });
+}
+
+function alterarItemPlano(dia: number, itemId: string, fn: (i: ItemPlano) => ItemPlano) {
+  alterarDiaPlano(dia, (d) => ({ ...d, itens: d.itens.map((i) => (i.id === itemId ? fn(i) : i)) }));
+}
+
+function seriesDoModelo(tecnica: TecnicaId, atuais: SeriePlano[] = []): SeriePlano[] {
+  const t = tecnicaPorId(tecnica);
+  if (!t) return atuais;
+  return t.modelo.map((m, i) => ({
+    id: novoId(),
+    // em força mantém a carga que já estava planejada naquela posição
+    carga: m.carga ?? atuais[i]?.carga ?? atuais[atuais.length - 1]?.carga ?? "",
+    reps: m.reps,
+  }));
+}
+
+export function definirTituloPlano(dia: number, titulo: string) {
+  alterarDiaPlano(dia, (d) => ({ ...d, titulo }));
+}
+
+export function adicionarItensPlano(dia: number, itens: ExercicioCatalogo[]) {
+  if (itens.length === 0) return;
+  alterarDiaPlano(dia, (d) => ({
+    ...d,
+    itens: [
+      ...d.itens,
+      ...itens.map((c) => {
+        const tipo = tipoDoGrupo(c.grupo);
+        const tecnica = tecnicaPadrao(tipo);
+        return {
+          id: novoId(),
+          exercicioId: c.id,
+          nome: c.nome,
+          grupo: c.grupo,
+          tipo,
+          tecnica,
+          observacoes: "",
+          series: seriesDoModelo(tecnica),
+        };
+      }),
+    ],
+  }));
+}
+
+export function removerItemPlano(dia: number, itemId: string) {
+  alterarDiaPlano(dia, (d) => ({ ...d, itens: d.itens.filter((i) => i.id !== itemId) }));
+}
+
+export function moverItemPlano(dia: number, itemId: string, direcao: -1 | 1) {
+  alterarDiaPlano(dia, (d) => {
+    const lista = [...d.itens];
+    const i = lista.findIndex((e) => e.id === itemId);
+    const j = i + direcao;
+    if (i < 0 || j < 0 || j >= lista.length) return d;
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+    return { ...d, itens: lista };
+  });
+}
+
+/** Troca a técnica e ajusta as séries para o modelo dela (mantendo as cargas). */
+export function definirTecnicaPlano(dia: number, itemId: string, tecnica: TecnicaId) {
+  alterarItemPlano(dia, itemId, (i) => ({ ...i, tecnica, series: seriesDoModelo(tecnica, i.series) }));
+}
+
+export function atualizarSeriePlano(dia: number, itemId: string, serieId: string, patch: Partial<Omit<SeriePlano, "id">>) {
+  alterarItemPlano(dia, itemId, (i) => ({
+    ...i,
+    series: i.series.map((s) => (s.id === serieId ? { ...s, ...patch } : s)),
+  }));
+}
+
+export function adicionarSeriePlano(dia: number, itemId: string) {
+  alterarItemPlano(dia, itemId, (i) => {
+    const u = i.series[i.series.length - 1];
+    return { ...i, series: [...i.series, { id: novoId(), carga: u?.carga ?? "", reps: u?.reps ?? "" }] };
+  });
+}
+
+export function removerSeriePlano(dia: number, itemId: string) {
+  alterarItemPlano(dia, itemId, (i) => (i.series.length <= 1 ? i : { ...i, series: i.series.slice(0, -1) }));
+}
+
+export function atualizarObservacoesPlano(dia: number, itemId: string, observacoes: string) {
+  alterarItemPlano(dia, itemId, (i) => ({ ...i, observacoes }));
+}
+
+export function limparDiaPlano(dia: number) {
+  const { dados } = garantirEstado();
+  const plano = { ...dados.plano };
+  delete plano[dia];
+  gravar({ ...dados, plano });
+}
+
+/** Copia o plano de um dia da semana para outro (substitui o destino). */
+export function copiarDiaPlano(origem: number, destino: number) {
+  const { dados } = garantirEstado();
+  const fonte = dados.plano[origem];
+  if (!fonte || origem === destino) return;
+  const copia: DiaPlano = {
+    titulo: fonte.titulo,
+    itens: fonte.itens.map((i) => ({ ...i, id: novoId(), series: i.series.map((s) => ({ ...s, id: novoId() })) })),
+  };
+  gravar({ ...dados, plano: { ...dados.plano, [destino]: copia } });
+}
+
+/** Monta o treino de uma data a partir do plano do dia da semana. Séries vêm desmarcadas. */
+export function aplicarPlanoNoDia(data: string, dia: number) {
+  const { dados } = garantirEstado();
+  const plano = dados.plano[dia];
+  if (!plano || plano.itens.length === 0) return;
+  const ts = agora();
+  const treino: TreinoDoDia = {
+    data,
+    status: "em_andamento",
+    criadoEm: ts,
+    atualizadoEm: ts,
+    planoDe: dia,
+    titulo: plano.titulo.trim() || undefined,
+    exercicios: plano.itens.map((i) => ({
+      id: novoId(),
+      exercicioId: i.exercicioId,
+      nome: i.nome,
+      grupo: i.grupo,
+      tipo: i.tipo,
+      tecnica: i.tecnica,
+      observacoes: i.observacoes,
+      series: i.series.map((s) => serieVazia({ carga: s.carga, reps: s.reps })),
+    })),
+  };
+  gravar({ ...dados, treinos: { ...dados.treinos, [data]: treino } });
 }

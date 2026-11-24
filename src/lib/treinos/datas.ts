@@ -62,3 +62,11 @@ export function rotuloRelativo(chave: string): string | null {
   if (chave === somarDias(hoje, 1)) return "Amanhã";
   return null;
 }
+
+/** Nome do dia da semana pelo número de Date.getDay() (0 = domingo). */
+export function nomeDiaSemana(n: number): string {
+  return DIAS[n];
+}
+
+/** Ordem da semana começando na segunda. */
+export const ORDEM_SEMANA = [1, 2, 3, 4, 5, 6, 0];

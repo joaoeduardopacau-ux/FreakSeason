@@ -344,3 +344,28 @@ input, textarea { font-family: inherit; }
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .tr-note > svg { flex-shrink: 0; margin-top: 1px; }
+
+/* Técnica / plano semanal */
+.tr-tecnica {
+  width: 100%; min-height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: var(--accent-dim); border: 1px solid rgba(232,83,26,0.35); border-radius: 12px;
+  color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.tr-tecnica-rot { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
+.tr-sets-head.plano, .tr-set.plano { grid-template-columns: 44px 1fr 1fr; }
+.tr-num.texto { font-size: 16px; font-weight: 600; }
+.tr-semana-dia {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  padding: 14px; background: var(--s1); border: 1px solid var(--border); border-radius: 14px;
+  color: var(--text); cursor: pointer;
+}
+.tr-semana-dia + .tr-semana-dia { margin-top: 10px; }
+.tr-semana-dia.hoje { border-color: var(--accent); }
+.tr-semana-sigla {
+  width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px; background: var(--s2);
+  display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800;
+}
+.tr-semana-dia.hoje .tr-semana-sigla { background: var(--accent); color: #fff; }
+.tr-plano-banner {
+  background: var(--s1); border: 1px solid var(--accent); border-radius: 16px; padding: 16px; text-align: left;
+}

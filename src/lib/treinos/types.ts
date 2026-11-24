@@ -8,7 +8,24 @@ export type GrupoMuscular =
   | "Glúteos"
   | "Panturrilha"
   | "Abdômen"
+  | "Cardio"
   | "Outro";
+
+/** Força: linhas de carga (kg) × repetições. Cardio: linhas de minutos × intensidade. */
+export type TipoExercicio = "forca" | "cardio";
+
+export type TecnicaId =
+  | "tradicional"
+  | "piramide_crescente"
+  | "piramide_decrescente"
+  | "progressao_carga"
+  | "fst7"
+  | "drop_set"
+  | "rest_pause"
+  | "bi_set"
+  | "gvt"
+  | "cardio_continuo"
+  | "cardio_hiit";
 
 export interface ExercicioCatalogo {
   id: string;
@@ -18,7 +35,9 @@ export interface ExercicioCatalogo {
 }
 
 /**
- * Uma série do treino. Toda série criada é "planejada"; ela só conta como
+ * Uma série do treino. Em exercícios de cardio, `carga` guarda os minutos e
+ * `reps` a intensidade (velocidade, nível ou inclinação).
+ * Toda série criada é "planejada"; ela só conta como
  * realizada quando `feita` é true. Assim o registro guarda a diferença entre
  * o que foi planejado e o que foi realmente feito.
  */
@@ -36,6 +55,8 @@ export interface ExercicioDoTreino {
   grupo: GrupoMuscular;
   series: Serie[];
   observacoes: string;
+  tipo?: TipoExercicio; // ausente = força (registros antigos)
+  tecnica?: TecnicaId;
 }
 
 export type StatusTreino = "em_andamento" | "concluido";
@@ -48,10 +69,39 @@ export interface TreinoDoDia {
   atualizadoEm: string;
   concluidoEm?: string;
   copiadoDe?: string; // data de origem, quando foi copiado
+  planoDe?: number; // dia da semana (0 = domingo) do plano usado para montar o treino
+  titulo?: string; // título do plano usado, ex.: "Peito e tríceps"
 }
+
+/** Meta de uma série no plano semanal. Em cardio: carga = minutos, reps = intensidade. */
+export interface SeriePlano {
+  id: string;
+  carga: string;
+  reps: string;
+}
+
+export interface ItemPlano {
+  id: string;
+  exercicioId: string;
+  nome: string;
+  grupo: GrupoMuscular;
+  tipo: TipoExercicio;
+  tecnica: TecnicaId;
+  series: SeriePlano[];
+  observacoes: string;
+}
+
+export interface DiaPlano {
+  titulo: string;
+  itens: ItemPlano[];
+}
+
+/** Chave = dia da semana como em Date.getDay(): "0" domingo … "6" sábado. */
+export type PlanoSemanal = Record<string, DiaPlano>;
 
 export interface DadosTreinos {
   versao: 1;
   catalogo: ExercicioCatalogo[];
   treinos: Record<string, TreinoDoDia>;
+  plano: PlanoSemanal;
 }

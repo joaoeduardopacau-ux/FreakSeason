@@ -2,8 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   adicionarExercicios,
+  aplicarPlanoNoDia,
+  definirTecnicaTreino,
   concluirTreino,
   contarSeries,
   copiarTreino,
@@ -19,6 +22,7 @@ import {
   dataPorExtenso,
   diaDaSemana,
   hojeChave,
+  paraData,
   rotuloRelativo,
   somarDias,
 } from "@/lib/treinos/datas";
@@ -27,6 +31,7 @@ import { Calendario } from "@/components/treinos/Calendario";
 import { SeletorExercicios } from "@/components/treinos/SeletorExercicios";
 import { CartaoExercicio } from "@/components/treinos/CartaoExercicio";
 import { Confirmacao } from "@/components/treinos/Sheet";
+import { SeletorTecnica } from "@/components/treinos/SeletorTecnica";
 import {
   IconeCalendario,
   IconeCelular,
@@ -46,6 +51,7 @@ type Dialogo =
   | { tipo: "confirmar-conclusao"; faltam: number }
   | { tipo: "remover-exercicio"; item: ExercicioDoTreino }
   | { tipo: "excluir-treino" }
+  | { tipo: "tecnica"; item: ExercicioDoTreino }
   | null;
 
 export default function Page() {
@@ -110,6 +116,10 @@ function TreinosDoDia() {
   }
 
   const relativo = rotuloRelativo(data);
+  const diaSemana = paraData(data).getDay();
+  const nomeDia = diaDaSemana(data).split("-")[0];
+  const planoDoDia = dados.plano[diaSemana];
+  const temPlano = !!planoDoDia && planoDoDia.itens.length > 0;
   const contagem = treino ? contarSeries(treino) : { feitas: 0, total: 0 };
   const concluido = treino?.status === "concluido";
 
@@ -182,11 +192,37 @@ function TreinosDoDia() {
           </div>
           <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Nenhum treino neste dia</p>
           <p style={{ fontSize: 15, color: "var(--text2)", marginBottom: 24 }}>
-            Escolha os exercícios que você vai fazer.
+            {temPlano ? `Use o plano de ${nomeDia.toLowerCase()} ou escolha os exercícios.` : "Escolha os exercícios que você vai fazer."}
           </p>
-          <button className="tr-btn tr-btn-primary tr-btn-lg tr-btn-block" onClick={() => setDialogo({ tipo: "seletor" })}>
+          {temPlano && (
+            <div className="tr-plano-banner" style={{ marginBottom: 12 }}>
+              <div className="stat-label" style={{ color: "var(--accent)" }}>Plano de {nomeDia.toLowerCase()}</div>
+              <div style={{ fontSize: 18, fontWeight: 800, marginTop: 4 }}>{planoDoDia.titulo.trim() || nomeDia}</div>
+              <div style={{ fontSize: 14, color: "var(--text2)", margin: "4px 0 14px", lineHeight: 1.4 }}>
+                {planoDoDia.itens.map((i) => i.nome).join(" · ")}
+              </div>
+              <button className="tr-btn tr-btn-primary tr-btn-lg tr-btn-block" onClick={() => aplicarPlanoNoDia(data, diaSemana)}>
+                <IconeCheck /> Usar o plano de {nomeDia.toLowerCase()}
+              </button>
+            </div>
+          )}
+          <button
+            className={"tr-btn tr-btn-lg tr-btn-block" + (temPlano ? "" : " tr-btn-primary")}
+            onClick={() => setDialogo({ tipo: "seletor" })}
+          >
             <IconeMais /> Adicionar exercícios
           </button>
+          {!temPlano && (
+            <p className="tr-note" style={{ justifyContent: "center", marginTop: 16 }}>
+              <span>
+                Dica: monte seu treino de cada dia da semana na aba{" "}
+                <Link href="/semana" style={{ color: "var(--accent)", fontWeight: 700 }}>
+                  Semana
+                </Link>
+                .
+              </span>
+            </p>
+          )}
         </div>
       ) : (
         <div style={{ paddingTop: 14 }}>
@@ -209,6 +245,15 @@ function TreinosDoDia() {
             </div>
           )}
 
+          {treino.titulo && (
+            <p style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>
+              {treino.titulo}
+              {treino.planoDe !== undefined && (
+                <span style={{ fontSize: 13, color: "var(--text2)", fontWeight: 500 }}> · do plano semanal</span>
+              )}
+            </p>
+          )}
+
           {treino.copiadoDe && (
             <p className="tr-note" style={{ marginBottom: 12 }}>
               <IconeCopiar size={16} />
@@ -226,6 +271,7 @@ function TreinosDoDia() {
               indice={i}
               total={treino.exercicios.length}
               anterior={anteriores.get(item.exercicioId) ?? null}
+              onTecnica={() => setDialogo({ tipo: "tecnica", item })}
               onRemover={() => {
                 const temDados = item.series.some((s) => s.feita || s.carga || s.reps) || item.observacoes;
                 if (temDados) setDialogo({ tipo: "remover-exercicio", item });
@@ -365,6 +411,19 @@ function TreinosDoDia() {
           onCancelar={() => setDialogo(null)}
           onConfirmar={() => {
             removerExercicio(data, dialogo.item.id);
+            setDialogo(null);
+          }}
+        />
+      )}
+
+      {dialogo?.tipo === "tecnica" && (
+        <SeletorTecnica
+          nome={dialogo.item.nome}
+          tipo={dialogo.item.tipo ?? "forca"}
+          atual={dialogo.item.tecnica}
+          onFechar={() => setDialogo(null)}
+          onEscolher={(t) => {
+            definirTecnicaTreino(data, dialogo.item.id, t);
             setDialogo(null);
           }}
         />
