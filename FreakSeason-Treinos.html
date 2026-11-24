@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0C0C0E">
+<title>FreakSeason Treinos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+
+:root {
+  --bg: #0C0C0E;
+  --s1: #141417;
+  --s2: #1B1B1F;
+  --s3: #222226;
+  --accent: #E8531A;
+  --accent-dim: rgba(232,83,26,0.12);
+  --accent-glow: rgba(232,83,26,0.3);
+  --text: #EDEDF0;
+  --text2: #80808A;
+  --text3: #404048;
+  --border: #232328;
+  --green: #22C55E;
+  --green-dim: rgba(34,197,94,0.12);
+  --blue: #60A5FA;
+  --blue-dim: rgba(96,165,250,0.12);
+  --red: #EF4444;
+}
+
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+/* ── UTILITY CLASSES ── */
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text2);
+  font-weight: 500;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.stat-value {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: var(--font-inter), sans-serif;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:active { opacity: 0.8; }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: var(--font-inter), sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: var(--accent-dim); }
+
+.progress-track {
+  background: var(--s3);
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* ── FORM INPUT ── */
+.field-input {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 400;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.field-input:focus {
+  border-color: var(--accent);
+}
+.field-input::placeholder {
+  color: var(--text3);
+}
+select.field-input option {
+  background: var(--s2);
+  color: var(--text);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+/* ═════════ TREINOS ═════════ */
+html { -webkit-text-size-adjust: 100%; }
+body { overscroll-behavior-y: none; }
+button { font-family: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+input, textarea { font-family: inherit; }
+
+.tr-page { padding: 0 16px 24px; }
+
+.tr-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 18px; border-radius: 12px;
+  font-size: 16px; font-weight: 600; border: 1px solid var(--border);
+  background: var(--s2); color: var(--text); cursor: pointer;
+}
+.tr-btn:active { transform: scale(0.98); }
+.tr-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+.tr-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tr-btn-success { background: var(--green); border-color: var(--green); color: #06210f; }
+.tr-btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+.tr-btn-ghost { background: transparent; }
+.tr-btn-block { width: 100%; }
+.tr-btn-lg { min-height: 56px; font-size: 17px; }
+
+.tr-icon-btn {
+  width: 48px; height: 48px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px; background: var(--s2); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer;
+}
+.tr-icon-btn:disabled { opacity: 0.3; cursor: default; }
+.tr-icon-btn-sm { width: 40px; height: 40px; border-radius: 10px; }
+
+/* Cabeçalho do dia */
+.tr-day {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--bg); margin: 0 -16px; padding: 12px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tr-day-row { display: flex; align-items: center; gap: 8px; }
+.tr-day-center {
+  flex: 1; min-width: 0; text-align: center; background: none; border: none;
+  color: var(--text); cursor: pointer; padding: 2px 0;
+}
+.tr-day-weekday { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.tr-day-date { font-size: 14px; color: var(--text2); margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; }
+.tr-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  background: var(--accent-dim); color: var(--accent); border: 1px solid transparent;
+}
+.tr-pill-green { background: var(--green-dim); color: var(--green); }
+.tr-pill-muted { background: var(--s2); color: var(--text2); border-color: var(--border); }
+
+/* Cartão do exercício */
+.tr-card { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.tr-card + .tr-card { margin-top: 12px; }
+.tr-card-head { display: flex; align-items: flex-start; gap: 10px; padding: 14px 14px 8px; }
+.tr-card-title { font-size: 17px; font-weight: 700; line-height: 1.25; }
+.tr-card-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+.tr-sets-head, .tr-set {
+  display: grid; grid-template-columns: 34px 1fr 1fr 56px; gap: 8px; align-items: center;
+  padding: 0 14px;
+}
+.tr-sets-head { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); font-weight: 600; padding-bottom: 6px; }
+.tr-sets-head span:nth-child(2), .tr-sets-head span:nth-child(3) { text-align: center; }
+.tr-set { padding-top: 5px; padding-bottom: 5px; }
+.tr-set.feita { background: rgba(34,197,94,0.07); }
+.tr-set-num { font-size: 15px; font-weight: 700; color: var(--text2); text-align: center; }
+.tr-set.feita .tr-set-num { color: var(--green); }
+.tr-num {
+  width: 100%; height: 52px; text-align: center;
+  font-size: 20px; font-weight: 700; color: var(--text);
+  background: var(--s2); border: 1px solid var(--border); border-radius: 12px; outline: none;
+  -moz-appearance: textfield;
+}
+.tr-num:focus { border-color: var(--accent); background: var(--s3); }
+.tr-num::placeholder { color: var(--text3); font-weight: 500; }
+.tr-set.feita .tr-num { border-color: rgba(34,197,94,0.35); }
+.tr-check {
+  width: 56px; height: 52px; border-radius: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--s2); border: 2px solid var(--s3); color: var(--text3);
+}
+.tr-check[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #06210f; }
+
+.tr-card-foot { display: flex; gap: 8px; padding: 10px 14px 4px; }
+.tr-card-foot .tr-btn { flex: 1; min-height: 44px; font-size: 15px; }
+.tr-obs {
+  display: block; width: calc(100% - 28px); margin: 8px 14px 14px; min-height: 48px;
+  background: var(--s2); border: 1px solid var(--border); border-radius: 12px;
+  color: var(--text); font-size: 16px; padding: 12px; resize: vertical; outline: none;
+}
+.tr-obs:focus { border-color: var(--accent); }
+.tr-obs::placeholder { color: var(--text3); }
+
+.tr-note { font-size: 13px; color: var(--text2); display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+
+/* Sheet / modal */
+.tr-overlay {
+  position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.65);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.tr-sheet {
+  width: 100%; max-width: 448px; max-height: 92dvh; display: flex; flex-direction: column;
+  background: var(--s1); border-top-left-radius: 20px; border-top-right-radius: 20px;
+  border: 1px solid var(--border); border-bottom: none;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tr-sheet-full { height: 92dvh; }
+.tr-sheet-head { display: flex; align-items: center; gap: 8px; padding: 14px 16px 10px; }
+.tr-sheet-title { flex: 1; font-size: 19px; font-weight: 800; }
+.tr-sheet-body { flex: 1; overflow-y: auto; padding: 0 16px 16px; -webkit-overflow-scrolling: touch; }
+.tr-sheet-foot { padding: 12px 16px 16px; border-top: 1px solid var(--border); }
+.tr-dialog {
+  width: calc(100% - 32px); max-width: 400px; margin: auto; align-self: center;
+  background: var(--s1); border: 1px solid var(--border); border-radius: 18px; padding: 20px;
+}
+
+/* Calendário */
+.tr-cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.tr-cal-month { flex: 1; text-align: center; font-size: 17px; font-weight: 700; text-transform: capitalize; }
+.tr-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.tr-cal-wd { text-align: center; font-size: 12px; color: var(--text2); font-weight: 600; padding: 4px 0; }
+.tr-cal-day {
+  position: relative; aspect-ratio: 1; min-height: 44px; border-radius: 12px;
+  background: transparent; border: 1px solid transparent; color: var(--text);
+  font-size: 16px; font-weight: 600; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.tr-cal-day.fora { visibility: hidden; }
+.tr-cal-day.hoje { border-color: var(--text2); }
+.tr-cal-day.sel { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tr-cal-day.origem { opacity: 0.35; }
+.tr-cal-dot { position: absolute; bottom: 6px; width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
+.tr-cal-dot.ok { background: var(--green); }
+.tr-cal-day.sel .tr-cal-dot { background: #fff; }
+.tr-legend { display: flex; gap: 16px; justify-content: center; margin-top: 12px; font-size: 12px; color: var(--text2); }
+.tr-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Lista de exercícios */
+.tr-search {
+  width: 100%; height: 50px; padding: 0 14px 0 42px; font-size: 16px;
+  background: var(--s2); border: 1px solid var(--border); border-radius: 12px; color: var(--text); outline: none;
+}
+.tr-search:focus { border-color: var(--accent); }
+.tr-chips { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: none; }
+.tr-chips::-webkit-scrollbar { display: none; }
+.tr-chip {
+  flex-shrink: 0; height: 38px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  background: var(--s2); border: 1px solid var(--border); color: var(--text2); cursor: pointer;
+}
+.tr-chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tr-ex-item {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  min-height: 58px; padding: 8px 4px; background: none; border: none; border-bottom: 1px solid var(--border);
+  color: var(--text); cursor: pointer;
+}
+.tr-box {
+  width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; border: 2px solid var(--text3);
+  display: flex; align-items: center; justify-content: center; color: transparent;
+}
+.tr-ex-item[aria-pressed="true"] .tr-box { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tr-field-label { display: block; font-size: 13px; color: var(--text2); font-weight: 600; margin: 14px 0 6px; }
+.tr-input {
+  width: 100%; height: 50px; padding: 0 14px; font-size: 16px;
+  background: var(--s2); border: 1px solid var(--border); border-radius: 12px; color: var(--text); outline: none;
+}
+.tr-input:focus { border-color: var(--accent); }
+
+/* Histórico */
+.tr-hist-item {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  padding: 14px; background: var(--s1); border: 1px solid var(--border); border-radius: 14px;
+  color: var(--text); cursor: pointer;
+}
+.tr-hist-item + .tr-hist-item { margin-top: 10px; }
+.tr-hist-month { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); font-weight: 700; margin: 20px 0 10px; }
+.tr-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tr-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); font-weight: 600; text-align: left; padding: 4px 0; }
+.tr-table td { padding: 7px 0; border-top: 1px solid var(--border); }
+.tr-table tr.nao-feita td { color: var(--text3); }
+
+.tr-toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 120;
+  width: calc(100% - 32px); max-width: 416px;
+  background: var(--s3); border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px 14px; display: flex; align-items: center; gap: 10px; font-size: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.tr-note > svg { flex-shrink: 0; margin-top: 1px; }
+
+/* Layout: coluna única de celular (max 448px), abas fixas embaixo. Tema escuro único, como o app. */
+:root { color-scheme: dark; --font-inter: "Inter"; }
+html, body { background: var(--bg); color: var(--text); }
+body { margin: 0; font-size: 15px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.shell { max-width: 448px; margin: 0 auto; min-height: 100vh; }
+main { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+.tr-page { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.tr-day { top: env(safe-area-inset-top, 0px); margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, p { margin: 0; }
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; max-width: 448px; margin: 0 auto; display: flex;
+  background: var(--bg); border-top: 1px solid var(--border);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.nav a { flex: 1; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-size: 12px; font-weight: 600; color: var(--text2); text-decoration: none; }
+.nav a.on { color: var(--accent); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tr-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>(()=>{var ye=(...e)=>window.ReactDOM.createRoot(...e);var at=window.React;var{useState:v,useEffect:V,useMemo:L,useCallback:bt,useRef:yt,useContext:Ct,createContext:St,useSyncExternalStore:_,Suspense:Ce,Fragment:Nt}=at;var U=Se(null),se=new Set;function Se(e){return{aba:location.hash.replace("#","")==="historico"?"historico":"treinos",data:e}}function Ne(){se.forEach(e=>e())}window.addEventListener("hashchange",()=>{U=Se(U.data),Ne()});function it(e){return se.add(e),()=>se.delete(e)}function Y(){return _(it,()=>U)}function K(e){let t=new URL(e,"https://x"),r=t.pathname.includes("historico")?"historico":"treinos";U={aba:r,data:t.searchParams.get("data")},location.hash!=="#"+r&&history.replaceState(null,"","#"+r),Ne()}function De(){return{replace:e=>K(e),push:e=>K(e)}}function ke(){return"/"+Y().aba}function Te(){let e=Y();return new URLSearchParams(e.data?"data="+e.data:"")}var ce=["Peito","Costas","Ombros","B\xEDceps","Tr\xEDceps","Pernas","Gl\xFAteos","Panturrilha","Abd\xF4men","Outro"],nt=[["Supino reto com barra","Peito"],["Supino reto com halteres","Peito"],["Supino inclinado com barra","Peito"],["Supino inclinado com halteres","Peito"],["Supino declinado","Peito"],["Crucifixo com halteres","Peito"],["Crucifixo na m\xE1quina (peck deck)","Peito"],["Crossover","Peito"],["Chest press (m\xE1quina)","Peito"],["Flex\xE3o de bra\xE7o","Peito"],["Puxada frontal","Costas"],["Puxada com tri\xE2ngulo","Costas"],["Barra fixa","Costas"],["Remada baixa","Costas"],["Remada curvada com barra","Costas"],["Remada unilateral com halter (serrote)","Costas"],["Remada cavalinho","Costas"],["Pulldown com corda","Costas"],["Levantamento terra","Costas"],["Hiperextens\xE3o lombar","Costas"],["Eleva\xE7\xE3o lateral","Ombros"],["Eleva\xE7\xE3o frontal","Ombros"],["Desenvolvimento com halteres","Ombros"],["Desenvolvimento com barra","Ombros"],["Desenvolvimento na m\xE1quina","Ombros"],["Crucifixo invertido","Ombros"],["Face pull","Ombros"],["Encolhimento","Ombros"],["Rosca direta com barra","B\xEDceps"],["Rosca alternada com halteres","B\xEDceps"],["Rosca martelo","B\xEDceps"],["Rosca Scott","B\xEDceps"],["Rosca concentrada","B\xEDceps"],["Rosca no cabo","B\xEDceps"],["Tr\xEDceps pulley (barra)","Tr\xEDceps"],["Tr\xEDceps corda","Tr\xEDceps"],["Tr\xEDceps testa","Tr\xEDceps"],["Tr\xEDceps franc\xEAs","Tr\xEDceps"],["Mergulho (paralelas)","Tr\xEDceps"],["Supino fechado","Tr\xEDceps"],["Agachamento livre","Pernas"],["Agachamento no Smith","Pernas"],["Agachamento b\xFAlgaro","Pernas"],["Hack squat","Pernas"],["Leg press 45\xB0","Pernas"],["Cadeira extensora","Pernas"],["Mesa flexora","Pernas"],["Cadeira flexora","Pernas"],["Stiff","Pernas"],["Afundo","Pernas"],["Cadeira adutora","Pernas"],["Eleva\xE7\xE3o p\xE9lvica (hip thrust)","Gl\xFAteos"],["Cadeira abdutora","Gl\xFAteos"],["Gl\xFAteo no cabo (coice)","Gl\xFAteos"],["Panturrilha em p\xE9","Panturrilha"],["Panturrilha sentado","Panturrilha"],["Panturrilha no leg press","Panturrilha"],["Abdominal supra","Abd\xF4men"],["Abdominal infra","Abd\xF4men"],["Prancha","Abd\xF4men"],["Abdominal na polia","Abd\xF4men"]];function st(e){return e.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}var Ee=nt.map(([e,t])=>({id:st(e),nome:e,grupo:t}));function M(e){return e.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim()}var de="freakseason_treinos_v1",ct=3,B=null,le=new Set;function Q(){return typeof crypto!="undefined"&&"randomUUID"in crypto?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36)}function J(){return new Date().toISOString()}function Pe(){return{versao:1,catalogo:[],treinos:{}}}function Ie(){try{let e=localStorage.getItem(de);if(!e)return Pe();let t=JSON.parse(e);return{versao:1,catalogo:Array.isArray(t.catalogo)?t.catalogo:[],treinos:t.treinos&&typeof t.treinos=="object"?t.treinos:{}}}catch{return Pe()}}function F(){return B||(B={dados:Ie(),erroAoSalvar:!1}),B}function Re(){le.forEach(e=>e())}function X(e){let t=!1;try{localStorage.setItem(de,JSON.stringify(e))}catch{t=!0}B={dados:e,erroAoSalvar:t},Re()}function lt(e){le.add(e);let t=r=>{r.key===de&&(B={dados:Ie(),erroAoSalvar:!1},Re())};return window.addEventListener("storage",t),()=>{le.delete(e),window.removeEventListener("storage",t)}}function Z(){return _(lt,F,()=>null)}function pe(e){var t,r;return{id:Q(),carga:(t=e==null?void 0:e.carga)!=null?t:"",reps:(r=e==null?void 0:e.reps)!=null?r:"",feita:!1}}function $(e,t){let{dados:r}=F(),i=r.treinos[e];if(!i)return;let o=t(i),a={...r.treinos};!o||o.exercicios.length===0?delete a[e]:a[e]={...o,atualizadoEm:J()},X({...r,treinos:a})}function ee(e,t,r){$(e,i=>({...i,exercicios:i.exercicios.map(o=>o.id===t?r(o):o)}))}function ue(e){return[...Ee,...e.catalogo].sort((t,r)=>t.nome.localeCompare(r.nome,"pt-BR"))}function ze(e,t){let{dados:r}=F(),i=e.trim().replace(/\s+/g," "),o=ue(r).find(n=>M(n.nome)===M(i));if(o)return o;let a={id:"custom-"+Q(),nome:i,grupo:t,personalizado:!0};return X({...r,catalogo:[...r.catalogo,a]}),a}function we(e,t,r){let i=Object.keys(e.treinos).filter(o=>o<r).sort().reverse();for(let o of i){let a=e.treinos[o].exercicios.find(n=>n.exercicioId===t);if(a&&a.series.some(n=>n.carga||n.reps))return{data:o,series:a.series}}return null}function O(e){let t=0,r=0;return e.exercicios.forEach(i=>i.series.forEach(o=>{r++,o.feita&&t++})),{feitas:t,total:r}}function Ae(e,t){if(t.length===0)return;let{dados:r}=F(),i=r.treinos[e],o=t.map(s=>({id:Q(),exercicioId:s.id,nome:s.nome,grupo:s.grupo,observacoes:"",series:Array.from({length:ct},()=>pe())})),a=J(),n=i?{...i,exercicios:[...i.exercicios,...o],atualizadoEm:a}:{data:e,status:"em_andamento",exercicios:o,criadoEm:a,atualizadoEm:a};X({...r,treinos:{...r.treinos,[e]:n}})}function me(e,t){$(e,r=>({...r,exercicios:r.exercicios.filter(i=>i.id!==t)}))}function fe(e,t,r){$(e,i=>{let o=[...i.exercicios],a=o.findIndex(s=>s.id===t),n=a+r;return a<0||n<0||n>=o.length?i:([o[a],o[n]]=[o[n],o[a]],{...i,exercicios:o})})}function te(e,t,r,i){ee(e,t,o=>({...o,series:o.series.map(a=>a.id===r?{...a,...i}:a)}))}function Me(e,t){ee(e,t,r=>{let i=r.series[r.series.length-1];return{...r,series:[...r.series,pe(i&&{carga:i.carga,reps:i.reps})]}})}function $e(e,t,r){ee(e,t,i=>({...i,series:i.series.filter(o=>o.id!==r)}))}function Oe(e,t,r){ee(e,t,i=>({...i,observacoes:r}))}function ge(e){$(e,t=>({...t,status:"concluido",concluidoEm:J()}))}function je(e){$(e,t=>({...t,status:"em_andamento",concluidoEm:void 0}))}function Le(e){$(e,()=>null)}function Be(e,t){let{dados:r}=F(),i=r.treinos[e];if(!i||e===t)return;let o=J(),a={data:t,status:"em_andamento",criadoEm:o,atualizadoEm:o,copiadoDe:e,exercicios:i.exercicios.map(n=>({id:Q(),exercicioId:n.exercicioId,nome:n.nome,grupo:n.grupo,observacoes:"",series:n.series.map(s=>pe({carga:s.carga,reps:s.reps}))}))};X({...r,treinos:{...r.treinos,[t]:a}})}function W(e){let t=e.getFullYear(),r=String(e.getMonth()+1).padStart(2,"0"),i=String(e.getDate()).padStart(2,"0");return`${t}-${r}-${i}`}function I(){return W(new Date)}function S(e){let[t,r,i]=e.split("-").map(Number);return new Date(t,r-1,i)}function H(e,t){let r=S(e);return r.setDate(r.getDate()+t),W(r)}function Fe(e){return!e||!/^\d{4}-\d{2}-\d{2}$/.test(e)?!1:W(S(e))===e}var dt=["Domingo","Segunda-feira","Ter\xE7a-feira","Quarta-feira","Quinta-feira","Sexta-feira","S\xE1bado"],He=["janeiro","fevereiro","mar\xE7o","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"],We=["D","S","T","Q","Q","S","S"];function R(e){return dt[S(e).getDay()]}function G(e){return He[e]}function oe(e,t=!0){let r=S(e),i=`${r.getDate()} de ${He[r.getMonth()]}`;return t?`${i} de ${r.getFullYear()}`:i}function N(e){let[t,r,i]=e.split("-");return`${i}/${r}/${t}`}function re(e){let t=I();return e===t?"Hoje":e===H(t,-1)?"Ontem":e===H(t,1)?"Amanh\xE3":null}function x({size:e=22,children:t}){return window.React.createElement("svg",{width:e,height:e,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2.2",strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"},t)}var ae=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"15 18 9 12 15 6"})),j=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"9 18 15 12 9 6"})),Ge=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"18 15 12 9 6 15"})),qe=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"6 9 12 15 18 9"})),D=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"20 6 9 17 4 12"})),Ve=e=>window.React.createElement(x,{...e},window.React.createElement("line",{x1:"18",y1:"6",x2:"6",y2:"18"}),window.React.createElement("line",{x1:"6",y1:"6",x2:"18",y2:"18"})),z=e=>window.React.createElement(x,{...e},window.React.createElement("line",{x1:"12",y1:"5",x2:"12",y2:"19"}),window.React.createElement("line",{x1:"5",y1:"12",x2:"19",y2:"12"})),_e=e=>window.React.createElement(x,{...e},window.React.createElement("line",{x1:"5",y1:"12",x2:"19",y2:"12"})),Ue=e=>window.React.createElement(x,{...e},window.React.createElement("polyline",{points:"3 6 5 6 21 6"}),window.React.createElement("path",{d:"M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"}),window.React.createElement("path",{d:"M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"})),Ke=e=>window.React.createElement(x,{...e},window.React.createElement("rect",{x:"3",y:"4",width:"18",height:"18",rx:"2"}),window.React.createElement("line",{x1:"16",y1:"2",x2:"16",y2:"6"}),window.React.createElement("line",{x1:"8",y1:"2",x2:"8",y2:"6"}),window.React.createElement("line",{x1:"3",y1:"10",x2:"21",y2:"10"})),ve=e=>window.React.createElement(x,{...e},window.React.createElement("rect",{x:"9",y:"9",width:"13",height:"13",rx:"2"}),window.React.createElement("path",{d:"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"})),Ye=e=>window.React.createElement(x,{...e},window.React.createElement("circle",{cx:"11",cy:"11",r:"7"}),window.React.createElement("line",{x1:"21",y1:"21",x2:"16.65",y2:"16.65"})),ie=e=>window.React.createElement(x,{...e},window.React.createElement("rect",{x:"6",y:"2",width:"12",height:"20",rx:"2"}),window.React.createElement("line",{x1:"11",y1:"18",x2:"13",y2:"18"})),Qe=e=>window.React.createElement(x,{...e},window.React.createElement("path",{d:"M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3"}),window.React.createElement("line",{x1:"6",y1:"12",x2:"18",y2:"12"})),Je=e=>window.React.createElement(x,{...e},window.React.createElement("circle",{cx:"12",cy:"12",r:"9"}),window.React.createElement("polyline",{points:"12 7 12 12 15 14"}));function Xe(){V(()=>{let e=document.body.style.overflow;return document.body.style.overflow="hidden",()=>{document.body.style.overflow=e}},[])}function w({titulo:e,onFechar:t,children:r,rodape:i,cheia:o}){return Xe(),window.React.createElement("div",{className:"tr-overlay",onClick:t,role:"presentation"},window.React.createElement("div",{className:"tr-sheet"+(o?" tr-sheet-full":""),role:"dialog","aria-modal":"true","aria-label":e,onClick:a=>a.stopPropagation()},window.React.createElement("div",{className:"tr-sheet-head"},window.React.createElement("div",{className:"tr-sheet-title"},e),window.React.createElement("button",{className:"tr-icon-btn",onClick:t,"aria-label":"Fechar"},window.React.createElement(Ve,null))),window.React.createElement("div",{className:"tr-sheet-body"},r),i&&window.React.createElement("div",{className:"tr-sheet-foot"},i)))}function q({titulo:e,texto:t,confirmar:r,perigo:i,onConfirmar:o,onCancelar:a}){return Xe(),window.React.createElement("div",{className:"tr-overlay",style:{alignItems:"center",zIndex:110},onClick:a,role:"presentation"},window.React.createElement("div",{className:"tr-dialog",role:"alertdialog","aria-modal":"true","aria-label":e,onClick:n=>n.stopPropagation()},window.React.createElement("div",{style:{fontSize:19,fontWeight:800,marginBottom:8}},e),window.React.createElement("div",{style:{fontSize:15,color:"var(--text2)",lineHeight:1.45,marginBottom:20}},t),window.React.createElement("div",{style:{display:"flex",gap:10}},window.React.createElement("button",{className:"tr-btn",style:{flex:1},onClick:a},"Cancelar"),window.React.createElement("button",{className:"tr-btn "+(i?"tr-btn-danger":"tr-btn-primary"),style:{flex:1},onClick:o},r))))}function xe({titulo:e,selecionada:t,treinos:r,desabilitada:i,aviso:o,onEscolher:a,onFechar:n}){let s=S(t),[f,l]=v(s.getFullYear()),[u,p]=v(s.getMonth()),h=I();function b(m){let c=new Date(f,u+m,1);l(c.getFullYear()),p(c.getMonth())}let P=new Date(f,u,1).getDay(),E=new Date(f,u+1,0).getDate(),C=[...Array.from({length:P},()=>null),...Array.from({length:E},(m,c)=>W(new Date(f,u,c+1)))],k=C.filter(m=>m&&r[m]).length;return window.React.createElement(w,{titulo:e,onFechar:n},o,window.React.createElement("div",{className:"tr-cal-head"},window.React.createElement("button",{className:"tr-icon-btn",onClick:()=>b(-1),"aria-label":"M\xEAs anterior"},window.React.createElement(ae,null)),window.React.createElement("div",{className:"tr-cal-month"},G(u)," ",f,window.React.createElement("div",{style:{fontSize:12,color:"var(--text2)",fontWeight:500,textTransform:"none"}},k===0?"Nenhum treino":k===1?"1 treino":`${k} treinos`)),window.React.createElement("button",{className:"tr-icon-btn",onClick:()=>b(1),"aria-label":"Pr\xF3ximo m\xEAs"},window.React.createElement(j,null))),window.React.createElement("div",{className:"tr-cal-grid"},We.map((m,c)=>window.React.createElement("div",{key:c,className:"tr-cal-wd"},m)),C.map((m,c)=>{if(!m)return window.React.createElement("div",{key:"v"+c,className:"tr-cal-day fora"});let g=r[m],T=["tr-cal-day"];return m===h&&T.push("hoje"),m===t&&T.push("sel"),m===i&&T.push("origem"),window.React.createElement("button",{key:m,className:T.join(" "),disabled:m===i,onClick:()=>a(m),"aria-label":`${S(m).getDate()} de ${G(u)}${g?g.status==="concluido"?", treino conclu\xEDdo":", treino em andamento":""}`},S(m).getDate(),g&&window.React.createElement("span",{className:"tr-cal-dot"+(g.status==="concluido"?" ok":"")}))})),window.React.createElement("div",{className:"tr-legend"},window.React.createElement("span",null,window.React.createElement("span",{className:"tr-cal-dot ok",style:{position:"static"}})," Conclu\xEDdo"),window.React.createElement("span",null,window.React.createElement("span",{className:"tr-cal-dot",style:{position:"static"}})," Em andamento")),t!==h&&!i&&window.React.createElement("button",{className:"tr-btn tr-btn-block",style:{marginTop:16},onClick:()=>a(h)},"Ir para hoje"))}function Ze({dados:e,jaNoTreino:t,onAdicionar:r,onFechar:i}){let[o,a]=v(""),[n,s]=v("Todos"),[f,l]=v([]),[u,p]=v(!1),[h,b]=v(""),[P,E]=v("Peito"),C=L(()=>ue(e),[e]),k=L(()=>{let d=M(o);return C.filter(y=>(n==="Todos"||y.grupo===n)&&(!d||M(y.nome).includes(d)))},[C,o,n]),m=new Set(f.map(d=>d.id));function c(d){l(y=>m.has(d.id)?y.filter(ne=>ne.id!==d.id):[...y,d])}function g(){b(o.trim()),E(n==="Todos"?"Peito":n),p(!0)}function T(){if(!h.trim())return;let d=ze(h,P);l(y=>y.some(ne=>ne.id===d.id)?y:[...y,d]),a(""),s("Todos"),p(!1)}return u?window.React.createElement(w,{titulo:"Cadastrar exerc\xEDcio",onFechar:()=>p(!1),rodape:window.React.createElement("div",{style:{display:"flex",gap:10}},window.React.createElement("button",{className:"tr-btn",style:{flex:1},onClick:()=>p(!1)},"Voltar"),window.React.createElement("button",{className:"tr-btn tr-btn-primary",style:{flex:2},disabled:!h.trim(),onClick:T},"Salvar e selecionar"))},window.React.createElement("p",{className:"tr-note"},"O exerc\xEDcio fica salvo na sua lista para usar nos pr\xF3ximos treinos."),window.React.createElement("label",{className:"tr-field-label",htmlFor:"novo-nome"},"Nome do exerc\xEDcio"),window.React.createElement("input",{id:"novo-nome",className:"tr-input",value:h,autoFocus:!0,enterKeyHint:"done",placeholder:"Ex.: Remada articulada",onChange:d=>b(d.target.value),onKeyDown:d=>d.key==="Enter"&&T()}),window.React.createElement("span",{className:"tr-field-label"},"Grupo muscular"),window.React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:8}},ce.map(d=>window.React.createElement("button",{key:d,className:"tr-chip","aria-pressed":P===d,onClick:()=>E(d)},d)))):window.React.createElement(w,{titulo:"Adicionar exerc\xEDcios",cheia:!0,onFechar:i,rodape:window.React.createElement("button",{className:"tr-btn tr-btn-primary tr-btn-block tr-btn-lg",disabled:f.length===0,onClick:()=>r(f)},f.length===0?"Selecione os exerc\xEDcios":`Adicionar ${f.length} ${f.length===1?"exerc\xEDcio":"exerc\xEDcios"}`)},window.React.createElement("div",{style:{position:"sticky",top:0,background:"var(--s1)",zIndex:2,paddingBottom:4}},window.React.createElement("div",{style:{position:"relative"}},window.React.createElement("span",{style:{position:"absolute",left:13,top:14,color:"var(--text2)"}},window.React.createElement(Ye,{size:20})),window.React.createElement("input",{className:"tr-search",type:"search",placeholder:"Buscar por nome",value:o,enterKeyHint:"search",onChange:d=>a(d.target.value),"aria-label":"Buscar exerc\xEDcio por nome"})),window.React.createElement("div",{className:"tr-chips",role:"group","aria-label":"Filtrar por grupo muscular"},["Todos",...ce].map(d=>window.React.createElement("button",{key:d,className:"tr-chip","aria-pressed":n===d,onClick:()=>s(d)},d)))),k.map(d=>window.React.createElement("button",{key:d.id,className:"tr-ex-item","aria-pressed":m.has(d.id),onClick:()=>c(d)},window.React.createElement("span",{className:"tr-box"},window.React.createElement(D,{size:18})),window.React.createElement("span",{style:{flex:1,minWidth:0}},window.React.createElement("span",{style:{display:"block",fontSize:16,fontWeight:600}},d.nome),window.React.createElement("span",{style:{display:"block",fontSize:13,color:"var(--text2)",marginTop:2}},d.grupo,d.personalizado?" \xB7 cadastrado por voc\xEA":"",t.has(d.id)?" \xB7 j\xE1 est\xE1 no treino":"")))),k.length===0&&window.React.createElement("p",{style:{textAlign:"center",color:"var(--text2)",padding:"28px 0 8px",fontSize:15}},"Nenhum exerc\xEDcio encontrado",o?` para \u201C${o}\u201D`:"","."),window.React.createElement("button",{className:"tr-btn tr-btn-ghost tr-btn-block",style:{marginTop:16,borderStyle:"dashed"},onClick:g},window.React.createElement(z,{size:20}),o.trim()?`Cadastrar \u201C${o.trim()}\u201D`:"Cadastrar novo exerc\xEDcio"))}function pt(e){let t=e.replace(/[^\d.,]/g,"").replace(".",","),r=t.indexOf(",");return r>=0&&(t=t.slice(0,r+1)+t.slice(r+1).replace(/,/g,"")),t.slice(0,6)}function ut(e){return e.replace(/\D/g,"").slice(0,3)}function et({data:e,item:t,indice:r,total:i,anterior:o,onRemover:a}){let n=t.series.filter(s=>s.feita).length;return window.React.createElement("section",{className:"tr-card","aria-label":t.nome},window.React.createElement("div",{className:"tr-card-head"},window.React.createElement("div",{style:{flex:1,minWidth:0}},window.React.createElement("div",{className:"tr-card-title"},t.nome),window.React.createElement("div",{className:"tr-card-sub"},t.grupo," \xB7 ",n,"/",t.series.length," s\xE9ries feitas"),o&&window.React.createElement("div",{className:"tr-card-sub",style:{fontSize:12}},"\xDAltima vez (",N(o.data),"):"," ",o.series.filter(s=>s.carga||s.reps).map(s=>`${s.carga||"\u2013"}kg\xD7${s.reps||"\u2013"}`).join(", "))),window.React.createElement("div",{style:{display:"flex",gap:6}},window.React.createElement("button",{className:"tr-icon-btn tr-icon-btn-sm",onClick:()=>fe(e,t.id,-1),disabled:r===0,"aria-label":`Mover ${t.nome} para cima`},window.React.createElement(Ge,{size:20})),window.React.createElement("button",{className:"tr-icon-btn tr-icon-btn-sm",onClick:()=>fe(e,t.id,1),disabled:r===i-1,"aria-label":`Mover ${t.nome} para baixo`},window.React.createElement(qe,{size:20})),window.React.createElement("button",{className:"tr-icon-btn tr-icon-btn-sm",style:{color:"var(--red)"},onClick:a,"aria-label":`Remover ${t.nome}`},window.React.createElement(Ue,{size:19})))),window.React.createElement("div",{className:"tr-sets-head","aria-hidden":"true"},window.React.createElement("span",{style:{textAlign:"center"}},"S\xE9rie"),window.React.createElement("span",null,"Carga (kg)"),window.React.createElement("span",null,"Reps"),window.React.createElement("span",{style:{textAlign:"center"}},"Feita")),t.series.map((s,f)=>{let l=o==null?void 0:o.series[f];return window.React.createElement("div",{key:s.id,className:"tr-set"+(s.feita?" feita":"")},window.React.createElement("div",{className:"tr-set-num"},f+1),window.React.createElement("input",{className:"tr-num",type:"text",inputMode:"decimal",enterKeyHint:"next",autoComplete:"off",placeholder:(l==null?void 0:l.carga)||"kg",value:s.carga,"aria-label":`Carga em kg da s\xE9rie ${f+1} de ${t.nome}`,onChange:u=>te(e,t.id,s.id,{carga:pt(u.target.value)})}),window.React.createElement("input",{className:"tr-num",type:"text",inputMode:"numeric",pattern:"[0-9]*",enterKeyHint:"done",autoComplete:"off",placeholder:(l==null?void 0:l.reps)||"reps",value:s.reps,"aria-label":`Repeti\xE7\xF5es da s\xE9rie ${f+1} de ${t.nome}`,onChange:u=>te(e,t.id,s.id,{reps:ut(u.target.value)})}),window.React.createElement("button",{className:"tr-check","aria-pressed":s.feita,"aria-label":`Marcar s\xE9rie ${f+1} de ${t.nome} como feita`,onClick:()=>te(e,t.id,s.id,{feita:!s.feita})},window.React.createElement(D,{size:26})))}),window.React.createElement("div",{className:"tr-card-foot"},window.React.createElement("button",{className:"tr-btn",onClick:()=>{let s=t.series[t.series.length-1];s&&$e(e,t.id,s.id)},disabled:t.series.length<=1,"aria-label":`Remover a \xFAltima s\xE9rie de ${t.nome}`},window.React.createElement(_e,{size:20})," S\xE9rie"),window.React.createElement("button",{className:"tr-btn",onClick:()=>Me(e,t.id),"aria-label":`Adicionar s\xE9rie em ${t.nome}`},window.React.createElement(z,{size:20})," S\xE9rie")),window.React.createElement("textarea",{className:"tr-obs",rows:1,placeholder:"Observa\xE7\xF5es (opcional)",value:t.observacoes,"aria-label":`Observa\xE7\xF5es de ${t.nome}`,onChange:s=>Oe(e,t.id,s.target.value)}))}function he(){return window.React.createElement(Ce,{fallback:window.React.createElement(tt,null)},window.React.createElement(mt,null))}function tt(){return window.React.createElement("div",{className:"tr-page",style:{paddingTop:40,textAlign:"center",color:"var(--text2)"}},"Carregando treinos\u2026")}function mt(){var m;let e=Z(),t=De(),r=ke(),i=Te(),[o,a]=v(null),[n,s]=v(null),f=i.get("data"),l=Fe(f)?f:I();V(()=>{if(!n)return;let c=setTimeout(()=>s(null),5e3);return()=>clearTimeout(c)},[n]);let u=e==null?void 0:e.dados,p=l&&u?u.treinos[l]:void 0,h=L(()=>{let c=new Map;return!u||!p||p.exercicios.forEach(g=>{c.has(g.exercicioId)||c.set(g.exercicioId,we(u,g.exercicioId,l))}),c},[u,p,l]);if(!e||!u)return window.React.createElement(tt,null);function b(c){a(null),t.replace(c===I()?r:`${r}?data=${c}`,{scroll:!1}),window.scrollTo({top:0})}function P(c){Be(l,c),a(null),s({texto:`Treino copiado para ${R(c).split("-")[0].toLowerCase()}, ${N(c)}.`,data:c})}let E=re(l),C=p?O(p):{feitas:0,total:0},k=(p==null?void 0:p.status)==="concluido";return window.React.createElement("div",{className:"tr-page"},window.React.createElement("header",{className:"tr-day"},window.React.createElement("div",{className:"tr-day-row"},window.React.createElement("button",{className:"tr-icon-btn",onClick:()=>b(H(l,-1)),"aria-label":"Dia anterior"},window.React.createElement(ae,null)),window.React.createElement("button",{className:"tr-day-center",onClick:()=>a({tipo:"calendario"}),"aria-label":"Abrir calend\xE1rio"},window.React.createElement("div",{className:"tr-day-weekday"},R(l)),window.React.createElement("div",{className:"tr-day-date"},window.React.createElement(Ke,{size:15}),oe(l))),window.React.createElement("button",{className:"tr-icon-btn",onClick:()=>b(H(l,1)),"aria-label":"Pr\xF3ximo dia"},window.React.createElement(j,null))),window.React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:6,marginTop:8,minHeight:24}},E&&window.React.createElement("span",{className:"tr-pill tr-pill-muted"},E),p&&(k?window.React.createElement("span",{className:"tr-pill tr-pill-green"},window.React.createElement(D,{size:13})," Conclu\xEDdo"):window.React.createElement("span",{className:"tr-pill"},"Em andamento")),p&&window.React.createElement("span",{className:"tr-pill tr-pill-muted"},C.feitas,"/",C.total," s\xE9ries"),!E&&window.React.createElement("button",{className:"tr-pill tr-pill-muted",style:{cursor:"pointer"},onClick:()=>b(I())},"Voltar para hoje"))),e.erroAoSalvar&&window.React.createElement("div",{className:"tr-note",style:{color:"var(--red)",marginTop:12}},"N\xE3o foi poss\xEDvel salvar no aparelho (armazenamento cheio ou bloqueado). Suas \xFAltimas altera\xE7\xF5es podem se perder."),p?window.React.createElement("div",{style:{paddingTop:14}},k&&window.React.createElement("div",{className:"tr-note",style:{background:"var(--green-dim)",color:"var(--green)",borderRadius:12,padding:"12px 14px",marginBottom:12,fontWeight:600}},window.React.createElement(D,{size:18}),window.React.createElement("span",null,"Treino conclu\xEDdo: ",C.feitas," de ",C.total," s\xE9ries feitas. Voc\xEA ainda pode ajustar os valores.")),p.copiadoDe&&window.React.createElement("p",{className:"tr-note",style:{marginBottom:12}},window.React.createElement(ve,{size:16}),window.React.createElement("span",null,"Copiado de ",N(p.copiadoDe),". As altera\xE7\xF5es aqui n\xE3o mudam o treino original.")),p.exercicios.map((c,g)=>{var T;return window.React.createElement(et,{key:c.id,data:l,item:c,indice:g,total:p.exercicios.length,anterior:(T=h.get(c.exercicioId))!=null?T:null,onRemover:()=>{c.series.some(y=>y.feita||y.carga||y.reps)||c.observacoes?a({tipo:"remover-exercicio",item:c}):me(l,c.id)}})}),window.React.createElement("button",{className:"tr-btn tr-btn-block",style:{marginTop:12,borderStyle:"dashed"},onClick:()=>a({tipo:"seletor"})},window.React.createElement(z,{size:20})," Adicionar exerc\xEDcios"),window.React.createElement("div",{style:{marginTop:24,display:"flex",flexDirection:"column",gap:10}},k?window.React.createElement("button",{className:"tr-btn tr-btn-block",onClick:()=>je(l)},"Reabrir treino"):window.React.createElement("button",{className:"tr-btn tr-btn-success tr-btn-lg tr-btn-block",onClick:()=>{let c=C.total-C.feitas;c>0?a({tipo:"confirmar-conclusao",faltam:c}):ge(l)}},window.React.createElement(D,null)," Concluir treino"),window.React.createElement("button",{className:"tr-btn tr-btn-block",onClick:()=>a({tipo:"copiar"})},window.React.createElement(ve,{size:20})," Copiar treino para outra data"),window.React.createElement("button",{className:"tr-btn tr-btn-ghost tr-btn-block",style:{color:"var(--red)",borderColor:"transparent"},onClick:()=>a({tipo:"excluir-treino"})},"Excluir treino deste dia"))):window.React.createElement("div",{style:{textAlign:"center",padding:"44px 8px 24px"}},window.React.createElement("div",{style:{width:72,height:72,borderRadius:20,background:"var(--s1)",border:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",color:"var(--text2)"}},window.React.createElement(Qe,{size:32})),window.React.createElement("p",{style:{fontSize:18,fontWeight:700,marginBottom:6}},"Nenhum treino neste dia"),window.React.createElement("p",{style:{fontSize:15,color:"var(--text2)",marginBottom:24}},"Escolha os exerc\xEDcios que voc\xEA vai fazer."),window.React.createElement("button",{className:"tr-btn tr-btn-primary tr-btn-lg tr-btn-block",onClick:()=>a({tipo:"seletor"})},window.React.createElement(z,null)," Adicionar exerc\xEDcios")),window.React.createElement("p",{className:"tr-note",style:{marginTop:28,justifyContent:"center",textAlign:"center"}},window.React.createElement(ie,{size:16}),window.React.createElement("span",null,"Salvo automaticamente. Seus treinos ficam guardados apenas neste aparelho e navegador.")),(o==null?void 0:o.tipo)==="calendario"&&window.React.createElement(xe,{titulo:"Escolher dia",selecionada:l,treinos:u.treinos,onEscolher:b,onFechar:()=>a(null)}),(o==null?void 0:o.tipo)==="seletor"&&window.React.createElement(Ze,{dados:u,jaNoTreino:new Set((m=p==null?void 0:p.exercicios.map(c=>c.exercicioId))!=null?m:[]),onFechar:()=>a(null),onAdicionar:c=>{Ae(l,c),a(null)}}),(o==null?void 0:o.tipo)==="copiar"&&window.React.createElement(xe,{titulo:"Copiar para qual data?",selecionada:l,desabilitada:l,treinos:u.treinos,aviso:window.React.createElement("p",{className:"tr-note",style:{marginBottom:14}},"Copia exerc\xEDcios, s\xE9ries e cargas de ",N(l)," com todas as s\xE9ries desmarcadas."),onEscolher:c=>{u.treinos[c]?a({tipo:"confirmar-copia",destino:c}):P(c)},onFechar:()=>a(null)}),(o==null?void 0:o.tipo)==="confirmar-copia"&&(()=>{let c=u.treinos[o.destino],g=O(c);return window.React.createElement(q,{titulo:"Substituir treino?",texto:window.React.createElement(window.React.Fragment,null,R(o.destino),", ",N(o.destino)," j\xE1 tem um treino"," ",c.status==="concluido"?"conclu\xEDdo":"em andamento"," com ",c.exercicios.length," ",c.exercicios.length===1?"exerc\xEDcio":"exerc\xEDcios"," e ",g.feitas," de ",g.total," s\xE9ries feitas. Ele ser\xE1 substitu\xEDdo pela c\xF3pia."),confirmar:"Substituir",perigo:!0,onCancelar:()=>a({tipo:"copiar"}),onConfirmar:()=>P(o.destino)})})(),(o==null?void 0:o.tipo)==="confirmar-conclusao"&&window.React.createElement(q,{titulo:"Concluir treino?",texto:`${o.faltam} ${o.faltam===1?"s\xE9rie n\xE3o foi marcada":"s\xE9ries n\xE3o foram marcadas"} como feita. ${o.faltam===1?"Ela fica registrada":"Elas ficam registradas"} como planejada, mas n\xE3o feita.`,confirmar:"Concluir",onCancelar:()=>a(null),onConfirmar:()=>{ge(l),a(null),window.scrollTo({top:0,behavior:"smooth"})}}),(o==null?void 0:o.tipo)==="remover-exercicio"&&window.React.createElement(q,{titulo:"Remover exerc\xEDcio?",texto:`${o.item.nome} e as s\xE9ries registradas nele ser\xE3o removidos deste dia.`,confirmar:"Remover",perigo:!0,onCancelar:()=>a(null),onConfirmar:()=>{me(l,o.item.id),a(null)}}),(o==null?void 0:o.tipo)==="excluir-treino"&&window.React.createElement(q,{titulo:"Excluir treino?",texto:`Todos os exerc\xEDcios e s\xE9ries de ${N(l)} ser\xE3o apagados. Os outros dias n\xE3o s\xE3o afetados.`,confirmar:"Excluir",perigo:!0,onCancelar:()=>a(null),onConfirmar:()=>{Le(l),a(null)}}),n&&window.React.createElement("div",{className:"tr-toast",role:"status"},window.React.createElement(D,{size:20}),window.React.createElement("span",{style:{flex:1}},n.texto),n.data&&window.React.createElement("button",{className:"tr-btn tr-btn-primary",style:{minHeight:40,padding:"0 14px",fontSize:15},onClick:()=>{b(n.data),s(null)}},"Ver")))}function A({href:e,children:t,onClick:r,...i}){let o=e.includes("historico")?"historico":"treinos";return window.React.createElement("a",{...i,href:"#"+o,onClick:a=>{a.preventDefault(),r&&r(a),K(e),window.scrollTo(0,0)}},t)}function rt({t:e}){return e.status==="concluido"?window.React.createElement("span",{className:"tr-pill tr-pill-green"},window.React.createElement(D,{size:13})," Conclu\xEDdo"):window.React.createElement("span",{className:"tr-pill"},window.React.createElement(Je,{size:13})," Em andamento")}function be(){let e=Z(),[t,r]=v(null);if(!e)return window.React.createElement("div",{className:"tr-page",style:{paddingTop:40,textAlign:"center",color:"var(--text2)"}},"Carregando hist\xF3rico\u2026");let{treinos:i}=e.dados,o=Object.values(i).sort((n,s)=>s.data.localeCompare(n.data)),a=n=>{let s=S(n);return`${G(s.getMonth())} ${s.getFullYear()}`};return window.React.createElement("div",{className:"tr-page"},window.React.createElement("header",{style:{padding:"20px 0 4px"}},window.React.createElement("h1",{style:{fontSize:26,fontWeight:800,letterSpacing:"-0.02em"}},"Hist\xF3rico"),window.React.createElement("p",{style:{fontSize:14,color:"var(--text2)",marginTop:4}},o.length===0?"Nenhum treino registrado ainda.":`${o.length} ${o.length===1?"treino registrado":"treinos registrados"}`)),o.length===0&&window.React.createElement("div",{style:{textAlign:"center",padding:"36px 0"}},window.React.createElement(A,{href:"/treinos",className:"tr-btn tr-btn-primary tr-btn-lg",style:{textDecoration:"none"}},"Come\xE7ar o treino de hoje")),o.map((n,s)=>{let f=S(n.data),l=a(n.data),u=s===0||a(o[s-1].data)!==l?l:null,p=O(n),h=re(n.data);return window.React.createElement("div",{key:n.data},u&&window.React.createElement("div",{className:"tr-hist-month"},u),window.React.createElement("button",{className:"tr-hist-item",onClick:()=>r(n.data)},window.React.createElement("div",{style:{width:52,flexShrink:0,textAlign:"center",background:"var(--s2)",borderRadius:12,padding:"6px 0"}},window.React.createElement("div",{style:{fontSize:22,fontWeight:800,lineHeight:1.1}},f.getDate()),window.React.createElement("div",{style:{fontSize:11,color:"var(--text2)",fontWeight:600,textTransform:"uppercase"}},R(n.data).slice(0,3))),window.React.createElement("div",{style:{flex:1,minWidth:0}},window.React.createElement("div",{style:{fontSize:16,fontWeight:700}},h?`${h} \xB7 `:"",N(n.data)),window.React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap",margin:"6px 0 4px"}},window.React.createElement(rt,{t:n}),window.React.createElement("span",{className:"tr-pill tr-pill-muted"},p.feitas," ",p.feitas===1?"s\xE9rie feita":"s\xE9ries feitas",p.total!==p.feitas?` de ${p.total}`:"")),window.React.createElement("div",{style:{fontSize:13,color:"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},n.exercicios.map(b=>b.nome).join(" \xB7 "))),window.React.createElement("span",{style:{color:"var(--text3)"}},window.React.createElement(j,null))))}),window.React.createElement("p",{className:"tr-note",style:{marginTop:28,justifyContent:"center",textAlign:"center"}},window.React.createElement(ie,{size:16}),window.React.createElement("span",null,"Os treinos ficam salvos apenas neste aparelho e navegador. Limpar os dados do navegador apaga o hist\xF3rico.")),t&&i[t]&&window.React.createElement(ft,{t:i[t],onFechar:()=>r(null)}))}function ot(e){let t=parseFloat(e.replace(",","."));return Number.isFinite(t)?t:0}function ft({t:e,onFechar:t}){let r=O(e),i=e.exercicios.reduce((o,a)=>o+a.series.filter(n=>n.feita).reduce((n,s)=>n+ot(s.carga)*ot(s.reps),0),0);return window.React.createElement(w,{titulo:`${R(e.data)}`,onFechar:t,cheia:!0,rodape:window.React.createElement(A,{href:`/treinos?data=${e.data}`,className:"tr-btn tr-btn-primary tr-btn-block tr-btn-lg",style:{textDecoration:"none"}},"Abrir em Treinos para editar ou copiar")},window.React.createElement("p",{style:{fontSize:15,color:"var(--text2)",marginTop:-4}},oe(e.data)),window.React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0 6px"}},window.React.createElement(rt,{t:e}),window.React.createElement("span",{className:"tr-pill tr-pill-muted"},r.feitas," de ",r.total," s\xE9ries feitas"),i>0&&window.React.createElement("span",{className:"tr-pill tr-pill-muted"},"Volume ",Math.round(i).toLocaleString("pt-BR")," kg")),e.copiadoDe&&window.React.createElement("p",{className:"tr-note"},"Copiado de ",N(e.copiadoDe),"."),e.exercicios.map(o=>window.React.createElement("div",{key:o.id,className:"tr-card",style:{padding:14,marginTop:12}},window.React.createElement("div",{style:{fontSize:16,fontWeight:700}},o.nome),window.React.createElement("div",{style:{fontSize:13,color:"var(--text2)",marginTop:2,marginBottom:8}},o.grupo," \xB7 ",o.series.filter(a=>a.feita).length,"/",o.series.length," s\xE9ries feitas"),window.React.createElement("table",{className:"tr-table"},window.React.createElement("thead",null,window.React.createElement("tr",null,window.React.createElement("th",{style:{width:"18%"}},"S\xE9rie"),window.React.createElement("th",null,"Carga"),window.React.createElement("th",null,"Reps"),window.React.createElement("th",{style:{textAlign:"right"}},"Status"))),window.React.createElement("tbody",null,o.series.map((a,n)=>window.React.createElement("tr",{key:a.id,className:a.feita?"":"nao-feita"},window.React.createElement("td",null,n+1),window.React.createElement("td",{style:{fontWeight:700}},a.carga?`${a.carga} kg`:"\u2014"),window.React.createElement("td",{style:{fontWeight:700}},a.reps||"\u2014"),window.React.createElement("td",{style:{textAlign:"right",fontSize:13,color:a.feita?"var(--green)":"var(--text3)"}},a.feita?"Feita":"N\xE3o feita"))))),o.observacoes.trim()&&window.React.createElement("p",{style:{fontSize:14,marginTop:10,background:"var(--s2)",borderRadius:10,padding:"10px 12px",whiteSpace:"pre-wrap"}},window.React.createElement("span",{style:{color:"var(--text2)",fontWeight:600}},"Observa\xE7\xF5es: "),o.observacoes))))}function gt(){return window.React.createElement("svg",{width:"22",height:"22",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round"},window.React.createElement("path",{d:"M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3"}),window.React.createElement("line",{x1:"6",y1:"12",x2:"18",y2:"12"}))}function vt(){return window.React.createElement("svg",{width:"22",height:"22",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round"},window.React.createElement("path",{d:"M3 12a9 9 0 1 0 3-6.7L3 8"}),window.React.createElement("polyline",{points:"3 3 3 8 8 8"}),window.React.createElement("polyline",{points:"12 7 12 12 15 14"}))}function xt(){let{aba:e}=Y();return window.React.createElement("div",{className:"shell"},window.React.createElement("main",null,window.React.createElement(e==="historico"?be:he,null)),window.React.createElement("nav",{className:"nav"},window.React.createElement(A,{href:"/treinos",className:e==="treinos"?"on":"","aria-current":e==="treinos"?"page":void 0},window.React.createElement(gt,null),"Treinos"),window.React.createElement(A,{href:"/historico",className:e==="historico"?"on":"","aria-current":e==="historico"?"page":void 0},window.React.createElement(vt,null),"Hist\xF3rico")))}ye(document.getElementById("app")).render(window.React.createElement(xt,null));})();
+</script>
+</body>
+</html>
