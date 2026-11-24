@@ -115,6 +115,90 @@ export const CATALOGO_PADRAO: ExercicioCatalogo[] = base.map(([nome, grupo]) => 
   grupo,
 }));
 
+/** Exercícios do catálogo que têm GIF em public/gifs/<id>.gif. */
+const COM_GIF = new Set<string>([
+  "abdominal-infra",
+  "abdominal-na-polia",
+  "abdominal-supra",
+  "afundo",
+  "agachamento-bulgaro",
+  "agachamento-livre",
+  "agachamento-no-smith",
+  "barra-fixa",
+  "bicicleta-ergometrica",
+  "bike-spinning",
+  "burpee",
+  "cadeira-abdutora",
+  "cadeira-adutora",
+  "cadeira-extensora",
+  "cadeira-flexora",
+  "caminhada-inclinada-na-esteira",
+  "chest-press-maquina",
+  "corrida-ao-ar-livre",
+  "crossover",
+  "crucifixo-com-halteres",
+  "crucifixo-invertido",
+  "crucifixo-na-maquina-peck-deck",
+  "desenvolvimento-com-barra",
+  "desenvolvimento-com-halteres",
+  "desenvolvimento-na-maquina",
+  "elevacao-frontal",
+  "elevacao-lateral",
+  "elevacao-pelvica-hip-thrust",
+  "eliptico-transport",
+  "encolhimento",
+  "escada-simulador",
+  "esteira-caminhada",
+  "esteira-corrida",
+  "face-pull",
+  "flexao-de-braco",
+  "gluteo-no-cabo-coice",
+  "hack-squat",
+  "hiperextensao-lombar",
+  "leg-press-45",
+  "levantamento-terra",
+  "mergulho-paralelas",
+  "mesa-flexora",
+  "panturrilha-em-pe",
+  "panturrilha-no-leg-press",
+  "panturrilha-sentado",
+  "polichinelo",
+  "prancha",
+  "pular-corda",
+  "pulldown-com-corda",
+  "puxada-com-triangulo",
+  "puxada-frontal",
+  "remada-baixa",
+  "remada-cavalinho",
+  "remada-curvada-com-barra",
+  "remada-unilateral-com-halter-serrote",
+  "rosca-alternada-com-halteres",
+  "rosca-concentrada",
+  "rosca-direta-com-barra",
+  "rosca-martelo",
+  "rosca-no-cabo",
+  "rosca-scott",
+  "stiff",
+  "supino-declinado",
+  "supino-fechado",
+  "supino-inclinado-com-barra",
+  "supino-inclinado-com-halteres",
+  "supino-reto-com-barra",
+  "supino-reto-com-halteres",
+  "triceps-corda",
+  "triceps-frances",
+  "triceps-pulley-barra",
+  "triceps-testa",
+]);
+
+// No app Next os GIFs ficam em /gifs/; a versão em arquivo único define outro caminho.
+const BASE_GIF = process.env.NEXT_PUBLIC_GIF_BASE || "/gifs/";
+
+/** URL do GIF demonstrativo do exercício, ou null se não houver. */
+export function gifDoExercicio(exercicioId: string): string | null {
+  return COM_GIF.has(exercicioId) ? `${BASE_GIF}${exercicioId}.gif` : null;
+}
+
 export function tipoDoGrupo(grupo: GrupoMuscular) {
   return grupo === "Cardio" ? ("cardio" as const) : ("forca" as const);
 }

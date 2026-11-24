@@ -6,6 +6,7 @@ import { GRUPOS, normalizar } from "@/lib/treinos/catalogo";
 import { cadastrarExercicio, catalogoCompleto } from "@/lib/treinos/store";
 import { IconeBusca, IconeCheck, IconeMais } from "./Icones";
 import { Sheet } from "./Sheet";
+import { MiniGif } from "./Gif";
 
 export function SeletorExercicios({
   dados,
@@ -142,6 +143,7 @@ export function SeletorExercicios({
           <span className="tr-box">
             <IconeCheck size={18} />
           </span>
+          <MiniGif exercicioId={e.id} tamanho={48} />
           <span style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 16, fontWeight: 600 }}>{e.nome}</span>
             <span style={{ display: "block", fontSize: 13, color: "var(--text2)", marginTop: 2 }}>

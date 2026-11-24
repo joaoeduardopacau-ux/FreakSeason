@@ -8,6 +8,7 @@ import type { TreinoDoDia } from "@/lib/treinos/types";
 import { tecnicaPorId } from "@/lib/treinos/tecnicas";
 import { rotulos } from "@/lib/treinos/campos";
 import { Sheet } from "@/components/treinos/Sheet";
+import { BotaoGif } from "@/components/treinos/Gif";
 import { IconeCelular, IconeCheck, IconeDireita, IconeRelogio } from "@/components/treinos/Icones";
 
 function Status({ t }: { t: TreinoDoDia }) {
@@ -173,7 +174,10 @@ function Detalhe({ t, onFechar }: { t: TreinoDoDia; onFechar: () => void }) {
         const tec = tecnicaPorId(e.tecnica);
         return (
         <div key={e.id} className="tr-card" style={{ padding: 14, marginTop: 12 }}>
-          <div style={{ fontSize: 16, fontWeight: 700 }}>{e.nome}</div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <BotaoGif exercicioId={e.exercicioId} nome={e.nome} grupo={e.grupo} tecnica={e.tecnica} />
+            <div style={{ fontSize: 16, fontWeight: 700, flex: 1, minWidth: 0 }}>{e.nome}</div>
+          </div>
           <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 2, marginBottom: 8 }}>
             {e.grupo} · {e.series.filter((s) => s.feita).length}/{e.series.length} {e.tipo === "cardio" ? "blocos feitos" : "séries feitas"}
             {tec && tec.id !== "tradicional" && <> · <span style={{ color: "var(--accent)", fontWeight: 600 }}>{tec.nome}</span></>}

@@ -11,6 +11,7 @@ import {
 import { dataCurta } from "@/lib/treinos/datas";
 import { limparDecimal, limparInteiro, limparTexto, rotulos } from "@/lib/treinos/campos";
 import { ChipTecnica } from "./ChipTecnica";
+import { BotaoGif } from "./Gif";
 import { IconeBaixo, IconeCheck, IconeCima, IconeLixo, IconeMais, IconeMenos } from "./Icones";
 
 
@@ -38,6 +39,7 @@ export function CartaoExercicio({
   return (
     <section className="tr-card" aria-label={item.nome}>
       <div className="tr-card-head">
+        <BotaoGif exercicioId={item.exercicioId} nome={item.nome} grupo={item.grupo} tecnica={item.tecnica} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="tr-card-title">{item.nome}</div>
           <div className="tr-card-sub">

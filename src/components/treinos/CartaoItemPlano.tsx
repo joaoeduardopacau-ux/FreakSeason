@@ -10,6 +10,7 @@ import {
 } from "@/lib/treinos/store";
 import { limparDecimal, limparInteiro, limparTexto, rotulos } from "@/lib/treinos/campos";
 import { ChipTecnica } from "./ChipTecnica";
+import { BotaoGif } from "./Gif";
 import { IconeBaixo, IconeCima, IconeLixo, IconeMais, IconeMenos } from "./Icones";
 
 /** Exercício dentro de uma ficha: técnica + metas por série (sem marcar como feita). */
@@ -34,6 +35,7 @@ export function CartaoItemPlano({
   return (
     <section className="tr-card" aria-label={item.nome}>
       <div className="tr-card-head">
+        <BotaoGif exercicioId={item.exercicioId} nome={item.nome} grupo={item.grupo} tecnica={item.tecnica} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="tr-card-title">{item.nome}</div>
           <div className="tr-card-sub">
