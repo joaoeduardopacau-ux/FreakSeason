@@ -2,15 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ExercicioDoTreino, Serie, TreinoDoDia } from "@/lib/treinos/types";
-import { adicionarSerie, alternarSerieFeita, atualizarObservacoes, atualizarSerie } from "@/lib/treinos/store";
+import { adicionarSerie, alternarSerieFeita, atualizarSerie } from "@/lib/treinos/store";
 import { gifIdDoExercicio } from "@/lib/treinos/catalogo";
 import { tecnicaPorId } from "@/lib/treinos/tecnicas";
 import { useMidia } from "@/lib/treinos/midia";
 import { dataCurta } from "@/lib/treinos/datas";
 import { limparDecimal, limparInteiro, limparTexto, rotulos, somarPasso } from "@/lib/treinos/campos";
 import { VisualizadorGif } from "./Gif";
-import { Sheet } from "./Sheet";
-import { IconeBaixo, IconeCheck, IconeDireita, IconeEsquerda, IconeMais, IconeMaisOpcoes } from "./Icones";
+import { IconeBaixo, IconeCheck, IconeDireita, IconeEsquerda, IconeMais } from "./Icones";
 
 type Alvo = { ex: number; serie: number };
 
@@ -105,7 +104,6 @@ export function TreinoGuiado({
   anteriores,
   onTecnica,
   onAdicionarExercicio,
-  onDescartar,
   onFinalizar,
 }: {
   chave: string;
@@ -113,13 +111,11 @@ export function TreinoGuiado({
   anteriores: Map<string, { data: string; series: Serie[] } | null>;
   onTecnica: (item: ExercicioDoTreino) => void;
   onAdicionarExercicio: () => void;
-  onDescartar: () => void;
   onFinalizar: () => void;
 }) {
   const [alvo, setAlvo] = useState<Alvo>(() => proximaPendente(treino, 0) ?? { ex: 0, serie: 0 });
   const [direcao, setDirecao] = useState<"frente" | "tras">("frente");
   const [acendeu, setAcendeu] = useState<string | null>(null);
-  const [menu, setMenu] = useState(false);
   const [gifGrande, setGifGrande] = useState(false);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
@@ -205,10 +201,10 @@ export function TreinoGuiado({
               </button>
             );
           })}
+          <button className="tg-ponto novo" onClick={onAdicionarExercicio} aria-label="Adicionar exercício só hoje">
+            <IconeMais size={14} />
+          </button>
         </div>
-        <button className="tg-mais" onClick={() => setMenu(true)} aria-label="Mais opções do treino">
-          <IconeMaisOpcoes size={20} />
-        </button>
       </div>
 
       <section key={item.id} className={"tg-cartao entra-" + direcao} aria-label={item.nome}>
@@ -362,49 +358,6 @@ export function TreinoGuiado({
         <VisualizadorGif exercicioId={item.exercicioId} nome={item.nome} grupo={item.grupo} tecnica={item.tecnica} onFechar={() => setGifGrande(false)} />
       )}
 
-      {menu && (
-        <Sheet titulo={item.nome} onFechar={() => setMenu(false)}>
-          <label className="tr-field-label" htmlFor="tg-obs" style={{ marginTop: 0 }}>
-            Observações deste exercício
-          </label>
-          <textarea
-            id="tg-obs"
-            className="tr-obs"
-            style={{ width: "100%", margin: 0 }}
-            rows={3}
-            placeholder="Ajuste de banco, pegada, sensação…"
-            value={item.observacoes}
-            aria-label={`Observações de ${item.nome}`}
-            onChange={(e) => atualizarObservacoes(chave, item.id, e.target.value)}
-          />
-          {tec && (
-            <p className="tr-note" style={{ marginTop: 12, display: "block" }}>
-              <strong style={{ color: "var(--text)" }}>{tec.nome}:</strong> {tec.comoFazer}
-            </p>
-          )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
-            <button
-              className="tr-btn tr-btn-block"
-              onClick={() => {
-                setMenu(false);
-                onAdicionarExercicio();
-              }}
-            >
-              <IconeMais size={18} /> Adicionar exercício só hoje
-            </button>
-            <button
-              className="tr-btn tr-btn-ghost tr-btn-block"
-              style={{ color: "var(--red)", borderColor: "transparent" }}
-              onClick={() => {
-                setMenu(false);
-                onDescartar();
-              }}
-            >
-              Descartar este treino
-            </button>
-          </div>
-        </Sheet>
-      )}
     </div>
   );
 }

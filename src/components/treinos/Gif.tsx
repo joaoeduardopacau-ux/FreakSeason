@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { GrupoMuscular, TecnicaId } from "@/lib/treinos/types";
 import { gifIdDoExercicio } from "@/lib/treinos/catalogo";
-import { tecnicaPorId } from "@/lib/treinos/tecnicas";
-import { useMidia } from "@/lib/treinos/midia";
+import { useDescricao, useMidia } from "@/lib/treinos/midia";
 import { Sheet } from "./Sheet";
 
 /** Só fica true quando o elemento chega perto da área visível. */
@@ -82,7 +81,6 @@ export function VisualizadorGif({
   exercicioId,
   nome,
   grupo,
-  tecnica,
   onFechar,
 }: {
   exercicioId: string;
@@ -92,7 +90,7 @@ export function VisualizadorGif({
   onFechar: () => void;
 }) {
   const src = useMidia("gif", gifIdDoExercicio(exercicioId));
-  const t = tecnicaPorId(tecnica);
+  const passos = useDescricao(gifIdDoExercicio(exercicioId));
   return (
     <Sheet titulo={nome} onFechar={onFechar}>
       <p style={{ fontSize: 14, color: "var(--text2)", marginTop: -4, marginBottom: 12 }}>{grupo}</p>
@@ -104,17 +102,22 @@ export function VisualizadorGif({
           {src === null ? "GIF indisponível" : "Carregando GIF…"}
         </div>
       )}
-      {t && (
-        <div style={{ marginTop: 14, background: "var(--s2)", borderRadius: 12, padding: "12px 14px" }}>
-          <div className="tr-tecnica-rot">
-            {t.tipo === "cardio" ? "Tipo" : "Técnica"}: {t.nome}
+      {passos === undefined ? (
+        <p className="tr-note" role="status" style={{ marginTop: 14, display: "block" }}>
+          Carregando descrição…
+        </p>
+      ) : passos && passos.length > 0 ? (
+        <>
+          <div className="tr-tecnica-rot" style={{ marginTop: 16 }}>
+            Como fazer
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.45, marginTop: 6 }}>
-            {t.comoFazer}
-            {t.descanso ? ` Descanso: ${t.descanso}.` : ""}
-          </p>
-        </div>
-      )}
+          <ol className="tr-como">
+            {passos.map((p, i) => (
+              <li key={i}>{p}</li>
+            ))}
+          </ol>
+        </>
+      ) : null}
       <button className="tr-btn tr-btn-block" style={{ marginTop: 16 }} onClick={onFechar}>
         Fechar
       </button>

@@ -305,7 +305,6 @@ function ExecucaoTreino({
               anteriores={anteriores}
               onTecnica={(item) => setDialogo({ tipo: "tecnica", item })}
               onAdicionarExercicio={() => setDialogo({ tipo: "seletor" })}
-              onDescartar={() => setDialogo({ tipo: "descartar" })}
               onFinalizar={() => {
                 setResumo(true);
                 window.scrollTo({ top: 0, behavior: "smooth" });

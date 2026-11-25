@@ -12,7 +12,7 @@ import { useEffect, useSyncExternalStore } from "react";
  *   um índice diz onde está cada um. Só o pacote necessário é baixado.
  */
 const MODO = process.env.NEXT_PUBLIC_GIF_MODE === "pacotes" ? "pacotes" : "arquivos";
-const BASE = process.env.NEXT_PUBLIC_GIF_BASE || "/gifs/";
+export const BASE_MIDIA = process.env.NEXT_PUBLIC_GIF_BASE || "/gifs/";
 
 export type TipoMidia = "gif" | "thumb";
 
@@ -34,7 +34,7 @@ function emitir() {
 }
 
 function lerIndice() {
-  if (!indice) indice = fetch(`${BASE}indice.json`).then((r) => r.json());
+  if (!indice) indice = fetch(`${BASE_MIDIA}indice.json`).then((r) => r.json());
   return indice;
 }
 
@@ -52,20 +52,20 @@ async function carregarPacote(tipo: TipoMidia, id: string): Promise<string> {
   if (tipo === "thumb") {
     const n = ind.thumbs[id];
     if (n === undefined) throw new Error("sem miniatura");
-    if (!pacotesThumb.has(n)) pacotesThumb.set(n, fetch(`${BASE}thumbs-${n}.json`).then((r) => r.json()));
+    if (!pacotesThumb.has(n)) pacotesThumb.set(n, fetch(`${BASE_MIDIA}thumbs-${n}.json`).then((r) => r.json()));
     const mapa = await pacotesThumb.get(n)!;
     return mapa[id];
   }
   const pos = ind.gifs[id];
   if (!pos) throw new Error("sem gif");
   const [n, ini, tam] = pos;
-  if (!pacotesGif.has(n)) pacotesGif.set(n, fetch(`${BASE}pacote-${n}.gif`).then((r) => r.arrayBuffer()));
+  if (!pacotesGif.has(n)) pacotesGif.set(n, fetch(`${BASE_MIDIA}pacote-${n}.gif`).then((r) => r.arrayBuffer()));
   const buf = await pacotesGif.get(n)!;
   return paraDataUrl(new Blob([buf.slice(ini, ini + tam)], { type: "image/gif" }));
 }
 
 function urlDireta(tipo: TipoMidia, id: string) {
-  return tipo === "gif" ? `${BASE}${id}.gif` : `${BASE}thumbs/${id}.jpg`;
+  return tipo === "gif" ? `${BASE_MIDIA}${id}.gif` : `${BASE_MIDIA}thumbs/${id}.jpg`;
 }
 
 function pedir(tipo: TipoMidia, id: string) {
@@ -107,4 +107,42 @@ export function useMidia(tipo: TipoMidia, gifId: string | null, ativo = true): s
   if (!gifId) return null;
   if (MODO === "arquivos") return urlDireta(tipo, gifId);
   return valor;
+}
+
+// Descrições (passo a passo) dos exercícios, em um JSON único baixado na primeira vez.
+let descricoes: Promise<Record<string, string[]>> | null = null;
+let descricoesProntas: Record<string, string[]> | null = null;
+
+function lerDescricoes() {
+  if (!descricoes)
+    descricoes = fetch(`${BASE_MIDIA}descricoes.json`)
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => {
+        descricoes = null;
+        return {};
+      })
+      .then((d) => {
+        descricoesProntas = d;
+        emitir();
+        return d;
+      });
+  return descricoes;
+}
+
+/** Passos de execução do exercício (undefined = carregando, null = sem descrição). */
+export function useDescricao(gifId: string | null): string[] | null | undefined {
+  const pronto = useSyncExternalStore(
+    (f) => {
+      ouvintes.add(f);
+      return () => ouvintes.delete(f);
+    },
+    () => descricoesProntas,
+    () => null
+  );
+  useEffect(() => {
+    if (gifId) lerDescricoes();
+  }, [gifId]);
+  if (!gifId) return null;
+  if (!pronto) return undefined;
+  return pronto[gifId] ?? null;
 }
