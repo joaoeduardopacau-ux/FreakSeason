@@ -27,18 +27,8 @@ export type Equipamento =
 /** Força: linhas de carga (kg) × repetições. Cardio: linhas de minutos × intensidade. */
 export type TipoExercicio = "forca" | "cardio";
 
-export type TecnicaId =
-  | "tradicional"
-  | "piramide_crescente"
-  | "piramide_decrescente"
-  | "progressao_carga"
-  | "fst7"
-  | "drop_set"
-  | "rest_pause"
-  | "bi_set"
-  | "gvt"
-  | "cardio_continuo"
-  | "cardio_hiit";
+/** Id de uma técnica do catálogo em tecnicas.ts (ex.: "piramide_crescente", "fst7"). */
+export type TecnicaId = string;
 
 export interface ExercicioCatalogo {
   id: string;
@@ -74,6 +64,7 @@ export interface ExercicioDoTreino {
   observacoes: string;
   tipo?: TipoExercicio; // ausente = força (registros antigos)
   tecnica?: TecnicaId;
+  descanso?: number; // segundos entre séries; ausente = padrão da técnica
 }
 
 export type StatusTreino = "em_andamento" | "concluido";
@@ -107,6 +98,7 @@ export interface ItemPlano {
   tecnica: TecnicaId;
   series: SeriePlano[];
   observacoes: string;
+  descanso?: number; // segundos entre séries; ausente = padrão da técnica
 }
 
 /** Ficha de treino com nome livre (Treino A, B, C…), sem dia fixo da semana. */

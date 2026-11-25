@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   adicionarItensFicha,
@@ -18,6 +18,7 @@ import { tecnicaPorId } from "@/lib/treinos/tecnicas";
 import { siglaFicha } from "@/lib/treinos/campos";
 import type { DadosTreinos, Ficha, ItemPlano } from "@/lib/treinos/types";
 import { CartaoItemPlano } from "@/components/treinos/CartaoItemPlano";
+import { ModelosProntos } from "@/components/treinos/ModelosProntos";
 import { SeletorExercicios } from "@/components/treinos/SeletorExercicios";
 import { SeletorTecnica } from "@/components/treinos/SeletorTecnica";
 import { Confirmacao } from "@/components/treinos/Sheet";
@@ -42,14 +43,14 @@ function Carregando() {
 function Fichas() {
   const estado = useTreinos();
   const params = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const fichaId = params.get("ficha");
 
   if (!estado) return <Carregando />;
 
   const abrir = (id: string | null) => {
-    router.replace(id ? `${pathname}?ficha=${id}` : pathname, { scroll: false });
+    // só muda o parâmetro da URL (History API nativo, integrado ao useSearchParams)
+    window.history.replaceState(null, "", id ? `${pathname}?ficha=${id}` : pathname);
     window.scrollTo({ top: 0 });
   };
 
@@ -79,6 +80,17 @@ function resumoItens(f: Ficha) {
 
 function ListaFichas({ dados, onAbrir }: { dados: DadosTreinos; onAbrir: (id: string) => void }) {
   const novo = () => onAbrir(criarFicha());
+  const [modelos, setModelos] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const botaoModelos = (destaque: boolean) => (
+    <button
+      className={"tr-btn tr-btn-block" + (destaque ? " tr-btn-lg" : "")}
+      style={{ marginTop: 12 }}
+      onClick={() => setModelos(true)}
+    >
+      <IconeCopiar size={20} /> Modelos prontos (PPL, Full body, GVT…)
+    </button>
+  );
   return (
     <div className="tr-page">
       <header style={{ padding: "20px 0 16px" }}>
@@ -97,6 +109,7 @@ function ListaFichas({ dados, onAbrir }: { dados: DadosTreinos; onAbrir: (id: st
           <button className="tr-btn tr-btn-primary tr-btn-lg tr-btn-block" onClick={novo}>
             <IconeMais /> Criar Treino A
           </button>
+          {botaoModelos(true)}
         </div>
       ) : (
         <>
@@ -124,7 +137,25 @@ function ListaFichas({ dados, onAbrir }: { dados: DadosTreinos; onAbrir: (id: st
           <button className="tr-btn tr-btn-block" style={{ marginTop: 12, borderStyle: "dashed" }} onClick={novo}>
             <IconeMais size={20} /> Novo treino
           </button>
+          {botaoModelos(false)}
         </>
+      )}
+
+      {modelos && (
+        <ModelosProntos
+          onFechar={() => setModelos(false)}
+          onCriadas={(qtd, nome) => {
+            setModelos(false);
+            setAviso(`${qtd} ${qtd === 1 ? "ficha criada" : "fichas criadas"}: ${nome}.`);
+            setTimeout(() => setAviso(null), 4000);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+          }}
+        />
+      )}
+      {aviso && (
+        <div className="tr-toast" role="status">
+          <span style={{ flex: 1 }}>{aviso}</span>
+        </div>
       )}
 
       <p className="tr-note" style={{ marginTop: 24, justifyContent: "center", textAlign: "center" }}>

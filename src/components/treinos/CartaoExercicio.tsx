@@ -5,6 +5,7 @@ import {
   adicionarSerie,
   atualizarObservacoes,
   atualizarSerie,
+  definirDescansoTreino,
   moverExercicio,
   removerSerie,
 } from "@/lib/treinos/store";
@@ -12,6 +13,9 @@ import { dataCurta } from "@/lib/treinos/datas";
 import { limparDecimal, limparInteiro, limparTexto, rotulos } from "@/lib/treinos/campos";
 import { ChipTecnica } from "./ChipTecnica";
 import { BotaoGif } from "./Gif";
+import { BotaoIntervalos, ControleDescanso } from "./ControleDescanso";
+import { descansoDe } from "@/lib/treinos/tecnicas";
+import { iniciarDescanso } from "@/lib/treinos/temporizador";
 import { IconeBaixo, IconeCheck, IconeCima, IconeLixo, IconeMais, IconeMenos } from "./Icones";
 
 
@@ -84,6 +88,16 @@ export function CartaoExercicio({
       </div>
 
       <ChipTecnica tecnica={item.tecnica} nome={item.nome} onClick={onTecnica} />
+      {cardio ? (
+        <BotaoIntervalos nome={item.nome} tecnica={item.tecnica} />
+      ) : (
+        <ControleDescanso
+          nome={item.nome}
+          segundos={descansoDe(item)}
+          onMudar={(seg) => definirDescansoTreino(data, item.id, seg)}
+          podeIniciar
+        />
+      )}
 
       <div className="tr-sets-head" aria-hidden="true">
         <span style={{ textAlign: "center" }}>{r.linha}</span>
@@ -137,7 +151,11 @@ export function CartaoExercicio({
               className="tr-check"
               aria-pressed={s.feita}
               aria-label={`Marcar ${cardio ? "bloco" : "série"} ${i + 1} de ${item.nome} como feita`}
-              onClick={() => atualizarSerie(data, item.id, s.id, { feita: !s.feita })}
+              onClick={() => {
+                atualizarSerie(data, item.id, s.id, { feita: !s.feita });
+                // ao marcar a série como feita, começa o descanso
+                if (!s.feita && !cardio) iniciarDescanso(descansoDe(item), `Descanso · ${item.nome}`);
+              }}
             >
               <IconeCheck size={26} />
             </button>

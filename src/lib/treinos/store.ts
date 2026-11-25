@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { CATALOGO_PADRAO, normalizar, tipoDoGrupo } from "./catalogo";
 import { tecnicaPadrao, tecnicaPorId } from "./tecnicas";
+import { MODELOS } from "./modelos";
 import type {
   DadosTreinos,
   Ficha,
@@ -290,7 +291,13 @@ export function excluirTreino(data: string) {
 }
 
 export function definirTecnicaTreino(data: string, itemId: string, tecnica: TecnicaId) {
-  alterarExercicio(data, itemId, (e) => ({ ...e, tecnica }));
+  // descanso volta ao padrão da nova técnica
+  alterarExercicio(data, itemId, (e) => ({ ...e, tecnica, descanso: undefined }));
+}
+
+/** Descanso entre séries (segundos) só neste treino. */
+export function definirDescansoTreino(data: string, itemId: string, segundos: number) {
+  alterarExercicio(data, itemId, (e) => ({ ...e, descanso: Math.max(5, Math.min(600, Math.round(segundos))) }));
 }
 
 // ───────── fichas (treinos com nome livre) ─────────
@@ -401,7 +408,7 @@ export function moverItemFicha(fichaId: string, itemId: string, direcao: -1 | 1)
 
 /** Troca a técnica e ajusta as séries para o modelo dela (mantendo as cargas). */
 export function definirTecnicaFicha(fichaId: string, itemId: string, tecnica: TecnicaId) {
-  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, tecnica, series: seriesDoModelo(tecnica, i.series) }));
+  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, tecnica, descanso: undefined, series: seriesDoModelo(tecnica, i.series) }));
 }
 
 export function atualizarSerieFicha(fichaId: string, itemId: string, serieId: string, patch: Partial<Omit<SeriePlano, "id">>) {
@@ -420,6 +427,11 @@ export function adicionarSerieFicha(fichaId: string, itemId: string) {
 
 export function removerSerieFicha(fichaId: string, itemId: string) {
   alterarItemFicha(fichaId, itemId, (i) => (i.series.length <= 1 ? i : { ...i, series: i.series.slice(0, -1) }));
+}
+
+/** Descanso entre séries (segundos) do exercício na ficha. */
+export function definirDescansoFicha(fichaId: string, itemId: string, segundos: number) {
+  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, descanso: Math.max(5, Math.min(600, Math.round(segundos))) }));
 }
 
 export function atualizarObservacoesFicha(fichaId: string, itemId: string, observacoes: string) {
@@ -481,10 +493,52 @@ export function iniciarTreino(fichaId: string, hoje: string): string | null {
       grupo: i.grupo,
       tipo: i.tipo,
       tecnica: i.tecnica,
+      descanso: i.descanso,
       observacoes: i.observacoes,
       series: i.series.map((x) => serieVazia({ carga: x.carga, reps: x.reps })),
     })),
   };
   gravar({ ...dados, treinos: { ...dados.treinos, [chave]: treino } });
   return chave;
+}
+
+/**
+ * Cria as fichas de um modelo pronto (ex.: Push/Pull/Legs) e retorna os ids criados.
+ * Se já existir ficha com o mesmo nome, a nova recebe um número no fim.
+ */
+export function criarFichasDeModelo(modeloId: string): string[] {
+  const { dados } = garantirEstado();
+  const modelo = MODELOS.find((m) => m.id === modeloId);
+  if (!modelo) return [];
+  const catalogo = new Map(catalogoCompleto(dados).map((e) => [e.id, e]));
+  const nomes = new Set(dados.fichas.map((f) => f.nome.trim().toLowerCase()));
+  const novas: Ficha[] = modelo.fichas.map((fm) => {
+    let nome = fm.nome;
+    for (let n = 2; nomes.has(nome.toLowerCase()); n++) nome = `${fm.nome} (${n})`;
+    nomes.add(nome.toLowerCase());
+    const itens: ItemPlano[] = [];
+    for (const im of fm.itens) {
+      const ex = catalogo.get(im.ex);
+      if (!ex) continue;
+      const tipo = tipoDoGrupo(ex.grupo);
+      const tecnica = im.tecnica ?? tecnicaPadrao(tipo);
+      const series: SeriePlano[] = im.reps
+        ? im.reps.map((r) => ({ id: novoId(), carga: "", reps: r }))
+        : seriesDoModelo(tecnica);
+      itens.push({
+        id: novoId(),
+        exercicioId: ex.id,
+        nome: ex.nome,
+        grupo: ex.grupo,
+        tipo,
+        tecnica,
+        series,
+        observacoes: im.obs ?? "",
+        ...(im.descanso ? { descanso: im.descanso } : {}),
+      });
+    }
+    return { id: novoId(), nome, descricao: fm.descricao, itens, criadoEm: agora() };
+  });
+  gravar({ ...dados, fichas: [...dados.fichas, ...novas] });
+  return novas.map((f) => f.id);
 }

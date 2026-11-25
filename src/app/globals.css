@@ -393,3 +393,50 @@ input, textarea { font-family: inherit; }
 .tr-chips + .tr-chips { padding-top: 4px; }
 .tr-chip.equip { height: 34px; font-size: 13px; }
 .tr-lista-info { font-size: 13px; color: var(--text2); padding: 8px 2px 4px; }
+
+/* Temporizador (descanso e intervalos) */
+.tr-timer {
+  position: fixed; z-index: 60; left: 50%; transform: translateX(-50%);
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  width: calc(100% - 24px); max-width: 424px;
+  background: var(--s2); border: 1px solid var(--accent); border-radius: 18px;
+  padding: 10px 12px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+.tr-timer.fim { border-color: var(--green); }
+.tr-timer.intervalo.trabalho { border-color: var(--accent); background: #2a1710; }
+.tr-timer.intervalo.pausa { border-color: var(--blue); background: #111c2a; }
+.tr-timer-topo { display: flex; align-items: center; gap: 6px; }
+.tr-timer-rotulo { flex: 1; min-width: 0; font-size: 13px; color: var(--text2); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-timer-fechar {
+  width: 36px; height: 36px; border-radius: 10px; border: none; background: transparent; color: var(--text2);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.tr-timer-linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.tr-timer-tempo { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.tr-timer.fim .tr-timer-tempo { color: var(--green); }
+.tr-timer-fase { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; color: var(--accent); }
+.tr-timer.intervalo.pausa .tr-timer-fase { color: var(--blue); }
+.tr-timer-msg { font-size: 14px; color: var(--green); font-weight: 700; text-align: right; }
+.tr-timer-botoes { display: flex; gap: 6px; }
+.tr-timer-btn {
+  min-width: 52px; height: 46px; padding: 0 12px; border-radius: 12px; font-size: 15px; font-weight: 700;
+  background: var(--s3); border: 1px solid var(--border); color: var(--text); cursor: pointer;
+}
+.tr-timer-btn.forte { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tr-timer-barra { height: 5px; border-radius: 999px; background: var(--s3); margin-top: 8px; overflow: hidden; }
+.tr-timer-barra span { display: block; height: 100%; background: var(--accent); transition: width 0.2s linear; }
+.tr-timer.fim .tr-timer-barra span { background: var(--green); }
+.tr-timer.intervalo.pausa .tr-timer-barra span { background: var(--blue); }
+
+/* Controle de descanso nos cartões */
+.tr-descanso { display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px; }
+.tr-descanso-rot { font-size: 13px; color: var(--text2); font-weight: 600; flex: 1; }
+.tr-descanso-valor { font-size: 15px; font-weight: 800; min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
+.tr-mini-btn {
+  height: 36px; min-width: 40px; padding: 0 10px; border-radius: 10px; font-size: 15px; font-weight: 700;
+  background: var(--s2); border: 1px solid var(--border); color: var(--text); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tr-mini-btn.acento { background: var(--accent-dim); border-color: rgba(232,83,26,0.4); color: var(--accent); }
+.tr-tec-grupo { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 800; margin: 16px 0 4px; }
+.tr-tec-extra { display: block; font-size: 12px; color: var(--text3); margin-top: 3px; }

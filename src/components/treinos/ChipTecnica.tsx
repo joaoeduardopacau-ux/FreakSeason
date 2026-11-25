@@ -4,7 +4,7 @@ import type { TecnicaId } from "@/lib/treinos/types";
 import { tecnicaPorId } from "@/lib/treinos/tecnicas";
 import { IconeBaixo } from "./Icones";
 
-/** Botão que mostra a técnica escolhida e abre o seletor; logo abaixo, como executar. */
+/** Botão que mostra a técnica escolhida e abre o seletor; logo abaixo, como executar e progredir. */
 export function ChipTecnica({ tecnica, nome, onClick }: { tecnica?: TecnicaId; nome: string; onClick: () => void }) {
   const t = tecnicaPorId(tecnica);
   return (
@@ -14,12 +14,15 @@ export function ChipTecnica({ tecnica, nome, onClick }: { tecnica?: TecnicaId; n
         <span style={{ flex: 1, textAlign: "left" }}>{t?.nome ?? "Escolher técnica"}</span>
         <IconeBaixo size={18} />
       </button>
-      {t && t.id !== "tradicional" && (
-        <p className="tr-note" style={{ marginTop: 6, fontSize: 13 }}>
-          <span>
-            {t.comoFazer}
-            {t.descanso ? ` Descanso: ${t.descanso}.` : ""}
-          </span>
+      {t && (
+        <p className="tr-note" style={{ marginTop: 6, fontSize: 13, display: "block" }}>
+          {t.comoFazer}
+          {t.progressao && (
+            <>
+              {" "}
+              <strong style={{ color: "var(--text)" }}>Progressão:</strong> {t.progressao}
+            </>
+          )}
         </p>
       )}
     </div>

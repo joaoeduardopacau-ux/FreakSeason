@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   adicionarExercicios,
   concluirTreino,
@@ -45,7 +45,6 @@ function Carregando() {
 
 function Treinos() {
   const estado = useTreinos();
-  const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const sessao = params.get("sessao");
@@ -53,7 +52,9 @@ function Treinos() {
   if (!estado) return <Carregando />;
 
   const abrir = (chave: string | null) => {
-    router.replace(chave ? `${pathname}?sessao=${encodeURIComponent(chave)}` : pathname, { scroll: false });
+    // só muda o parâmetro da URL: o History API nativo integra com useSearchParams
+    // e funciona mesmo quando a página foi aberta direto com ?sessao= (recarga)
+    window.history.replaceState(null, "", chave ? `${pathname}?sessao=${encodeURIComponent(chave)}` : pathname);
     window.scrollTo({ top: 0 });
   };
 
@@ -341,6 +342,8 @@ function ExecucaoTreino({
         <IconeCelular size={16} />
         <span>Salvo automaticamente neste aparelho. Mudanças aqui não alteram a ficha.</span>
       </p>
+      {/* espaço para a barra do temporizador não cobrir o fim da página */}
+      <div style={{ height: 150 }} aria-hidden="true" />
 
       {dialogo?.tipo === "seletor" && (
         <SeletorExercicios
