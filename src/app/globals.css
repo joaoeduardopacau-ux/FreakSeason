@@ -394,49 +394,122 @@ input, textarea { font-family: inherit; }
 .tr-chip.equip { height: 34px; font-size: 13px; }
 .tr-lista-info { font-size: 13px; color: var(--text2); padding: 8px 2px 4px; }
 
-/* Temporizador (descanso e intervalos) */
-.tr-timer {
-  position: fixed; z-index: 60; left: 50%; transform: translateX(-50%);
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-  width: calc(100% - 24px); max-width: 424px;
-  background: var(--s2); border: 1px solid var(--accent); border-radius: 18px;
-  padding: 10px 12px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-}
-.tr-timer.fim { border-color: var(--green); }
-.tr-timer.intervalo.trabalho { border-color: var(--accent); background: #2a1710; }
-.tr-timer.intervalo.pausa { border-color: var(--blue); background: #111c2a; }
-.tr-timer-topo { display: flex; align-items: center; gap: 6px; }
-.tr-timer-rotulo { flex: 1; min-width: 0; font-size: 13px; color: var(--text2); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tr-timer-fechar {
-  width: 36px; height: 36px; border-radius: 10px; border: none; background: transparent; color: var(--text2);
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.tr-timer-linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
-.tr-timer-tempo { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
-.tr-timer.fim .tr-timer-tempo { color: var(--green); }
-.tr-timer-fase { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; color: var(--accent); }
-.tr-timer.intervalo.pausa .tr-timer-fase { color: var(--blue); }
-.tr-timer-msg { font-size: 14px; color: var(--green); font-weight: 700; text-align: right; }
-.tr-timer-botoes { display: flex; gap: 6px; }
-.tr-timer-btn {
-  min-width: 52px; height: 46px; padding: 0 12px; border-radius: 12px; font-size: 15px; font-weight: 700;
-  background: var(--s3); border: 1px solid var(--border); color: var(--text); cursor: pointer;
-}
-.tr-timer-btn.forte { background: var(--accent); border-color: var(--accent); color: #fff; }
-.tr-timer-barra { height: 5px; border-radius: 999px; background: var(--s3); margin-top: 8px; overflow: hidden; }
-.tr-timer-barra span { display: block; height: 100%; background: var(--accent); transition: width 0.2s linear; }
-.tr-timer.fim .tr-timer-barra span { background: var(--green); }
-.tr-timer.intervalo.pausa .tr-timer-barra span { background: var(--blue); }
-
-/* Controle de descanso nos cartões */
-.tr-descanso { display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px; }
-.tr-descanso-rot { font-size: 13px; color: var(--text2); font-weight: 600; flex: 1; }
-.tr-descanso-valor { font-size: 15px; font-weight: 800; min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
-.tr-mini-btn {
-  height: 36px; min-width: 40px; padding: 0 10px; border-radius: 10px; font-size: 15px; font-weight: 700;
-  background: var(--s2); border: 1px solid var(--border); color: var(--text); cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-}
-.tr-mini-btn.acento { background: var(--accent-dim); border-color: rgba(232,83,26,0.4); color: var(--accent); }
 .tr-tec-grupo { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 800; margin: 16px 0 4px; }
 .tr-tec-extra { display: block; font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+/* ═════════ Treino guiado e animações ═════════ */
+@keyframes tr-surge { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes tr-da-direita { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes tr-da-esquerda { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+@keyframes tr-sobe { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes tr-escurece { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tr-acende {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); transform: scale(1); }
+  40% { box-shadow: 0 0 0 10px rgba(34,197,94,0); transform: scale(1.04); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); transform: scale(1); }
+}
+@keyframes tr-pop { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes tr-confete {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(420px) rotate(540deg); opacity: 0; }
+}
+
+.tr-page { animation: tr-surge 0.25s ease-out; }
+.tr-overlay { animation: tr-escurece 0.18s ease-out; }
+.tr-sheet { animation: tr-sobe 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.tr-dialog { animation: tr-pop 0.22s ease-out; }
+.tr-toast { animation: tr-surge 0.22s ease-out; }
+.tr-btn, .tr-check, .tr-icon-btn, .tr-chip, .tg-passo, .tg-chip, .tr-semana-dia { transition: transform 0.08s ease, background-color 0.2s, border-color 0.2s; }
+.tr-btn:active, .tr-icon-btn:active, .tg-passo:active, .tg-chip:active, .tr-semana-dia:active { transform: scale(0.97); }
+.tr-check { transition: background-color 0.2s, border-color 0.2s, transform 0.1s; }
+.tr-check[aria-pressed="true"] { animation: tr-acende 0.5s ease-out; }
+.tr-set { transition: background-color 0.3s; }
+
+/* progresso e seletor de modo no topo da execução */
+.tg-progresso { height: 6px; border-radius: 999px; background: var(--s3); margin: 10px 4px 0; overflow: hidden; }
+.tg-progresso span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #FF8A3D); transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.tg-modo { display: flex; gap: 4px; background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin: 10px 0 0; }
+.tg-modo button { flex: 1; height: 36px; border: none; border-radius: 9px; background: transparent; color: var(--text2); font-size: 14px; font-weight: 700; cursor: pointer; }
+.tg-modo button[aria-pressed="true"] { background: var(--s3); color: var(--text); }
+
+/* treino guiado */
+.tg-mapa { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; }
+.tg-mapa::-webkit-scrollbar { display: none; }
+.tg-ponto {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--s1); color: var(--text2); font-size: 13px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.25s;
+}
+.tg-ponto.ok { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.tg-ponto.atual { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.08); }
+.tg-cartao { background: var(--s1); border: 1px solid var(--border); border-radius: 18px; padding: 14px; }
+.tg-cartao.entra-frente { animation: tr-da-direita 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.tg-cartao.entra-tras { animation: tr-da-esquerda 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.tg-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tg-contador { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); font-weight: 700; }
+.tg-tecnica {
+  display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 10px; border-radius: 999px;
+  background: var(--accent-dim); border: 1px solid rgba(232,83,26,0.35); color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.tg-nome { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin: 8px 0 10px; text-wrap: balance; }
+.tg-gif { display: block; width: 100%; max-width: 260px; height: auto; aspect-ratio: 1; margin: 0 auto; background: #fff; border-radius: 16px; object-fit: contain; }
+.tg-dica { font-size: 13px; color: var(--text2); line-height: 1.45; margin-top: 10px; }
+.tg-anterior { font-size: 13px; color: var(--text2); margin-top: 8px; }
+.tg-series { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 10px; }
+.tg-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 10px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--border); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.tg-chip-num { width: 20px; height: 20px; border-radius: 6px; background: var(--s3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text2); }
+.tg-chip.atual { border-color: var(--accent); background: var(--accent-dim); }
+.tg-chip.feita .tg-chip-num { background: var(--green); color: #06210f; }
+.tg-chip.feita { color: var(--green); }
+.tg-chip.acende { animation: tr-acende 0.5s ease-out; }
+.tg-chip.mais { color: var(--text2); padding: 0 12px; }
+.tg-serie { background: var(--s2); border: 1px solid var(--border); border-radius: 16px; padding: 14px; transition: border-color 0.3s, background-color 0.3s; }
+.tg-serie.feita { border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.06); }
+.tg-serie.acende { animation: tr-acende 0.5s ease-out; }
+.tg-serie-titulo { font-size: 17px; font-weight: 800; margin-bottom: 10px; }
+.tg-ok { color: var(--green); }
+.tg-campo { margin-bottom: 10px; }
+.tg-rot { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); font-weight: 700; margin-bottom: 6px; }
+.tg-ajuste { display: grid; grid-template-columns: 64px 1fr 64px; gap: 8px; }
+.tg-passo { height: 56px; border-radius: 14px; border: 1px solid var(--border); background: var(--s3); color: var(--text); font-size: 17px; font-weight: 800; cursor: pointer; }
+.tg-num {
+  width: 100%; height: 56px; text-align: center; font-size: 28px; font-weight: 800; color: var(--text);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 14px; outline: none; font-variant-numeric: tabular-nums;
+}
+.tg-num.texto { font-size: 18px; }
+.tg-num:focus { border-color: var(--accent); }
+.tg-num::placeholder { color: var(--text3); font-weight: 600; }
+.tg-feito {
+  width: 100%; height: 64px; margin-top: 6px; border: none; border-radius: 16px; cursor: pointer;
+  background: var(--green); color: #06210f; font-size: 20px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.08s, background-color 0.2s;
+}
+.tg-feito:active { transform: scale(0.97); }
+.tg-feito.desfazer { background: var(--s3); color: var(--text2); font-size: 16px; height: 52px; }
+.tg-obs-toggle { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: none; border: none; color: var(--text2); font-size: 14px; font-weight: 600; cursor: pointer; padding: 6px 0; }
+.tg-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+/* fim do treino */
+.tg-fim { position: relative; overflow: hidden; text-align: center; background: var(--s1); border: 1px solid var(--border); border-radius: 20px; padding: 28px 18px 18px; animation: tr-surge 0.3s ease-out; }
+.tg-fim.concluido { border-color: var(--green); }
+.tg-fim-icone { width: 76px; height: 76px; margin: 0 auto 12px; border-radius: 999px; background: var(--green); color: #06210f; display: flex; align-items: center; justify-content: center; animation: tr-pop 0.45s ease-out; }
+.tg-fim-titulo { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.tg-fim-sub { font-size: 15px; color: var(--text2); margin-top: 6px; line-height: 1.45; }
+.tg-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0; }
+.tg-stats div { background: var(--s2); border-radius: 14px; padding: 12px 6px; }
+.tg-stats strong { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tg-stats span { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; }
+.tg-fim-botoes { display: flex; flex-direction: column; gap: 10px; }
+.tg-confete { position: absolute; inset: 0; pointer-events: none; }
+.tg-confete span { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; animation: tr-confete 1.8s ease-in forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-page, .tr-overlay, .tr-sheet, .tr-dialog, .tr-toast, .tg-cartao, .tg-fim, .tg-fim-icone,
+  .tg-chip.acende, .tg-serie.acende, .tr-check[aria-pressed="true"] { animation: none !important; }
+  .tg-confete { display: none; }
+  .tg-progresso span { transition: none; }
+}

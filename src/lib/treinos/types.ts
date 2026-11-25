@@ -64,7 +64,6 @@ export interface ExercicioDoTreino {
   observacoes: string;
   tipo?: TipoExercicio; // ausente = força (registros antigos)
   tecnica?: TecnicaId;
-  descanso?: number; // segundos entre séries; ausente = padrão da técnica
 }
 
 export type StatusTreino = "em_andamento" | "concluido";
@@ -98,7 +97,6 @@ export interface ItemPlano {
   tecnica: TecnicaId;
   series: SeriePlano[];
   observacoes: string;
-  descanso?: number; // segundos entre séries; ausente = padrão da técnica
 }
 
 /** Ficha de treino com nome livre (Treino A, B, C…), sem dia fixo da semana. */

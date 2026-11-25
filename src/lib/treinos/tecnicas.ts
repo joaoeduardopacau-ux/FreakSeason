@@ -15,12 +15,6 @@ export type CategoriaTecnica =
   | "Cardio contínuo"
   | "Cardio intervalado";
 
-export interface Intervalo {
-  trabalho: number; // segundos de esforço
-  pausa: number; // segundos de recuperação
-  rodadas: number;
-}
-
 export interface Tecnica {
   id: TecnicaId;
   nome: string;
@@ -31,8 +25,6 @@ export interface Tecnica {
   progressao?: string; // como evoluir
   origem?: string; // criador / escola
   descanso?: string; // texto exibido (ex.: "60–90 s")
-  descansoSeg: number; // padrão do temporizador entre séries
-  intervalo?: Intervalo; // só cardio intervalado: temporizador de trabalho/pausa
   /** Séries sugeridas ao escolher a técnica. Força: reps. Cardio: [minutos, intensidade]. */
   modelo: { carga?: string; reps: string }[];
 }
@@ -60,7 +52,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Faça todas as séries com a mesma carga, parando com 1–3 repetições sobrando (RIR 1–3).",
     progressao: "Dupla progressão: ao fazer o topo da faixa (ex.: 12 reps) em todas as séries, aumente a carga.",
     descanso: "60–90 s (2 min nos multiarticulares)",
-    descansoSeg: 90,
     modelo: repetir(3, "10"),
   },
   {
@@ -73,7 +64,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Quando a última série sair com folga, suba a carga de todas as séries.",
     origem: "Princípios Weider",
     descanso: "60–90 s",
-    descansoSeg: 90,
     modelo: [{ reps: "12" }, { reps: "10" }, { reps: "8" }, { reps: "6" }],
   },
   {
@@ -86,7 +76,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Suba a carga da primeira série quando passar de 6 repetições.",
     origem: "Princípios Weider",
     descanso: "60–90 s",
-    descansoSeg: 90,
     modelo: [{ reps: "6" }, { reps: "8" }, { reps: "10" }, { reps: "12" }],
   },
   {
@@ -98,7 +87,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Mantenha as repetições. Quando completar todas as séries com boa execução, aumente a carga no próximo treino.",
     progressao: "Sobrecarga progressiva: +1–2,5 kg nos exercícios de braço e +2,5–5 kg nos de perna.",
     descanso: "90–120 s",
-    descansoSeg: 120,
     modelo: repetir(4, "8"),
   },
 
@@ -113,7 +101,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Use só na última série de cada exercício para não acumular fadiga demais.",
     origem: "Princípios Weider",
     descanso: "60–90 s",
-    descansoSeg: 90,
     modelo: repetir(3, "10"),
   },
   {
@@ -126,7 +113,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Estilo DC Training: anote as cargas e tente bater o caderno a cada sessão.",
     origem: "Popularizado por Dante Trudel (DC Training)",
     descanso: "90–120 s entre exercícios",
-    descansoSeg: 15,
     modelo: [{ reps: "8" }, { reps: "4" }, { reps: "3" }],
   },
   {
@@ -138,7 +124,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Faça uma série de ativação de 12–20 reps perto da falha. Depois, pausas de 3–5 respirações e mini-séries de 3–5 reps, até não conseguir manter.",
     progressao: "Quando passar de 5 mini-séries, aumente a carga.",
     descanso: "15 s entre mini-séries",
-    descansoSeg: 15,
     modelo: [{ reps: "15" }, { reps: "5" }, { reps: "5" }, { reps: "5" }],
   },
   {
@@ -150,7 +135,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Use carga alta (perto de 85%) e divida a série em blocos de 2–3 reps com 10–30 s de pausa entre eles. Cada linha é um bloco.",
     progressao: "Aumente a carga quando fizer todos os blocos com boa velocidade.",
     descanso: "20 s entre blocos",
-    descansoSeg: 20,
     modelo: repetir(4, "3"),
   },
   {
@@ -162,7 +146,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Faça uma série deste exercício e, sem descanso, uma série do próximo da lista. Mesmo músculo = bi-set; antagonistas (ex.: peito e costas) = super-série. Descanse só depois do par.",
     origem: "Princípios Weider (muito usado por Arnold)",
     descanso: "60–90 s após o par",
-    descansoSeg: 90,
     modelo: repetir(3, "12"),
   },
   {
@@ -173,7 +156,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Três ou mais exercícios encadeados sem pausa.",
     comoFazer: "Faça este exercício e os próximos 2 ou 3 da lista em sequência, sem descanso. Descanse só ao fim da volta.",
     descanso: "90–120 s após a volta",
-    descansoSeg: 120,
     modelo: repetir(3, "12"),
   },
   {
@@ -185,7 +167,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Faça este exercício isolador (ex.: crucifixo) e passe direto para o multiarticular (ex.: supino) sem pausa. Deixe o isolador antes na lista.",
     origem: "Usado no HIT de Mike Mentzer",
     descanso: "90 s após o par",
-    descansoSeg: 90,
     modelo: repetir(3, "10"),
   },
   {
@@ -197,7 +178,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Vá até a falha e peça ajuda do parceiro para fazer mais 1–3 repetições, só com a ajuda necessária.",
     origem: "Dorian Yates (Blood and Guts)",
     descanso: "2 min",
-    descansoSeg: 120,
     modelo: repetir(2, "8"),
   },
   {
@@ -208,7 +188,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Reps em amplitude parcial na posição alongada.",
     comoFazer: "Após a falha na amplitude completa, continue com repetições parciais na parte em que o músculo está mais alongado.",
     descanso: "60–90 s",
-    descansoSeg: 90,
     modelo: repetir(3, "10"),
   },
 
@@ -223,7 +202,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Aumente o volume ao longo do mesociclo (4–6 semanas) e faça uma semana de descarga.",
     origem: "Schoenfeld, Krieger, Israetel (RP)",
     descanso: "1–3 min",
-    descansoSeg: 120,
     modelo: repetir(3, "10"),
   },
   {
@@ -236,7 +214,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Quando completar as 10 séries de 10, aumente 4–5% da carga na sessão seguinte.",
     origem: "Escola alemã; popularizado por Charles Poliquin",
     descanso: "60–90 s",
-    descansoSeg: 75,
     modelo: repetir(10, "10"),
   },
   {
@@ -248,7 +225,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "7 séries de 10–12 repetições num exercício isolador, com 30–45 s de pausa, alongando o músculo entre as séries. Costuma ser o último exercício do grupo.",
     origem: "Hany Rambod",
     descanso: "30–45 s",
-    descansoSeg: 40,
     modelo: repetir(7, "12"),
   },
   {
@@ -261,7 +237,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Descanse 4–7 dias entre treinos do mesmo músculo e tente subir reps ou carga a cada sessão.",
     origem: "Arthur Jones; Mike Mentzer (Heavy Duty)",
     descanso: "2–3 min",
-    descansoSeg: 150,
     modelo: [{ reps: "12" }, { reps: "8" }, { reps: "8" }],
   },
   {
@@ -273,7 +248,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Semana 1 pesada (6–10 reps), semana 2 moderada (8–12) e semana 3 de alto volume (15–30+). Ajuste as repetições conforme a semana.",
     origem: "Neil Hill",
     descanso: "60–120 s",
-    descansoSeg: 90,
     modelo: repetir(3, "8"),
   },
 
@@ -288,7 +262,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "+2,5–5 kg no agachamento e terra e +1–2,5 kg nos de braço a cada sessão. Ao falhar duas vezes a mesma carga, reduza 10% e suba de novo.",
     origem: "Starting Strength (Rippetoe) e StrongLifts 5×5",
     descanso: "3–5 min",
-    descansoSeg: 180,
     modelo: repetir(5, "5"),
   },
   {
@@ -301,7 +274,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "A cada ciclo, suba o máximo de treino em 2,5 kg (braços) e 5 kg (pernas).",
     origem: "Jim Wendler",
     descanso: "3–5 min",
-    descansoSeg: 180,
     modelo: [{ reps: "5" }, { reps: "5" }, { reps: "5" }],
   },
   {
@@ -314,7 +286,6 @@ export const TECNICAS: Tecnica[] = [
     progressao: "Se a série @ RPE 8 sair fácil, suba 2,5–5 kg; se sair pesada, reduza.",
     origem: "Mike Tuchscherer (RTS)",
     descanso: "3 min",
-    descansoSeg: 180,
     modelo: repetir(4, "3"),
   },
 
@@ -327,7 +298,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Descida lenta de 3–6 s em cada repetição.",
     comoFazer: "Controle a fase de descida em 3–6 segundos e suba normalmente. Bom para hipertrofia, tendões e prevenção de lesões.",
     descanso: "90 s",
-    descansoSeg: 90,
     modelo: repetir(3, "8"),
   },
   {
@@ -339,7 +309,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Cada repetição dura cerca de 20 s (10 s subindo e 10 s descendo). Faça uma série até a falha. Baixo impacto articular.",
     origem: "Ken Hutchins",
     descanso: "2 min",
-    descansoSeg: 120,
     modelo: [{ reps: "6" }],
   },
 
@@ -353,7 +322,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Com o manguito inflado (40–80% da oclusão arterial), faça 30 – 15 – 15 – 15 repetições com 20–40% de 1RM e 30–60 s de pausa. Use orientação profissional, principalmente com histórico vascular.",
     origem: "Yoshiaki Sato (KAATSU)",
     descanso: "30–60 s",
-    descansoSeg: 45,
     modelo: [{ reps: "30" }, { reps: "15" }, { reps: "15" }, { reps: "15" }],
   },
 
@@ -366,7 +334,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Ritmo constante em que dá para conversar.",
     comoFazer: "Mantenha o mesmo ritmo durante todo o tempo, numa intensidade em que ainda dá para conversar (abaixo do 1º limiar). É a base da resistência.",
     progressao: "Aumente o tempo total aos poucos (até ~10% por semana).",
-    descansoSeg: 60,
     modelo: [{ carga: "30", reps: "Z1 / conversa fácil" }],
   },
   {
@@ -376,7 +343,6 @@ export const TECNICAS: Tecnica[] = [
     categoria: "Cardio contínuo",
     resumo: "20–60 min “confortavelmente difícil”.",
     comoFazer: "Ritmo perto do limiar de lactato: dá para falar só frases curtas. Faça 20 a 60 minutos.",
-    descansoSeg: 60,
     modelo: [{ carga: "10", reps: "Aquecimento" }, { carga: "25", reps: "Limiar (Z2)" }, { carga: "5", reps: "Desaquecimento" }],
   },
   {
@@ -388,7 +354,6 @@ export const TECNICAS: Tecnica[] = [
     comoFazer: "Treine com a frequência cardíaca até 180 − sua idade (ex.: 30 anos → 150 bpm). Uma vez por mês, faça o teste MAF: 5 km na FC-alvo anotando o ritmo.",
     progressao: "Se o ritmo no teste MAF melhora mês a mês, a base aeróbia está crescendo.",
     origem: "Phil Maffetone",
-    descansoSeg: 60,
     modelo: [{ carga: "45", reps: "FC ≤ 180 − idade" }],
   },
   {
@@ -399,7 +364,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Acelerações livres sem parar, alternando rápido e lento.",
     comoFazer: "“Jogo de velocidade”: alterne trechos rápidos e lentos como quiser, sem parar. Ex.: 13 × 3 min rápido com 1 min trotando.",
     origem: "Gösta Holmer (Suécia)",
-    descansoSeg: 60,
     modelo: [{ carga: "10", reps: "Leve" }, { carga: "20", reps: "Rápido/lento livre" }, { carga: "5", reps: "Leve" }],
   },
   {
@@ -410,8 +374,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "Alterna corrida e caminhada (ótimo para iniciantes).",
     comoFazer: "Alterne corrida e caminhada em proporções fixas. Semana 1: 8 × (1 min correndo + 2 min andando). Vá aumentando a corrida até 25–30 min contínuos em 8 semanas.",
     origem: "Jeff Galloway",
-    descansoSeg: 120,
-    intervalo: { trabalho: 60, pausa: 120, rodadas: 8 },
     modelo: [{ carga: "5", reps: "Caminhada" }, { carga: "24", reps: "8 × (1 min corre + 2 min anda)" }],
   },
 
@@ -423,8 +385,6 @@ export const TECNICAS: Tecnica[] = [
     categoria: "Cardio intervalado",
     resumo: "Esforços de 85–95% da FC máx com recuperação.",
     comoFazer: "Alterne esforços fortes (85–95% da FC máxima) com recuperação leve, numa razão de 2:1 ou 1:1. Ex.: 30 s forte / 30 s leve.",
-    descansoSeg: 30,
-    intervalo: { trabalho: 30, pausa: 30, rodadas: 10 },
     modelo: [{ carga: "5", reps: "Aquecimento" }, { carga: "10", reps: "30s forte / 30s leve" }, { carga: "5", reps: "Desaquecimento" }],
   },
   {
@@ -435,8 +395,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "8 × (20 s máximos + 10 s parado) = 4 min.",
     comoFazer: "8 rodadas de 20 s no esforço máximo com 10 s de pausa. O original exige intensidade muito alta (bike ergométrica). Aqueça antes.",
     origem: "Izumi Tabata, 1996",
-    descansoSeg: 10,
-    intervalo: { trabalho: 20, pausa: 10, rodadas: 8 },
     modelo: [{ carga: "5", reps: "Aquecimento" }, { carga: "4", reps: "8 × 20s / 10s" }, { carga: "3", reps: "Desaquecimento" }],
   },
   {
@@ -447,8 +405,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "4 × 4 min a 90–95% da FC máx com 3 min leves.",
     comoFazer: "10 min leve, depois 4 blocos de 4 min a 90–95% da FC máxima com 3 min de recuperação ativa (~70%). Termine com 5 min leve.",
     origem: "Helgerud e Wisløff (NTNU), 2007",
-    descansoSeg: 180,
-    intervalo: { trabalho: 240, pausa: 180, rodadas: 4 },
     modelo: [{ carga: "10", reps: "Aquecimento" }, { carga: "28", reps: "4 × 4 min forte / 3 min leve" }, { carga: "5", reps: "Leve" }],
   },
   {
@@ -459,8 +415,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "10 × (60 s forte + 75 s leve).",
     comoFazer: "8–12 esforços de 60 s a ~90% da FC máxima com 75 s leves entre eles. Na bike ou esteira.",
     origem: "Universidade McMaster",
-    descansoSeg: 75,
-    intervalo: { trabalho: 60, pausa: 75, rodadas: 10 },
     modelo: [{ carga: "5", reps: "Aquecimento" }, { carga: "23", reps: "10 × 60s forte / 75s leve" }],
   },
   {
@@ -471,8 +425,6 @@ export const TECNICAS: Tecnica[] = [
     resumo: "4–6 × 30 s máximos com 4 min de pausa.",
     comoFazer: "4 a 6 sprints de 30 s no esforço máximo, com 4 min de pausa leve entre eles.",
     origem: "Baseado no teste de Wingate",
-    descansoSeg: 240,
-    intervalo: { trabalho: 30, pausa: 240, rodadas: 5 },
     modelo: [{ carga: "5", reps: "Aquecimento" }, { carga: "23", reps: "5 × 30s máx / 4 min leve" }],
   },
   {
@@ -482,8 +434,6 @@ export const TECNICAS: Tecnica[] = [
     categoria: "Cardio intervalado",
     resumo: "Tarefa no início de cada minuto; descansa o que sobrar.",
     comoFazer: "Every minute on the minute: a cada minuto, faça a tarefa (ex.: 12 swings) e descanse o resto do minuto. Ex.: EMOM 20 min.",
-    descansoSeg: 60,
-    intervalo: { trabalho: 60, pausa: 0, rodadas: 20 },
     modelo: [{ carga: "20", reps: "1 tarefa por minuto" }],
   },
 ];
@@ -494,22 +444,4 @@ export function tecnicaPorId(id: TecnicaId | undefined): Tecnica | undefined {
 
 export function tecnicaPadrao(tipo: TipoExercicio): TecnicaId {
   return tipo === "cardio" ? "cardio_continuo" : "tradicional";
-}
-
-/** Descanso efetivo entre séries (segundos): o do exercício, senão o padrão da técnica. */
-export function descansoDe(item: { descanso?: number; tecnica?: TecnicaId; tipo?: TipoExercicio }): number {
-  if (item.descanso && item.descanso > 0) return item.descanso;
-  return tecnicaPorId(item.tecnica)?.descansoSeg ?? (item.tipo === "cardio" ? 60 : 90);
-}
-
-export function formatarTempo(seg: number): string {
-  const s = Math.max(0, Math.round(seg));
-  const m = Math.floor(s / 60);
-  const r = s % 60;
-  return m > 0 ? `${m}:${String(r).padStart(2, "0")}` : `${r} s`;
-}
-
-export function formatarRelogio(seg: number): string {
-  const s = Math.max(0, Math.ceil(seg));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }

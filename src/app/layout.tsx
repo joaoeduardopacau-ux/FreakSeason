@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import RegistrarSW from "@/components/RegistrarSW";
-import Temporizador from "@/components/treinos/Temporizador";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +34,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.variable}>
         <div className="max-w-md mx-auto min-h-screen flex flex-col">
           <main className="flex-1 pb-[calc(76px+env(safe-area-inset-bottom))]">{children}</main>
-          <Temporizador />
           <BottomNav />
           <RegistrarSW />
         </div>

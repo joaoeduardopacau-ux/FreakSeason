@@ -28,3 +28,10 @@ export function siglaFicha(nome: string) {
   const partes = nome.trim().split(/\s+/).filter(Boolean);
   return (partes.length > 1 ? partes[0][0] + partes[1][0] : (partes[0] ?? "T").slice(0, 2)).toUpperCase();
 }
+
+/** Soma um passo a um número escrito com vírgula ("22,5" + 2,5 → "25"). Nunca fica negativo. */
+export function somarPasso(valor: string, passo: number): string {
+  const n = parseFloat((valor || "0").replace(",", "."));
+  const r = Math.max(0, Math.round(((Number.isFinite(n) ? n : 0) + passo) * 100) / 100);
+  return String(r).replace(".", ",");
+}

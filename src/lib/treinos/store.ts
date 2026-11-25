@@ -263,6 +263,31 @@ export function atualizarSerie(data: string, itemId: string, serieId: string, pa
   }));
 }
 
+/**
+ * Marca/desmarca a série como feita. Ao marcar, a próxima série ainda não feita
+ * herda a carga (e as reps, se estiverem vazias) para economizar toques.
+ */
+export function alternarSerieFeita(data: string, itemId: string, serieId: string) {
+  alterarExercicio(data, itemId, (e) => {
+    const i = e.series.findIndex((x) => x.id === serieId);
+    if (i < 0) return e;
+    const atual = e.series[i];
+    const feita = !atual.feita;
+    const series = e.series.map((x, k) => {
+      if (k === i) return { ...x, feita };
+      if (feita && k === i + 1 && !x.feita) {
+        return {
+          ...x,
+          carga: x.carga || atual.carga,
+          reps: x.reps || atual.reps,
+        };
+      }
+      return x;
+    });
+    return { ...e, series };
+  });
+}
+
 export function adicionarSerie(data: string, itemId: string) {
   alterarExercicio(data, itemId, (e) => {
     const ultima = e.series[e.series.length - 1];
@@ -291,13 +316,7 @@ export function excluirTreino(data: string) {
 }
 
 export function definirTecnicaTreino(data: string, itemId: string, tecnica: TecnicaId) {
-  // descanso volta ao padrão da nova técnica
-  alterarExercicio(data, itemId, (e) => ({ ...e, tecnica, descanso: undefined }));
-}
-
-/** Descanso entre séries (segundos) só neste treino. */
-export function definirDescansoTreino(data: string, itemId: string, segundos: number) {
-  alterarExercicio(data, itemId, (e) => ({ ...e, descanso: Math.max(5, Math.min(600, Math.round(segundos))) }));
+  alterarExercicio(data, itemId, (e) => ({ ...e, tecnica }));
 }
 
 // ───────── fichas (treinos com nome livre) ─────────
@@ -408,7 +427,7 @@ export function moverItemFicha(fichaId: string, itemId: string, direcao: -1 | 1)
 
 /** Troca a técnica e ajusta as séries para o modelo dela (mantendo as cargas). */
 export function definirTecnicaFicha(fichaId: string, itemId: string, tecnica: TecnicaId) {
-  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, tecnica, descanso: undefined, series: seriesDoModelo(tecnica, i.series) }));
+  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, tecnica, series: seriesDoModelo(tecnica, i.series) }));
 }
 
 export function atualizarSerieFicha(fichaId: string, itemId: string, serieId: string, patch: Partial<Omit<SeriePlano, "id">>) {
@@ -427,11 +446,6 @@ export function adicionarSerieFicha(fichaId: string, itemId: string) {
 
 export function removerSerieFicha(fichaId: string, itemId: string) {
   alterarItemFicha(fichaId, itemId, (i) => (i.series.length <= 1 ? i : { ...i, series: i.series.slice(0, -1) }));
-}
-
-/** Descanso entre séries (segundos) do exercício na ficha. */
-export function definirDescansoFicha(fichaId: string, itemId: string, segundos: number) {
-  alterarItemFicha(fichaId, itemId, (i) => ({ ...i, descanso: Math.max(5, Math.min(600, Math.round(segundos))) }));
 }
 
 export function atualizarObservacoesFicha(fichaId: string, itemId: string, observacoes: string) {
@@ -493,7 +507,6 @@ export function iniciarTreino(fichaId: string, hoje: string): string | null {
       grupo: i.grupo,
       tipo: i.tipo,
       tecnica: i.tecnica,
-      descanso: i.descanso,
       observacoes: i.observacoes,
       series: i.series.map((x) => serieVazia({ carga: x.carga, reps: x.reps })),
     })),
@@ -534,7 +547,6 @@ export function criarFichasDeModelo(modeloId: string): string[] {
         tecnica,
         series,
         observacoes: im.obs ?? "",
-        ...(im.descanso ? { descanso: im.descanso } : {}),
       });
     }
     return { id: novoId(), nome, descricao: fm.descricao, itens, criadoEm: agora() };

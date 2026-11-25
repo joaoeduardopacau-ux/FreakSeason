@@ -5,15 +5,12 @@ import {
   adicionarSerieFicha,
   atualizarObservacoesFicha,
   atualizarSerieFicha,
-  definirDescansoFicha,
   moverItemFicha,
   removerSerieFicha,
 } from "@/lib/treinos/store";
 import { limparDecimal, limparInteiro, limparTexto, rotulos } from "@/lib/treinos/campos";
 import { ChipTecnica } from "./ChipTecnica";
 import { BotaoGif } from "./Gif";
-import { ControleDescanso } from "./ControleDescanso";
-import { descansoDe } from "@/lib/treinos/tecnicas";
 import { IconeBaixo, IconeCima, IconeLixo, IconeMais, IconeMenos } from "./Icones";
 
 /** Exercício dentro de uma ficha: técnica + metas por série (sem marcar como feita). */
@@ -69,9 +66,6 @@ export function CartaoItemPlano({
       </div>
 
       <ChipTecnica tecnica={item.tecnica} nome={item.nome} onClick={onTecnica} />
-      {!cardio && (
-        <ControleDescanso nome={item.nome} segundos={descansoDe(item)} onMudar={(seg) => definirDescansoFicha(fichaId, item.id, seg)} />
-      )}
 
       <div className="tr-sets-head plano" aria-hidden="true">
         <span style={{ textAlign: "center" }}>{r.linha}</span>

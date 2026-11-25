@@ -23,6 +23,8 @@ import { siglaFicha } from "@/lib/treinos/campos";
 import type { DadosTreinos, ExercicioDoTreino } from "@/lib/treinos/types";
 import { SeletorExercicios } from "@/components/treinos/SeletorExercicios";
 import { CartaoExercicio } from "@/components/treinos/CartaoExercicio";
+import { TreinoGuiado } from "@/components/treinos/TreinoGuiado";
+import { Comemoracao } from "@/components/treinos/Comemoracao";
 import { Confirmacao } from "@/components/treinos/Sheet";
 import { SeletorTecnica } from "@/components/treinos/SeletorTecnica";
 import { IconeCelular, IconeCheck, IconeDireita, IconeEsquerda, IconeHalter, IconeMais } from "@/components/treinos/Icones";
@@ -229,6 +231,24 @@ function ExecucaoTreino({
   const relativo = rotuloRelativo(treino.data);
   const [nomeTreino, ...resto] = (treino.titulo ?? "Treino").split(" · ");
   const descricao = resto.join(" · ");
+  const progresso = contagem.total > 0 ? contagem.feitas / contagem.total : 0;
+
+  // modo de execução: guiado (um exercício por vez) ou lista; o app lembra a escolha
+  const [modo, setModoEstado] = useState<"guiado" | "lista">(() => {
+    try {
+      return localStorage.getItem("freak_modo_treino") === "lista" ? "lista" : "guiado";
+    } catch {
+      return "guiado";
+    }
+  });
+  const setModo = (m: "guiado" | "lista") => {
+    setModoEstado(m);
+    try {
+      localStorage.setItem("freak_modo_treino", m);
+    } catch {}
+    window.scrollTo({ top: 0 });
+  };
+  const [resumo, setResumo] = useState(false);
 
   return (
     <div className="tr-page">
@@ -260,6 +280,17 @@ function ExecucaoTreino({
             {contagem.feitas}/{contagem.total} séries
           </span>
         </div>
+        <div className="tg-progresso" role="progressbar" aria-label="Progresso do treino" aria-valuemin={0} aria-valuemax={contagem.total} aria-valuenow={contagem.feitas}>
+          <span style={{ width: `${progresso * 100}%` }} />
+        </div>
+        <div className="tg-modo" role="group" aria-label="Modo do treino">
+          <button aria-pressed={modo === "guiado"} onClick={() => setModo("guiado")}>
+            Guiado
+          </button>
+          <button aria-pressed={modo === "lista"} onClick={() => setModo("lista")}>
+            Lista
+          </button>
+        </div>
       </header>
 
       {erroAoSalvar && (
@@ -268,6 +299,41 @@ function ExecucaoTreino({
         </div>
       )}
 
+      {modo === "guiado" ? (
+        <div style={{ paddingTop: 14 }}>
+          {resumo || concluido ? (
+            <Comemoracao
+              treino={treino}
+              onConcluir={() => {
+                concluirTreino(chave);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              onContinuar={() => setResumo(false)}
+              onVoltar={onVoltar}
+              onVerLista={() => setModo("lista")}
+            />
+          ) : (
+            <TreinoGuiado
+              chave={chave}
+              treino={treino}
+              anteriores={anteriores}
+              onTecnica={(item) => setDialogo({ tipo: "tecnica", item })}
+              onAdicionarExercicio={() => setDialogo({ tipo: "seletor" })}
+              onFinalizar={() => {
+                setResumo(true);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          )}
+          <button
+            className="tr-btn tr-btn-ghost tr-btn-block"
+            style={{ color: "var(--red)", borderColor: "transparent", marginTop: 8 }}
+            onClick={() => setDialogo({ tipo: "descartar" })}
+          >
+            Descartar este treino
+          </button>
+        </div>
+      ) : (
       <div style={{ paddingTop: 14 }}>
         {concluido && (
           <div
@@ -337,13 +403,13 @@ function ExecucaoTreino({
           </button>
         </div>
       </div>
+      )}
 
       <p className="tr-note" style={{ marginTop: 28, justifyContent: "center", textAlign: "center" }}>
         <IconeCelular size={16} />
         <span>Salvo automaticamente neste aparelho. Mudanças aqui não alteram a ficha.</span>
       </p>
-      {/* espaço para a barra do temporizador não cobrir o fim da página */}
-      <div style={{ height: 150 }} aria-hidden="true" />
+
 
       {dialogo?.tipo === "seletor" && (
         <SeletorExercicios
