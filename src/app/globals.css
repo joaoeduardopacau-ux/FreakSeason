@@ -514,3 +514,75 @@ input, textarea { font-family: inherit; }
   .tg-progresso span { transition: none; }
 }
 .tg-feito.ok { animation: tr-pop 0.3s ease-out; cursor: default; }
+
+/* ═════════ Treino guiado compacto (cabe numa tela) ═════════ */
+.tg-header {
+  position: sticky; top: 0; z-index: 20; background: var(--bg);
+  margin: 0 -16px; padding: 8px 16px; border-bottom: 1px solid var(--border);
+}
+.tg-header-linha { display: flex; align-items: center; gap: 10px; }
+.tg-header-titulo { flex: 1; min-width: 0; }
+.tg-header-nome { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tg-header-sub { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.tg-modo.mini { margin: 0; padding: 2px; border-radius: 10px; flex-shrink: 0; }
+.tg-modo.mini button { flex: none; height: 30px; padding: 0 10px; font-size: 12px; border-radius: 8px; }
+.tg-header .tg-progresso { margin: 8px 0 0; height: 4px; }
+
+.tg-linha-mapa { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.tg-linha-mapa .tg-mapa { flex: 1; min-width: 0; padding: 2px 0; }
+.tg-ponto { width: 30px; height: 30px; font-size: 12px; }
+.tg-mais {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
+  background: var(--s1); border: 1px solid var(--border); color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+}
+.tg-cartao { padding: 12px; }
+.tg-cabeca { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; }
+.tg-gif-btn { padding: 0; border: none; background: none; cursor: zoom-in; display: block; }
+.tg-cabeca .tg-gif { width: 96px; height: 96px; max-width: none; margin: 0; border-radius: 14px; }
+.tg-gif.sem { display: block; width: 96px; height: 96px; border-radius: 14px; background: var(--s2); }
+.tg-info { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.tg-cabeca .tg-nome {
+  font-size: 19px; margin: 0; line-height: 1.15;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tg-info .tg-tecnica { height: 26px; font-size: 12px; max-width: 100%; }
+.tg-info .tg-tecnica span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tg-info .tg-anterior { margin: 0; font-size: 12px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tg-cartao .tg-series { flex-wrap: nowrap; overflow-x: auto; margin: 10px 0 8px; scrollbar-width: none; }
+.tg-cartao .tg-series::-webkit-scrollbar { display: none; }
+.tg-cartao .tg-chip { flex-shrink: 0; height: 32px; font-size: 13px; padding: 0 8px; }
+.tg-cartao .tg-serie { padding: 10px 12px 12px; }
+.tg-cartao .tg-serie-titulo { font-size: 15px; margin-bottom: 4px; }
+.tg-cartao .tg-rot { font-size: 11px; margin: 4px 0 4px; }
+.tg-ajuste.carga { grid-template-columns: 46px 46px 1fr 46px 46px; gap: 6px; }
+.tg-ajuste.reps { grid-template-columns: 56px 1fr 56px; gap: 6px; }
+.tg-cartao .tg-passo { height: 48px; font-size: 15px; border-radius: 12px; }
+.tg-cartao .tg-num { height: 48px; font-size: 24px; }
+.tg-cartao .tg-num.texto { font-size: 17px; }
+.tg-cartao .tg-feito { height: 54px; font-size: 19px; margin-top: 10px; }
+.tg-cartao .tg-feito.desfazer { height: 48px; font-size: 15px; }
+.tg-nav { margin-top: 8px; }
+.tg-nav .tr-btn { min-height: 44px; font-size: 15px; }
+
+/* telas mais baixas (ex.: iPhone SE) */
+@media (max-height: 640px) {
+  .tg-cabeca { grid-template-columns: 76px 1fr; }
+  .tg-cabeca .tg-gif, .tg-gif.sem { width: 76px; height: 76px; }
+  .tg-cabeca .tg-nome { font-size: 17px; }
+  .tg-cartao .tg-passo, .tg-cartao .tg-num { height: 42px; }
+  .tg-cartao .tg-feito { height: 48px; }
+  .tg-nav .tr-btn { min-height: 40px; }
+}
+.tg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tg-cartao .tg-serie { position: relative; padding: 10px; }
+.tg-num-caixa { position: relative; display: block; min-width: 0; }
+.tg-unid {
+  position: absolute; top: 4px; left: 0; right: 0; text-align: center; pointer-events: none;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); font-weight: 700;
+}
+.tg-num-caixa .tg-num { padding-top: 10px; }
+.tg-espaco { margin-top: 8px; }
+.tg-cartao .tg-feito { margin-top: 10px; }
+.tg-linha-mapa { margin-bottom: 6px; }
+.tg-cartao .tg-series { margin: 8px 0; }

@@ -56,3 +56,6 @@ export const IconeHalter = (p: P) => (
   </Svg>
 );
 export const IconeRelogio = (p: P) => <Svg {...p}><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></Svg>;
+export const IconeMaisOpcoes = (p: P) => (
+  <Svg {...p}><circle cx="5" cy="12" r="1.4" fill="currentColor" /><circle cx="12" cy="12" r="1.4" fill="currentColor" /><circle cx="19" cy="12" r="1.4" fill="currentColor" /></Svg>
+);
