@@ -32,20 +32,71 @@ function vibrar(ms: number | number[]) {
 }
 
 /** GIF do exercício (animado); tocar abre em tamanho grande. */
-function GifCompacto({ exercicioId, nome, onAbrir }: { exercicioId: string; nome: string; onAbrir: () => void }) {
+function GifCompacto({ exercicioId, nome, tamanho, onAbrir }: { exercicioId: string; nome: string; tamanho: number; onAbrir: () => void }) {
   const gifId = gifIdDoExercicio(exercicioId);
   const src = useMidia("gif", gifId);
-  if (!gifId) return <div className="tg-gif sem" aria-hidden="true" />;
+  const estilo = { width: tamanho, height: tamanho };
+  if (!gifId) return <div className="tg-gif sem" style={estilo} aria-hidden="true" />;
   return (
     <button className="tg-gif-btn" onClick={onAbrir} aria-label={`Ver GIF de ${nome} em tamanho grande`}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element -- GIF animado local
-        <img className="tg-gif" src={src} alt={`Demonstração de ${nome}`} width={104} height={104} />
+        <img className="tg-gif" src={src} alt={`Demonstração de ${nome}`} width={tamanho} height={tamanho} style={estilo} />
       ) : (
-        <span className="tg-gif tr-gif-espera">{src === null ? "—" : "…"}</span>
+        <span className="tg-gif tr-gif-espera" style={estilo}>
+          {src === null ? "—" : "…"}
+        </span>
       )}
     </button>
   );
+}
+
+const GIF_PEQUENO = 96;
+const GIF_MINIMO_EMPILHADO = 150; // abaixo disso, vale mais o GIF ao lado do nome
+const GIF_MAXIMO = 380;
+
+type Layout = { modo: "lado" | "empilhado"; gif: number };
+
+/**
+ * Mede o espaço livre entre o topo do treino guiado e a barra de abas e decide
+ * o tamanho do GIF: pequeno ao lado do nome (telas baixas) ou grande, abaixo
+ * do nome, ocupando a sobra (telas altas, como o app instalado).
+ */
+function useLayoutGuiado(chaves: unknown[]) {
+  const raiz = useRef<HTMLDivElement>(null);
+  const cabeca = useRef<HTMLDivElement>(null);
+  const info = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<Layout>({ modo: "lado", gif: GIF_PEQUENO });
+
+  useEffect(() => {
+    let quadro = 0;
+    const calcular = () => {
+      cancelAnimationFrame(quadro);
+      quadro = requestAnimationFrame(() => {
+        const r = raiz.current, c = cabeca.current, i = info.current;
+        if (!r || !c || !i) return;
+        const barra = document.querySelector("nav")?.getBoundingClientRect().top ?? window.innerHeight;
+        const disponivel = barra - r.getBoundingClientRect().top - 10;
+        const fora = r.scrollHeight - c.offsetHeight; // tudo menos o bloco do GIF + nome
+        const largura = c.clientWidth;
+        const gif = Math.floor(Math.min(disponivel - fora - i.offsetHeight - 12, largura, GIF_MAXIMO));
+        const novo: Layout = gif >= GIF_MINIMO_EMPILHADO ? { modo: "empilhado", gif } : { modo: "lado", gif: GIF_PEQUENO };
+        setLayout((atual) => (atual.modo === novo.modo && Math.abs(atual.gif - novo.gif) < 4 ? atual : novo));
+      });
+    };
+    calcular();
+    window.addEventListener("resize", calcular);
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(calcular) : null;
+    if (ro && info.current) ro.observe(info.current);
+    return () => {
+      cancelAnimationFrame(quadro);
+      window.removeEventListener("resize", calcular);
+      ro?.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recalcula quando muda o exercício/série
+  }, chaves);
+
+  return { raiz, cabeca, info, layout };
 }
 
 export function TreinoGuiado({
@@ -74,6 +125,8 @@ export function TreinoGuiado({
   useEffect(() => () => {
     if (timeout.current) clearTimeout(timeout.current);
   }, []);
+  const exAtual = treino.exercicios[Math.min(alvo.ex, treino.exercicios.length - 1)];
+  const { raiz, cabeca, info, layout } = useLayoutGuiado([exAtual?.id, exAtual?.series.length, alvo.serie]);
 
   const total = treino.exercicios.length;
   const exIdx = Math.min(alvo.ex, total - 1);
@@ -134,7 +187,7 @@ export function TreinoGuiado({
   const formatarPasso = (p: number) => `${p > 0 ? "+" : "−"}${Math.abs(p)}`;
 
   return (
-    <div className="tg">
+    <div className="tg" ref={raiz}>
       <div className="tg-linha-mapa">
         <div className="tg-mapa" role="tablist" aria-label="Exercícios do treino">
           {treino.exercicios.map((e, i) => {
@@ -159,9 +212,9 @@ export function TreinoGuiado({
       </div>
 
       <section key={item.id} className={"tg-cartao entra-" + direcao} aria-label={item.nome}>
-        <div className="tg-cabeca">
-          <GifCompacto exercicioId={item.exercicioId} nome={item.nome} onAbrir={() => setGifGrande(true)} />
-          <div className="tg-info">
+        <div className={"tg-cabeca " + layout.modo} ref={cabeca}>
+          <GifCompacto exercicioId={item.exercicioId} nome={item.nome} tamanho={layout.gif} onAbrir={() => setGifGrande(true)} />
+          <div className="tg-info" ref={info}>
             <span className="tg-contador">
               Exercício {exIdx + 1} de {total}
             </span>

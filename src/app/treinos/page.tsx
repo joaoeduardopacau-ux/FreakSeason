@@ -22,7 +22,7 @@ import { dataCurta, dataPorExtenso, diaDaSemana, hojeChave, rotuloRelativo } fro
 import { siglaFicha } from "@/lib/treinos/campos";
 import type { DadosTreinos, ExercicioDoTreino } from "@/lib/treinos/types";
 import { SeletorExercicios } from "@/components/treinos/SeletorExercicios";
-import { CartaoExercicio } from "@/components/treinos/CartaoExercicio";
+import { ListaCompacta } from "@/components/treinos/ListaCompacta";
 import { TreinoGuiado } from "@/components/treinos/TreinoGuiado";
 import { Comemoracao } from "@/components/treinos/Comemoracao";
 import { Confirmacao } from "@/components/treinos/Sheet";
@@ -252,74 +252,32 @@ function ExecucaoTreino({
 
   return (
     <div className="tr-page">
-      {modo === "guiado" ? (
-        <header className="tg-header">
-          <div className="tg-header-linha">
-            <button className="tr-icon-btn tr-icon-btn-sm" onClick={onVoltar} aria-label="Voltar para os treinos">
-              <IconeEsquerda size={20} />
-            </button>
-            <div className="tg-header-titulo">
-              <div className="tg-header-nome">{nomeTreino}</div>
-              <div className="tg-header-sub">
-                {descricao ? `${descricao} · ` : ""}
-                {concluido ? "concluído" : `${contagem.feitas}/${contagem.total} séries`}
-              </div>
-            </div>
-            <div className="tg-modo mini" role="group" aria-label="Modo do treino">
-              <button aria-pressed={true} onClick={() => setModo("guiado")}>
-                Guiado
-              </button>
-              <button aria-pressed={false} onClick={() => setModo("lista")}>
-                Lista
-              </button>
+      <header className="tg-header">
+        <div className="tg-header-linha">
+          <button className="tr-icon-btn tr-icon-btn-sm" onClick={onVoltar} aria-label="Voltar para os treinos">
+            <IconeEsquerda size={20} />
+          </button>
+          <div className="tg-header-titulo">
+            <div className="tg-header-nome">{nomeTreino}</div>
+            <div className="tg-header-sub">
+              {descricao ? `${descricao} · ` : ""}
+              {concluido ? "concluído" : `${contagem.feitas}/${contagem.total} séries`}
+              {relativo ? "" : ` · ${dataCurta(treino.data)}`}
             </div>
           </div>
-          <div className="tg-progresso" role="progressbar" aria-label="Progresso do treino" aria-valuemin={0} aria-valuemax={contagem.total} aria-valuenow={contagem.feitas}>
-            <span style={{ width: `${progresso * 100}%` }} />
-          </div>
-        </header>
-      ) : (
-      <header className="tr-day">
-          <div className="tr-day-row">
-            <button className="tr-icon-btn" onClick={onVoltar} aria-label="Voltar para os treinos">
-              <IconeEsquerda />
-            </button>
-            <div style={{ flex: 1, minWidth: 0, textAlign: "center" }}>
-              <div className="tr-day-weekday" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {nomeTreino}
-              </div>
-              <div className="tr-day-date" style={{ display: "block" }}>
-                {descricao ? `${descricao} · ` : ""}
-                {relativo ?? dataCurta(treino.data)}
-              </div>
-            </div>
-            <span style={{ width: 48 }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 8 }}>
-            {concluido ? (
-              <span className="tr-pill tr-pill-green">
-                <IconeCheck size={13} /> Concluído
-              </span>
-            ) : (
-              <span className="tr-pill">Em andamento</span>
-            )}
-            <span className="tr-pill tr-pill-muted">
-              {contagem.feitas}/{contagem.total} séries
-            </span>
-          </div>
-          <div className="tg-progresso" role="progressbar" aria-label="Progresso do treino" aria-valuemin={0} aria-valuemax={contagem.total} aria-valuenow={contagem.feitas}>
-            <span style={{ width: `${progresso * 100}%` }} />
-          </div>
-          <div className="tg-modo" role="group" aria-label="Modo do treino">
-            <button aria-pressed={false} onClick={() => setModo("guiado")}>
+          <div className="tg-modo mini" role="group" aria-label="Modo do treino">
+            <button aria-pressed={modo === "guiado"} onClick={() => setModo("guiado")}>
               Guiado
             </button>
-            <button aria-pressed={true} onClick={() => setModo("lista")}>
+            <button aria-pressed={modo === "lista"} onClick={() => setModo("lista")}>
               Lista
             </button>
           </div>
-        </header>
-      )}
+        </div>
+        <div className="tg-progresso" role="progressbar" aria-label="Progresso do treino" aria-valuemin={0} aria-valuemax={contagem.total} aria-valuenow={contagem.feitas}>
+          <span style={{ width: `${progresso * 100}%` }} />
+        </div>
+      </header>
 
       {erroAoSalvar && (
         <div className="tr-note" style={{ color: "var(--red)", marginTop: 12 }}>
@@ -356,41 +314,30 @@ function ExecucaoTreino({
           )}
         </div>
       ) : (
-      <div style={{ paddingTop: 14 }}>
+      <div style={{ paddingTop: 10 }}>
         {concluido && (
-          <div
-            className="tr-note"
-            style={{ background: "var(--green-dim)", color: "var(--green)", borderRadius: 12, padding: "12px 14px", marginBottom: 12, fontWeight: 600 }}
-          >
-            <IconeCheck size={18} />
-            <span>
-              Treino concluído: {contagem.feitas} de {contagem.total} séries feitas. Você ainda pode ajustar os valores.
-            </span>
+          <div className="lc-banner" role="status">
+            <IconeCheck size={16} /> Treino concluído · {contagem.feitas} de {contagem.total} séries
           </div>
         )}
 
-        {treino.exercicios.map((item, i) => (
-          <CartaoExercicio
-            key={item.id}
-            data={chave}
-            item={item}
-            indice={i}
-            total={treino.exercicios.length}
-            anterior={anteriores.get(item.exercicioId) ?? null}
-            onTecnica={() => setDialogo({ tipo: "tecnica", item })}
-            onRemover={() => {
-              const temDados = item.series.some((s) => s.feita) || item.observacoes;
-              if (temDados) setDialogo({ tipo: "remover-exercicio", item });
-              else removerExercicio(chave, item.id);
-            }}
-          />
-        ))}
+        <ListaCompacta
+          chave={chave}
+          treino={treino}
+          anteriores={anteriores}
+          onTecnica={(item) => setDialogo({ tipo: "tecnica", item })}
+          onRemover={(item) => {
+            const temDados = item.series.some((s) => s.feita) || item.observacoes;
+            if (temDados) setDialogo({ tipo: "remover-exercicio", item });
+            else removerExercicio(chave, item.id);
+          }}
+        />
 
-        <button className="tr-btn tr-btn-block" style={{ marginTop: 12, borderStyle: "dashed" }} onClick={() => setDialogo({ tipo: "seletor" })}>
+        <button className="tr-btn tr-btn-block" style={{ marginTop: 10, borderStyle: "dashed", minHeight: 44, fontSize: 15 }} onClick={() => setDialogo({ tipo: "seletor" })}>
           <IconeMais size={20} /> Adicionar exercício só hoje
         </button>
 
-        <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
           {concluido ? (
             <>
               <button className="tr-btn tr-btn-primary tr-btn-lg tr-btn-block" onClick={onVoltar}>
@@ -427,12 +374,6 @@ function ExecucaoTreino({
       </div>
       )}
 
-      {modo === "lista" && (
-        <p className="tr-note" style={{ marginTop: 28, justifyContent: "center", textAlign: "center" }}>
-          <IconeCelular size={16} />
-          <span>Salvo automaticamente neste aparelho. Mudanças aqui não alteram a ficha.</span>
-        </p>
-      )}
 
 
       {dialogo?.tipo === "seletor" && (

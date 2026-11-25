@@ -256,6 +256,18 @@ export function moverExercicio(data: string, itemId: string, direcao: -1 | 1) {
   });
 }
 
+/** Troca a posição de dois exercícios do treino (usado para mover entre os visíveis). */
+export function trocarExercicios(data: string, idA: string, idB: string) {
+  alterarTreino(data, (t) => {
+    const lista = [...t.exercicios];
+    const i = lista.findIndex((e) => e.id === idA);
+    const j = lista.findIndex((e) => e.id === idB);
+    if (i < 0 || j < 0) return t;
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+    return { ...t, exercicios: lista };
+  });
+}
+
 export function atualizarSerie(data: string, itemId: string, serieId: string, patch: Partial<Omit<Serie, "id">>) {
   alterarExercicio(data, itemId, (e) => ({
     ...e,
