@@ -11,6 +11,7 @@ import {
   excluirFicha,
   removerItemFicha,
   renomearFicha,
+  ultimaVezFicha,
   useTreinos,
 } from "@/lib/treinos/store";
 import { dataCurta } from "@/lib/treinos/datas";
@@ -63,11 +64,9 @@ function Fichas() {
 }
 
 /** Última data em que a ficha foi usada na aba Treinos. */
+/** Última data em que a ficha foi feita (a data vem do registro, não da chave). */
 function ultimoUso(dados: DadosTreinos, fichaId: string) {
-  return Object.keys(dados.treinos)
-    .filter((d) => dados.treinos[d].fichaId === fichaId)
-    .sort()
-    .pop();
+  return ultimaVezFicha(dados, fichaId) ?? undefined;
 }
 
 function resumoItens(f: Ficha) {

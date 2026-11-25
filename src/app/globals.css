@@ -513,3 +513,4 @@ input, textarea { font-family: inherit; }
   .tg-confete { display: none; }
   .tg-progresso span { transition: none; }
 }
+.tg-feito.ok { animation: tr-pop 0.3s ease-out; cursor: default; }

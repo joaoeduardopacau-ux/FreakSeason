@@ -259,15 +259,21 @@ export function TreinoGuiado({
               )}
             </div>
 
-            <button className={"tg-feito" + (serie.feita ? " desfazer" : "")} onClick={feito}>
-              {serie.feita ? (
-                "Desmarcar série"
-              ) : (
-                <>
-                  <IconeCheck size={26} /> Feito
-                </>
-              )}
-            </button>
+            {acendeu === serie.id ? (
+              <div className="tg-feito ok" role="status">
+                <IconeCheck size={26} /> Feita!
+              </div>
+            ) : (
+              <button className={"tg-feito" + (serie.feita ? " desfazer" : "")} onClick={feito}>
+                {serie.feita ? (
+                  "Desmarcar série"
+                ) : (
+                  <>
+                    <IconeCheck size={26} /> Feito
+                  </>
+                )}
+              </button>
+            )}
           </div>
         )}
 
