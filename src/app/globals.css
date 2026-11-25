@@ -590,7 +590,7 @@ input, textarea { font-family: inherit; }
 .tg-cabeca.empilhado { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
 .tg-cabeca.empilhado .tg-info { order: 1; }
 .tg-cabeca.empilhado .tg-gif-btn { order: 2; align-self: center; }
-.tg-cabeca.empilhado .tg-gif, .tg-cabeca.empilhado .tg-gif.sem { border-radius: 18px; transition: width 0.25s, height 0.25s; }
+.tg-cabeca.empilhado .tg-gif, .tg-cabeca.empilhado .tg-gif.sem { border-radius: 18px; }
 .tg-cabeca .tg-gif, .tg-gif.sem { width: auto; height: auto; }
 
 /* ═════════ Lista compacta do treino ═════════ */
@@ -666,3 +666,23 @@ input, textarea { font-family: inherit; }
 .tr-como { margin: 14px 0 0; padding: 12px 14px 12px 32px; background: var(--s2); border-radius: 12px; font-size: 14px; line-height: 1.45; color: var(--text); }
 .tr-como li + li { margin-top: 6px; }
 .tr-como li::marker { color: var(--accent); font-weight: 800; }
+.tg-chip.mais:disabled { opacity: 0.35; cursor: default; }
+/* séries: chips roláveis + botões − / + sempre visíveis */
+.tg-series-linha { display: flex; align-items: center; gap: 6px; margin: 8px 0; }
+.tg-cartao .tg-series-linha .tg-series { flex: 1; min-width: 0; margin: 0; }
+.tg-series-acoes { display: flex; gap: 6px; flex-shrink: 0; }
+.tg-series-acoes .tg-chip.mais { width: 36px; padding: 0; justify-content: center; }
+@media (max-width: 359px) {
+  .tg-ajuste.carga { grid-template-columns: 38px 38px 1fr 38px 38px; gap: 4px; }
+  .tg-cartao .tg-passo { font-size: 14px; }
+  .tg-cartao .tg-num { font-size: 21px; }
+}
+@media (max-height: 600px) {
+  .tg-contador { display: none; }
+  .tg-cartao .tg-feito { height: 44px; margin-top: 8px; }
+  .tg-cartao .tg-passo, .tg-cartao .tg-num { height: 40px; }
+  .tg-nav .tr-btn { min-height: 38px; }
+}
+/* treino guiado: sem folga extra no fim da página, para caber sem rolar */
+main:has(.tg) { padding-bottom: calc(64px + env(safe-area-inset-bottom)) !important; }
+.tr-page:has(.tg) { padding-bottom: 0; }

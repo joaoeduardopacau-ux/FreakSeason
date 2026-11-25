@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ExercicioDoTreino, Serie, TreinoDoDia } from "@/lib/treinos/types";
-import { adicionarSerie, alternarSerieFeita, atualizarSerie } from "@/lib/treinos/store";
+import { adicionarSerie, alternarSerieFeita, atualizarSerie, removerSerie } from "@/lib/treinos/store";
 import { gifIdDoExercicio } from "@/lib/treinos/catalogo";
 import { tecnicaPorId } from "@/lib/treinos/tecnicas";
 import { useMidia } from "@/lib/treinos/midia";
 import { dataCurta } from "@/lib/treinos/datas";
 import { limparDecimal, limparInteiro, limparTexto, rotulos, somarPasso } from "@/lib/treinos/campos";
 import { VisualizadorGif } from "./Gif";
-import { IconeBaixo, IconeCheck, IconeDireita, IconeEsquerda, IconeMais } from "./Icones";
+import { IconeBaixo, IconeCheck, IconeDireita, IconeEsquerda, IconeMais, IconeMenos } from "./Icones";
 
 type Alvo = { ex: number; serie: number };
 
@@ -51,7 +51,7 @@ function GifCompacto({ exercicioId, nome, tamanho, onAbrir }: { exercicioId: str
 }
 
 const GIF_PEQUENO = 96;
-const GIF_MINIMO_EMPILHADO = 150; // abaixo disso, vale mais o GIF ao lado do nome
+const GIF_MINIMO_EMPILHADO = 130; // abaixo disso, vale mais o GIF ao lado do nome
 const GIF_MAXIMO = 380;
 
 type Layout = { modo: "lado" | "empilhado"; gif: number };
@@ -66,6 +66,10 @@ function useLayoutGuiado(chaves: unknown[]) {
   const cabeca = useRef<HTMLDivElement>(null);
   const info = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<Layout>({ modo: "lado", gif: GIF_PEQUENO });
+  const layoutAtual = useRef(layout);
+  useEffect(() => {
+    layoutAtual.current = layout;
+  }, [layout]);
 
   useEffect(() => {
     let quadro = 0;
@@ -75,10 +79,22 @@ function useLayoutGuiado(chaves: unknown[]) {
         const r = raiz.current, c = cabeca.current, i = info.current;
         if (!r || !c || !i) return;
         const barra = document.querySelector("nav")?.getBoundingClientRect().top ?? window.innerHeight;
-        const disponivel = barra - r.getBoundingClientRect().top - 10;
-        const fora = r.scrollHeight - c.offsetHeight; // tudo menos o bloco do GIF + nome
-        const largura = c.clientWidth;
-        const gif = Math.floor(Math.min(disponivel - fora - i.offsetHeight - 12, largura, GIF_MAXIMO));
+        // quanto sobra (ou falta, se negativo) até o limite sem rolagem: acima da barra de abas
+        // e sem passar da altura da tela somando os espaços que vêm depois do conteúdo
+        const rect = r.getBoundingClientRect();
+        const fimConteudo = rect.bottom + window.scrollY;
+        const main = r.closest("main");
+        const pagina = r.closest(".tr-page");
+        const espacoDepois =
+          (main ? parseFloat(getComputedStyle(main).paddingBottom) || 0 : 0) +
+          (pagina ? pagina.getBoundingClientRect().bottom - rect.bottom : 0);
+        const limite = Math.min(barra - 8, window.innerHeight - espacoDepois - 1);
+        const delta = Math.floor(limite - fimConteudo);
+        const atual = layoutAtual.current;
+        // tamanho que o GIF empilhado teria para a tela fechar certinho
+        const alvo =
+          atual.modo === "empilhado" ? atual.gif + delta : delta + c.offsetHeight - i.offsetHeight - 10;
+        const gif = Math.floor(Math.min(alvo, c.clientWidth, GIF_MAXIMO));
         const novo: Layout = gif >= GIF_MINIMO_EMPILHADO ? { modo: "empilhado", gif } : { modo: "lado", gif: GIF_PEQUENO };
         setLayout((atual) => (atual.modo === novo.modo && Math.abs(atual.gif - novo.gif) < 4 ? atual : novo));
       });
@@ -87,6 +103,7 @@ function useLayoutGuiado(chaves: unknown[]) {
     window.addEventListener("resize", calcular);
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(calcular) : null;
     if (ro && info.current) ro.observe(info.current);
+    if (ro && raiz.current) ro.observe(raiz.current);
     return () => {
       cancelAnimationFrame(quadro);
       window.removeEventListener("resize", calcular);
@@ -123,6 +140,13 @@ export function TreinoGuiado({
   }, []);
   const exAtual = treino.exercicios[Math.min(alvo.ex, treino.exercicios.length - 1)];
   const { raiz, cabeca, info, layout } = useLayoutGuiado([exAtual?.id, exAtual?.series.length, alvo.serie]);
+
+  // deixa a série atual visível na fila de séries (que rola de lado)
+  useEffect(() => {
+    const lista = raiz.current?.querySelector<HTMLElement>(".tg-series");
+    const chip = lista?.querySelector<HTMLElement>(".tg-chip.atual");
+    if (lista && chip) lista.scrollTo({ left: chip.offsetLeft - lista.clientWidth / 2 + chip.clientWidth / 2, behavior: "smooth" });
+  }, [raiz, exAtual?.id, alvo.serie, exAtual?.series.length]);
 
   const total = treino.exercicios.length;
   const exIdx = Math.min(alvo.ex, total - 1);
@@ -230,26 +254,41 @@ export function TreinoGuiado({
           </div>
         </div>
 
-        <div className="tg-series" role="group" aria-label={`Séries de ${item.nome}`}>
-          {item.series.map((s, i) => (
+        <div className="tg-series-linha">
+          <div className="tg-series" role="group" aria-label={`Séries de ${item.nome}`}>
+            {item.series.map((s, i) => (
+              <button
+                key={s.id}
+                className={"tg-chip" + (i === serieIdx ? " atual" : "") + (s.feita ? " feita" : "") + (acendeu === s.id ? " acende" : "")}
+                onClick={() => setAlvo({ ex: exIdx, serie: i })}
+                aria-label={`${r.linha} ${i + 1}${s.feita ? ", feita" : ""}`}
+                aria-pressed={i === serieIdx}
+              >
+                <span className="tg-chip-num">{s.feita ? <IconeCheck size={12} /> : i + 1}</span>
+                <span className="tg-chip-val">
+                  {s.carga || "–"}
+                  {cardio ? "′" : "×"}
+                  {cardio ? "" : s.reps || "–"}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="tg-series-acoes">
             <button
-              key={s.id}
-              className={"tg-chip" + (i === serieIdx ? " atual" : "") + (s.feita ? " feita" : "") + (acendeu === s.id ? " acende" : "")}
-              onClick={() => setAlvo({ ex: exIdx, serie: i })}
-              aria-label={`${r.linha} ${i + 1}${s.feita ? ", feita" : ""}`}
-              aria-pressed={i === serieIdx}
+              className="tg-chip mais"
+              onClick={() => {
+                const ultima = item.series[item.series.length - 1];
+                if (ultima) removerSerie(chave, item.id, ultima.id);
+              }}
+              disabled={item.series.length <= 1}
+              aria-label={`Remover ${r.linha.toLowerCase()} de ${item.nome}`}
             >
-              <span className="tg-chip-num">{s.feita ? <IconeCheck size={12} /> : i + 1}</span>
-              <span className="tg-chip-val">
-                {s.carga || "–"}
-                {cardio ? "′" : "×"}
-                {cardio ? "" : s.reps || "–"}
-              </span>
+              <IconeMenos size={15} />
             </button>
-          ))}
-          <button className="tg-chip mais" onClick={() => adicionarSerie(chave, item.id)} aria-label={`Adicionar ${r.linha.toLowerCase()} em ${item.nome}`}>
-            <IconeMais size={15} />
-          </button>
+            <button className="tg-chip mais" onClick={() => adicionarSerie(chave, item.id)} aria-label={`Adicionar ${r.linha.toLowerCase()} em ${item.nome}`}>
+              <IconeMais size={15} />
+            </button>
+          </div>
         </div>
 
         {serie && (
